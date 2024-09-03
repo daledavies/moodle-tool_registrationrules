@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_registrationrules\plugininfo;
+class registrationrule extends \core\plugininfo\base {
 
-$plugin->version      = 2024090300; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires     = 2022041908; // Support Moodle 4.0 and higher.
-$plugin->component    = 'registrationrule_nope';
-$plugin->release      = 'v0.1';
-$plugin->maturity     = MATURITY_STABLE;
-$plugin->dependencies = ['tool_registrationrules' => 2024090300];
+}
