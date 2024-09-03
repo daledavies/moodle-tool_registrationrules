@@ -1,6 +1,6 @@
 <?php
 
-namespace rule_nope;
+namespace registrationrule_nope;
 
 class rule implements \tool_registrationrules\local\rule\rule_interface {
 
