@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,18 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Strings for component 'tool_profiling', language 'en', branch 'MOODLE_22_STABLE'
- *
- * @package    tool
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+defined('MOODLE_INTERNAL') || die;
 
-defined('MOODLE_INTERNAL') || die();
+$ADMIN->add('tools', new admin_category('toolregistrationrules', new lang_string('pluginname', 'tool_registrationrules')));
 
-$string['hideshow'] = 'Hide/Show';
-$string['manageregistrationruleplugins'] = 'Manage rule plugins';
-$string['pluginname'] = 'Registration rules';
-$string['registrationrulepluginname'] = 'Registration rule plugin';
-$string['settings'] = 'Registration rules settings';
+$ADMIN->add('toolregistrationrules', new \tool_registrationrules\local\admin_page_rule_plugins('registrationrule'));

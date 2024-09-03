@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,18 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Strings for component 'tool_profiling', language 'en', branch 'MOODLE_22_STABLE'
- *
- * @package    tool
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+require_once(__DIR__ . '/../../../config.php');
 
-defined('MOODLE_INTERNAL') || die();
+use tool_registrationrules\local\registrationrules_plugin_manager;
 
-$string['hideshow'] = 'Hide/Show';
-$string['manageregistrationruleplugins'] = 'Manage rule plugins';
-$string['pluginname'] = 'Registration rules';
-$string['registrationrulepluginname'] = 'Registration rule plugin';
-$string['settings'] = 'Registration rules settings';
+$subtype = required_param('subtype', PARAM_PLUGIN);
+$action = optional_param('action', null, PARAM_PLUGIN);
+$plugin = optional_param('plugin', null, PARAM_PLUGIN);
+
+if (!empty($plugin)) {
+    require_sesskey();
+}
+
+// Create the class for this controller.
+$pluginmanager = new registrationrules_plugin_manager($subtype);
+
+$PAGE->set_context(context_system::instance());
+
+// Execute the controller.
+$pluginmanager->execute($action, $plugin);
