@@ -70,7 +70,7 @@ class rule_checker {
         if ($this->is_checked()) {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_messages()');
         }
-        $messgaes = [];
+        $messages = [];
         foreach ($this->results as $result) {
             $messages[] = $result->get_messages();
         }
