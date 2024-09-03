@@ -5,7 +5,10 @@ namespace tool_registrationrules\local;
 use core_component;
 
 class rule_checker {
-    public static function is_registration_allowed($data = null): rule_check_result {
+    private array $instances;
+    private array $results;
+
+    public function __construct() {
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
             $instance = new $rule();
@@ -13,12 +16,33 @@ class rule_checker {
                 debugging("Rule $ruleplugin does not implement rule_interface", DEBUG_DEVELOPER);
                 continue;
             }
-
-            if ($instance->get_result()) {
-                return new rule_check_result(false, "Rule $ruleplugin says no");
-            }
+            $this->instances[] = $instance;
         }
-        return new rule_check_result(true, 'All rules passed');
     }
 
+    public function get_instances(): array {
+        return $this->instances;
+    }
+
+    public function check($data = null) {
+        foreach ($$this->instances as $instance) {
+            $results[] = $instance->get_results($data);
+        }
+    }
+
+    public function is_registration_allowed(): bool {
+        if ($this->is_checked()) {
+            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::is_registration_allowed()');
+        }
+        foreach ($this->results as $result) {
+            if (!$result->get_allowed()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function is_checked(): bool {
+        return !empty($this->results);
+    }
 }
