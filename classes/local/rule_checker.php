@@ -49,7 +49,7 @@ class rule_checker {
     }
 
     public function check($data = null) {
-        foreach ($$this->instances as $instance) {
+        foreach ($this->instances as $instance) {
             $results[] = $instance->get_results($data);
         }
     }
