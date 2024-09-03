@@ -66,6 +66,17 @@ class rule_checker {
         return true;
     }
 
+    public function get_messages(): array {
+        if ($this->is_checked()) {
+            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_messages()');
+        }
+        $messgaes = [];
+        foreach ($this->results as $result) {
+            $messages[] = $result->get_messages();
+        }
+        return $messages;
+    }
+
     private function is_checked(): bool {
         return !empty($this->results);
     }
