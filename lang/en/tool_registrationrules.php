@@ -28,5 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['pluginname'] = 'Registration rules';
+$string['registrationrulepluginname'] = 'Registration rule';
 $string['subplugintype_registrationrule'] = 'Registration rule';
 $string['subplugintype_registrationrule_plural'] = 'Registration rules';

@@ -40,7 +40,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     }
 
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true);
+        return new rule_check_result(false, 'Sorry, but nope!', 50);
     }
 
     public function extend_form($mform): void {

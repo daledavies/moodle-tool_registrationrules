@@ -49,9 +49,14 @@ class rule_checker {
     private function __construct() {
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
-            $instance = new $rule();
+            $disabled = get_config($ruleplugin, 'disabled');
+            if ($disabled) {
+                continue;
+            }
+            // TODO: Replace dummy config with actual config.
+            $instance = new $rule([]);
             if (!$instance instanceof rule\rule_base) {
-                debugging("Rule $ruleplugin does not implement rule_interface", DEBUG_DEVELOPER);
+                debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
                 continue;
             }
             $this->rules[] = $instance;
@@ -100,7 +105,10 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
-            $messages[] = $result->get_messages();
+            if ($result->get_allowed()) {
+                continue;
+            }
+            $messages[] = $result->get_message();
         }
         return $messages;
     }

@@ -3,13 +3,12 @@
 namespace registrationrule_disposableemails;
 
 use registrationrule_disposableemails\local\list_manager;
+use tool_registrationrules\local\rule\rule_base;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule_check_result;
 
-class rule implements rule_interface {
+class rule extends rule_base implements rule_interface {
 
-    public function __construct($config) {
-    }
 
     public function extend_form($mform): void {
         // TODO: Implement extend_form() method.
@@ -20,11 +19,11 @@ class rule implements rule_interface {
     }
 
     public function post_data_check($data): rule_check_result {
-        if (!property_exists($data, 'email')) {
+        if (!array_key_exists('email', $data)) {
             return new rule_check_result(true, 'No email address provided', 0);
         }
 
-        $email = $data->email;
+        $email = $data['email'];
 
         if (strpos($email, '@') === false) {
             return new rule_check_result(true, 'Invalid email address', 0);
