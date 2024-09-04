@@ -53,8 +53,9 @@ function tool_registrationrules_pre_signup_requests() {
  * @return void
  */
 function tool_registrationrules_extend_signup_form($mform): void {
-    //$mform->addElement('hidden', 'registrationrules_information', '');
- }
+    $mform->insertElementBefore($mform->createElement('static', 'registrationrules_information',
+    get_string('pluginname', 'tool_registrationrules'), get_config('tool_registrationrules', 'registrationpagemessage')), 'username');
+}
 
 
 function tool_registrationrules_validate_extend_signup_form($data) {
