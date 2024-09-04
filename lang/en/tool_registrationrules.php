@@ -25,8 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['enable'] = 'Enable';
+$string['generalbeforemessage'] = 'General message for users rejected BEFORE user input';
+$string['generalaftermessage'] = 'General message for users rejected AFTER user input';
 $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
+$string['maxpoints'] = 'Max rejection points';
 $string['pluginname'] = 'Registration rules';
+$string['registrationrulessettings'] = 'Registration rules settings';
+$string['registrationpagemessage'] = 'Message on top of the registration page';
 $string['subplugintype_registrationrule'] = 'Registration rule';
 $string['subplugintype_registrationrule_plural'] = 'Registration rules';

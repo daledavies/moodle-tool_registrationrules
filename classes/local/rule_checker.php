@@ -36,6 +36,7 @@ class rule_checker {
      */
     private array $rules;
     private array $results;
+    private ?\stdClass $adminconfig = null;
 
     private bool $checked = false;
 
@@ -47,6 +48,7 @@ class rule_checker {
     }
 
     private function __construct() {
+        $this->adminconfig = $this->get_admin_config();
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
             $instance = new $rule();
@@ -56,6 +58,19 @@ class rule_checker {
             }
             $this->rules[] = $instance;
         }
+    }
+
+    /**
+     * Load and cache the admin config for this module.
+     *
+     * @return stdClass the plugin config
+     */
+    public function get_admin_config() {
+        if ($this->adminconfig) {
+            return $this->adminconfig;
+        }
+        $this->adminconfig = get_config('tool_registrationrules');
+        return $this->adminconfig;
     }
 
     public function get_rules(): array {
@@ -83,6 +98,9 @@ class rule_checker {
     }
 
     public function is_registration_allowed(): bool {
+        if (!$this->adminconfig->enable) {
+            return true;
+        }
         if (!$this->checked) {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::is_registration_allowed()');
         }
@@ -100,7 +118,7 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
-            $messages[] = $result->get_messages();
+            $messages[] = $result->get_message();
         }
         return $messages;
     }

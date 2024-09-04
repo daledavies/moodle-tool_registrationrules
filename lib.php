@@ -36,14 +36,40 @@ function tool_registrationrules_pre_signup_requests() {
     if ($rule_checker->is_registration_allowed()) {
         return;
     }
+    $messages = implode('<br>', $rule_checker->get_messages());
+    \core\notification::warning($messages);
     redirect(
         new moodle_url(
             '/admin/tool/registrationrules/error.php',
-            ['message' => implode('<br>', $rule_checker->get_messages())]
+            ['ver' =>'before']
         )
     );
 }
 
-function tool_registrationrules_validate_extend_signup_form($mform) {
-   return ['username' => 'No usernames are allowed'];
+/**
+ * Add general information about registration rules.
+ *
+ * @param MoodleQuickForm $mform
+ * @return void
+ */
+function tool_registrationrules_extend_signup_form($mform): void {
+    //$mform->addElement('hidden', 'registrationrules_information', '');
+ }
+
+
+function tool_registrationrules_validate_extend_signup_form($data) {
+    $rule_checker = rule_checker::get_instance();
+    $rule_checker->run_post_data_checks($data);
+    if ($rule_checker->is_registration_allowed()) {
+        return;
+    }
+    $messages = implode('<br>', $rule_checker->get_messages());
+    \core\notification::warning($messages);
+    redirect(
+        new moodle_url(
+            '/admin/tool/registrationrules/error.php',
+            ['ver' =>'after']
+        )
+    );
 }
+

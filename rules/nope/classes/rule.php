@@ -36,11 +36,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     }
 
     public function post_data_check($data): rule_check_result {
-        return new rule_check_result(false, 'Sorry, but nope!', 50);
+        return new rule_check_result(false, 'Nope', 50);
     }
 
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true);
+        return new rule_check_result(true, 'Double nope!');
     }
 
     public function extend_form($mform): void {
