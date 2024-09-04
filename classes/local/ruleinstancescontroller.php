@@ -157,7 +157,7 @@ class ruleinstancescontroller implements renderable, \templatable {
             $actions = new action_menu([
                 new \action_menu_link_primary(
                     url: new \moodle_url(
-                        '/admin/tool/registrationsrules/edit_rule_instance.php',
+                        '/admin/tool/registrationrules/edit_rule_instance.php',
                         [
                             'id' => $ruleinstance->id,
                         ],
@@ -167,7 +167,7 @@ class ruleinstancescontroller implements renderable, \templatable {
                 ),
                 new \action_menu_link_primary(
                     url: new \moodle_url(
-                        '/admin/tool/registrationsrules/manageruleinstances.php',
+                        '/admin/tool/registrationrules/manageruleinstances.php',
                         [
                             'instanceid' => $ruleinstance->id,
                             'action' => 'moveup',
@@ -178,7 +178,7 @@ class ruleinstancescontroller implements renderable, \templatable {
                 ),
                 new \action_menu_link_primary(
                     url: new \moodle_url(
-                        '/admin/tool/registrationsrules/manageruleinstances.php',
+                        '/admin/tool/registrationrules/manageruleinstances.php',
                         [
                             'instanceid' => $ruleinstance->id,
                             'action' => 'movedown',
@@ -190,7 +190,7 @@ class ruleinstancescontroller implements renderable, \templatable {
                 new action_menu_filler(),
                 new \action_menu_link_primary(
                     url: new \moodle_url(
-                        '/admin/tool/registrationsrules/manageruleinstances.php',
+                        '/admin/tool/registrationrules/manageruleinstances.php',
                         [
                             'instanceid' => $ruleinstance->id,
                             'action' => 'delete',
@@ -208,7 +208,7 @@ class ruleinstancescontroller implements renderable, \templatable {
                 'enabled' => $output->render(
                     new \action_menu_link_primary(
                         url: new \moodle_url(
-                            '/admin/tool/registrationsrules/manageruleinstances.php',
+                            '/admin/tool/registrationrules/manageruleinstances.php',
                             [
                                 'instanceid' => $ruleinstance->id,
                                 'action' => $ruleinstance->enabled ? 'disable' : 'enable',
