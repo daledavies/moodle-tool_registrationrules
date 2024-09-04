@@ -61,12 +61,12 @@ class rule_checker {
                 }
                 if ($instance->type == str_replace('registrationrule_', '', $ruleplugin)) {
                     // TODO: Replace dummy config with actual config.
-                    $instance = new $rule($instance);
-                    if (!$instance instanceof rule\rule_base) {
+                    $ruleinstance = new $rule($instance);
+                    if (!$ruleinstance instanceof rule\rule_base) {
                         debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
                         continue;
                     }
-                    $this->rules[] = $instance;
+                    $this->rules[] = $ruleinstance;
                 }
             }
         }
