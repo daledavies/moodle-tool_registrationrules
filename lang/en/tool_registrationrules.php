@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for tool_registrationrules plugin.
+ * Strings for component 'tool_profiling', language 'en', branch 'MOODLE_22_STABLE'
  *
  * @package    tool
  * @subpackage registrationrules
@@ -28,5 +28,5 @@ defined('MOODLE_INTERNAL') || die();
 $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['pluginname'] = 'Registration rules';
-$string['registrationrulepluginname'] = 'Registration rule plugin';
-$string['settings'] = 'Registration rules settings';
+$string['subplugintype_registrationrule'] = 'Registration rule';
+$string['subplugintype_registrationrule_plural'] = 'Registration rules';
