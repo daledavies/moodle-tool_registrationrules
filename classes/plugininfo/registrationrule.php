@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Plugin info for registration rule sub plugin type.
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -54,6 +53,6 @@ class registrationrule extends \core\plugininfo\base {
      * @return moodle_url
      */
     public static function get_manage_url() {
-        return new \moodle_url('/admin/tool/registrationrules/managerules.php', array('subtype'=>'registrationrule'));
+        return new \moodle_url('/admin/tool/registrationrules/managerules.php', ['subtype' => 'registrationrule']);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -19,7 +18,7 @@
  * Basic admin_externalpage wrapper to allow finding tool_registrationrules subplugins
  * for admin settings pages.
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -38,7 +37,7 @@ class admin_page_rule_plugins extends \admin_externalpage {
      */
     public function __construct($subtype) {
         $this->subtype = $subtype;
-        $url = new \moodle_url('/admin/tool/registrationrules/managerules.php', array('subtype'=>$subtype));
+        $url = new \moodle_url('/admin/tool/registrationrules/managerules.php', ['subtype' => $subtype]);
         parent::__construct('manage' . $subtype . 'plugins',
                             get_string('manageregistrationruleplugins', 'tool_registrationrules'),
                             $url);
@@ -67,10 +66,10 @@ class admin_page_rule_plugins extends \admin_externalpage {
         if ($found) {
             $result = new \stdClass();
             $result->page     = $this;
-            $result->settings = array();
-            return array($this->name => $result);
+            $result->settings = [];
+            return [$this->name => $result];
         } else {
-            return array();
+            return [];
         }
     }
 }
