@@ -29,11 +29,13 @@ class rule_check_result {
     private bool $allowed;
     private string $message;
     private int $score;
+    private array $validationmessages;
 
-    public function __construct(bool $allowed, string $message = '', int $score = 100) {
+    public function __construct(bool $allowed, string $message = '', int $score = 100, array $validationmessages = []) {
         $this->allowed = $allowed;
         $this->message = $message;
         $this->score = $score;
+        $this->validationmessages = $validationmessages;
     }
 
     public function get_allowed(): bool {
@@ -46,5 +48,9 @@ class rule_check_result {
 
     public function get_score(): int {
         return $this->score;
+    }
+
+    public function get_validation_messages(): array {
+        return $this->validationmessages;
     }
 }

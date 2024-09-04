@@ -123,4 +123,19 @@ class rule_checker {
         return $messages;
     }
 
+    public function get_validation_messages(): array {
+        if (!$this->checked) {
+            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_validation_messages()');
+        }
+        $messages = [];
+        foreach ($this->results as $result) {
+            foreach ($result->get_validation_messages() as $field => $message) {
+                // Note that this will overwrite any previous message for the same field.
+                // We may want to consider some kind of aggregation here.
+                $messages[$field] = $message;
+            }
+        }
+        return $messages;
+    }
+
 }

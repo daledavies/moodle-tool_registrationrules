@@ -46,23 +46,18 @@ function tool_registrationrules_pre_signup_requests() {
     );
 }
 
-/**
- * Add general information about registration rules.
- *
- * @param MoodleQuickForm $mform
- * @return void
- */
-function tool_registrationrules_extend_signup_form($mform): void {
-    //$mform->addElement('hidden', 'registrationrules_information', '');
- }
-
-
 function tool_registrationrules_validate_extend_signup_form($data) {
     $rule_checker = rule_checker::get_instance();
     $rule_checker->run_post_data_checks($data);
     if ($rule_checker->is_registration_allowed()) {
-        return;
+        return [];
     }
+
+    $errors = $rule_checker->get_validation_messages();
+    if (count($errors) > 0) {
+        return $errors;
+    }
+
     $messages = implode('<br>', $rule_checker->get_messages());
     \core\notification::warning($messages);
     redirect(
@@ -72,4 +67,3 @@ function tool_registrationrules_validate_extend_signup_form($data) {
         )
     );
 }
-
