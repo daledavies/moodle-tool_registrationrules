@@ -205,6 +205,8 @@ class ruleinstancescontroller implements renderable, \templatable {
                 'id' => $ruleinstance->id,
                 'name' => $ruleinstance->name,
                 'type' => $ruleinstance->type,
+                'points' => $ruleinstance->points,
+                'fallbackpoints' => $ruleinstance->fallbackpoints,
                 'enabled' => $output->render(
                     new \action_menu_link_primary(
                         url: new \moodle_url(
