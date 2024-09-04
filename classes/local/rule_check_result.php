@@ -30,7 +30,7 @@ class rule_check_result {
     private string $message;
     private int $score;
 
-    public function __construct(bool $allowed, string $message, int $score) {
+    public function __construct(bool $allowed, string $message = '', int $score = 100) {
         $this->allowed = $allowed;
         $this->message = $message;
         $this->score = $score;

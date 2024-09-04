@@ -28,9 +28,8 @@ namespace tool_registrationrules\local\rule;
 use \tool_registrationrules\local\rule_check_result;
 
 interface rule_interface {
-    public function __construct($config);
 
-    public function extend_form($mform);
+    public function extend_form($mform): void;
 
     public function pre_data_check(): rule_check_result;
 

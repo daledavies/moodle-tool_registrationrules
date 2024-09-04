@@ -16,34 +16,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Reference implementation of a registration rule subplugin.
+ * Interface for registration rule subplugin classes.
  *
- * @package    registrationrule
- * @subpackage nope
+ * @package    tool
+ * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace registrationrule_nope;
+namespace tool_registrationrules\local\rule;
 
 use \tool_registrationrules\local\rule_check_result;
 
-class rule extends \tool_registrationrules\local\rule\rule_base {
-
-    public function __construct() {
-        // Do something with config
-        $config = null;
-        parent::__construct($config);
+abstract class rule_base implements rule_interface {
+    public function __construct($config) {
     }
 
-    public function post_data_check($data): rule_check_result {
-        return new rule_check_result(false, 'Sorry, but nope!', 50);
-    }
+    abstract public function extend_form($mform): void;
 
-    public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true);
-    }
+    abstract public function pre_data_check(): rule_check_result;
 
-    public function extend_form($mform): void {
-    }
+    abstract public function post_data_check($data): rule_check_result;
 
 }

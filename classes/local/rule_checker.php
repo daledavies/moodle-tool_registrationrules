@@ -50,7 +50,7 @@ class rule_checker {
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
             $instance = new $rule();
-            if (!$instance instanceof rule\rule_interface) {
+            if (!$instance instanceof rule\rule_base) {
                 debugging("Rule $ruleplugin does not implement rule_interface", DEBUG_DEVELOPER);
                 continue;
             }
