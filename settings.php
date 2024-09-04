@@ -62,5 +62,13 @@ if ($ADMIN->fulltree) {
 }
 $ADMIN->add('toolregistrationrules', $settings);
 
+$manageinstancespage = new admin_externalpage(
+    'toolregistrationrules_instances',
+    get_string('registrationruleinstances', 'tool_registrationrules'),
+    new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'),
+    'moodle/site:config',
+);
+
+$ADMIN->add('toolregistrationrules', $manageinstancespage);
 
 $ADMIN->add('toolregistrationrules', new \tool_registrationrules\local\admin_page_rule_plugins('registrationrule'));

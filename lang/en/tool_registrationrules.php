@@ -31,6 +31,7 @@ $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['maxpoints'] = 'Max rejection points';
 $string['pluginname'] = 'Registration rules';
+$string['registrationruleinstances'] = 'Registration rule instances';
 $string['registrationrulepluginname'] = 'Registration rule';
 $string['registrationrulessettings'] = 'Registration rules settings';
 $string['registrationpagemessage'] = 'Message on top of the registration page';
