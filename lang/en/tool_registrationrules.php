@@ -40,6 +40,7 @@ $string['registrationrule:instance:name'] = 'Name';
 $string['registrationrule:instance:description'] = 'Description';
 $string['registrationrule:instance:message'] = 'Message';
 $string['registrationrule:instance:displaymessage'] = 'Display message';
+$string['registrationrule:instance:fallbackpoints'] = 'Fallback points';
 $string['registrationrule:instance:points'] = 'Points';
 $string['registrationrule:instance:invert_rule'] = 'Invert Rule';
 $string['subplugintype_registrationrule'] = 'Registration rule';
