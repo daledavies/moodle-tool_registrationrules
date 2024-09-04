@@ -37,6 +37,8 @@ class rule_checker {
     private array $rules;
     private array $results;
 
+    private bool $checked = false;
+
     public static function get_instance(): rule_checker {
         if (!isset(self::$instance)) {
             self::$instance = new rule_checker();
@@ -64,10 +66,11 @@ class rule_checker {
         foreach ($this->rules as $instance) {
             $this->results[] = $instance->get_result($data);
         }
+        $this->checked = true;
     }
 
     public function is_registration_allowed(): bool {
-        if ($this->is_checked()) {
+        if (!$this->checked) {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::is_registration_allowed()');
         }
         foreach ($this->results as $result) {
@@ -79,7 +82,7 @@ class rule_checker {
     }
 
     public function get_messages(): array {
-        if ($this->is_checked()) {
+        if (!$this->checked) {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_messages()');
         }
         $messages = [];
@@ -89,7 +92,4 @@ class rule_checker {
         return $messages;
     }
 
-    private function is_checked(): bool {
-        return !empty($this->results);
-    }
 }
