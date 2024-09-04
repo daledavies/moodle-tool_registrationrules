@@ -36,9 +36,13 @@ function tool_registrationrules_pre_signup_requests() {
     if ($rule_checker->is_registration_allowed()) {
         return;
     }
-    redirect(new moodle_url('/admin/tool/registrationrules/error.php', ['message' => implode('<br>', $rule_checker->get_messages())]));
+    redirect(
+        new moodle_url(
+            '/admin/tool/registrationrules/error.php',
+            ['message' => implode('<br>', $rule_checker->get_messages())]
+        )
+    );
 }
-
 
 /**
  * Example of use in callback that does pass data to rule_checker::check().
@@ -52,7 +56,12 @@ function tool_registrationrules_post_signup_requests($data) {
     if ($rule_checker->is_registration_allowed()) {
         return;
     }
-    redirect(new moodle_url('/admin/tool/registrationrules/error.php', ['message' => implode('<br>', $rule_checker->get_messages())]));
+    redirect(
+        new moodle_url(
+            '/admin/tool/registrationrules/error.php',
+            ['message' => implode('<br>', $rule_checker->get_messages())]
+        )
+    );
 }
 
 // function tool_registrationrules_check_password_policy($password, $user) {
@@ -60,5 +69,5 @@ function tool_registrationrules_post_signup_requests($data) {
 // }
 
 // function tool_registrationrules_validate_extend_signup_form($data) {
-//     return ['username' => 'No usernames are allowed'];
+//    return ['username' => 'No usernames are allowed'];
 // }

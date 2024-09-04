@@ -31,6 +31,9 @@ use core_component;
 class rule_checker {
     private static rule_checker $instance;
 
+    /**
+     * @var array<rule\rule_interface>
+     */
     private array $rules;
     private array $results;
 
@@ -59,7 +62,7 @@ class rule_checker {
 
     public function check($data = null) {
         foreach ($this->rules as $instance) {
-            $results[] = $instance->get_results($data);
+            $this->results[] = $instance->get_result($data);
         }
     }
 
