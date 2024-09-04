@@ -35,7 +35,7 @@ class rule implements \tool_registrationrules\local\rule\rule_interface {
      * @param mixed $data The data to be checked by the rule.
      * @return rule_check_result
      */
-    public function get_result($data): rule_check_result {
+    public function post_data_check($data): rule_check_result {
         return new rule_check_result(true, 'Sorry, but nope!', 50);
     }
 

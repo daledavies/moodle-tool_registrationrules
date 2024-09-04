@@ -62,11 +62,24 @@ class rule_checker {
         return $this->rules;
     }
 
-    public function check($data = null) {
+    public function run_pre_data_checks() {
         foreach ($this->rules as $instance) {
-            $this->results[] = $instance->get_result($data);
+            $this->results[] = $instance->pre_data_check();
         }
         $this->checked = true;
+    }
+
+    public function run_post_data_checks($data) {
+        foreach ($this->rules as $instance) {
+            $this->results[] = $instance->post_data_check($data);
+        }
+        $this->checked = true;
+    }
+
+    public function extend_form($mform) {
+        foreach ($this->rules as $instance) {
+            $instance->extend_form($mform);
+        }
     }
 
     public function is_registration_allowed(): bool {
