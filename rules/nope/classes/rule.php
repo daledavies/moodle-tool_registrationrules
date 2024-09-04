@@ -40,7 +40,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     }
 
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true, 'Double nope!');
+        return new rule_check_result(false, 'Double nope!');
     }
 
     public function extend_form($mform): void {
