@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Facilitate management of registration rule plugins.
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -46,7 +45,7 @@ class registrationrules_plugin_manager {
      * @param string $subtype
      */
     public function __construct($subtype) {
-        $this->pageurl = new \moodle_url('/admin/tool/registrationrules/managerules.php', array('subtype'=>$subtype));
+        $this->pageurl = new \moodle_url('/admin/tool/registrationrules/managerules.php', ['subtype' => $subtype]);
         $this->subtype = $subtype;
     }
 
@@ -59,7 +58,7 @@ class registrationrules_plugin_manager {
     public function get_sorted_plugins_list() {
         $names = \core_component::get_plugin_list($this->subtype);
 
-        $result = array();
+        $result = [];
 
         foreach ($names as $name => $path) {
             $idx = get_config($this->subtype . '_' . $name, 'sortorder');
@@ -67,7 +66,7 @@ class registrationrules_plugin_manager {
                 $idx = 0;
             }
             while (array_key_exists($idx, $result)) {
-                $idx +=1;
+                $idx += 1;
             }
             $result[$idx] = $name;
         }
@@ -100,9 +99,9 @@ class registrationrules_plugin_manager {
         }
 
         return $OUTPUT->action_icon(new \moodle_url($url,
-                array('action' => $action, 'plugin'=> $plugin, 'sesskey' => sesskey())),
-                new \pix_icon($icon, $alt, 'moodle', array('title' => $alt)),
-                null, array('title' => $alt)) . ' ';
+                ['action' => $action, 'plugin' => $plugin, 'sesskey' => sesskey()]),
+                new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+                null, ['title' => $alt]) . ' ';
     }
 
     /**
@@ -118,11 +117,11 @@ class registrationrules_plugin_manager {
         $this->view_header();
         $table = new \flexible_table($this->subtype . 'pluginsadminttable');
         $table->define_baseurl($this->pageurl);
-        $table->define_columns(array('pluginname', 'version', 'hideshow', 'order',
-                'settings', 'uninstall'));
-        $table->define_headers(array(get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
+        $table->define_columns(['pluginname', 'version', 'hideshow', 'order',
+                'settings', 'uninstall']);
+        $table->define_headers([get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
                 get_string('version'), get_string('hideshow', 'tool_registrationrules'),
-                get_string('order'), get_string('settings'), get_string('uninstallplugin', 'core_admin')));
+                get_string('order'), get_string('settings'), get_string('uninstallplugin', 'core_admin')]);
         $table->set_attribute('id', $this->subtype . 'plugins');
         $table->set_attribute('class', 'admintable generaltable');
         $table->setup();
@@ -131,7 +130,7 @@ class registrationrules_plugin_manager {
         $shortsubtype = substr($this->subtype, strlen('registration'));
 
         foreach ($plugins as $idx => $plugin) {
-            $row = array();
+            $row = [];
             $class = '';
 
             $row[] = get_string('pluginname', $this->subtype . '_' . $plugin);
@@ -150,7 +149,7 @@ class registrationrules_plugin_manager {
             if (!$idx == 0) {
                 $movelinks .= $this->format_icon_link('moveup', $plugin, 't/up', get_string('up'));
             } else {
-                $movelinks .= $OUTPUT->spacer(array('width'=>16));
+                $movelinks .= $OUTPUT->spacer(['width' => 16]);
             }
             if ($idx != count($plugins) - 1) {
                 $movelinks .= $this->format_icon_link('movedown', $plugin, 't/down', get_string('down'));
@@ -160,7 +159,7 @@ class registrationrules_plugin_manager {
             $exists = file_exists($CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php');
             if ($row[1] != '' && $exists) {
                 $row[] = \html_writer::link(new \moodle_url('/admin/settings.php',
-                        array('section' => $this->subtype . '_' . $plugin)), get_string('settings'));
+                        ['section' => $this->subtype . '_' . $plugin]), get_string('settings'));
             } else {
                 $row[] = '&nbsp;';
             }

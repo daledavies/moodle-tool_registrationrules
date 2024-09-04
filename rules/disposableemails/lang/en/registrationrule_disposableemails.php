@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,10 +17,10 @@
 /**
  * Strings for registrationrule_nope registration rule psublugin.
  *
- * @package    tool
+ * @package    registrationrule_disposableemails
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Disposable emails rule';
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
+$string['pluginname'] = 'Disposable emails rule';

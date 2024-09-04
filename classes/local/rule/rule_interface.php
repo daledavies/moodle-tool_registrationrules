@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,14 +17,14 @@
 /**
  * Interface for registration rule subplugin classes.
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_registrationrules\local\rule;
 
-use \tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result;
 
 interface rule_interface {
 
