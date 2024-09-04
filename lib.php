@@ -44,6 +44,12 @@ function tool_registrationrules_pre_signup_requests() {
     );
 }
 
-function tool_registrationrules_validate_extend_signup_form($mform) {
-   return ['username' => 'No usernames are allowed'];
+function tool_registrationrules_validate_extend_signup_form($data) {
+    $rule_checker = rule_checker::get_instance();
+    $rule_checker->run_post_data_checks($data);
+    if ($rule_checker->is_registration_allowed()) {
+        return [];
+    }
+
+    return $rule_checker->get_validation_messages();
 }
