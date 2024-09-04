@@ -32,7 +32,7 @@ use tool_registrationrules\local\rule_checker;
  */
 function tool_registrationrules_pre_signup_requests() {
     $rule_checker = rule_checker::get_instance();
-    $rule_checker->check();
+    $rule_checker->run_pre_data_checks();
     if ($rule_checker->is_registration_allowed()) {
         return;
     }
@@ -44,30 +44,6 @@ function tool_registrationrules_pre_signup_requests() {
     );
 }
 
-/**
- * Example of use in callback that does pass data to rule_checker::check().
- *
- * @return void
- */
-function tool_registrationrules_post_signup_requests($data) {
-    $rule_checker = rule_checker::get_instance();
-
-    $rule_checker->check($data);
-    if ($rule_checker->is_registration_allowed()) {
-        return;
-    }
-    redirect(
-        new moodle_url(
-            '/admin/tool/registrationrules/error.php',
-            ['message' => implode('<br>', $rule_checker->get_messages())]
-        )
-    );
+function tool_registrationrules_validate_extend_signup_form($mform) {
+   return ['username' => 'No usernames are allowed'];
 }
-
-// function tool_registrationrules_check_password_policy($password, $user) {
-//     // Doesn't appear to be called - because passwordpolicy is set to off?
-// }
-
-// function tool_registrationrules_validate_extend_signup_form($data) {
-//    return ['username' => 'No usernames are allowed'];
-// }
