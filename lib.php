@@ -31,7 +31,7 @@ use tool_registrationrules\local\rule_checker;
  * @return void
  */
 function tool_registrationrules_pre_signup_requests() {
-    $rule_checker = new rule_checker();
+    $rule_checker = rule_checker::get_instance();
     $rule_checker->check();
     if ($rule_checker->is_registration_allowed()) {
         return;
@@ -46,7 +46,8 @@ function tool_registrationrules_pre_signup_requests() {
  * @return void
  */
 function tool_registrationrules_post_signup_requests($data) {
-    $rule_checker = new rule_checker();
+    $rule_checker = rule_checker::get_instance();
+
     $rule_checker->check($data);
     if ($rule_checker->is_registration_allowed()) {
         return;

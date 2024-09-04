@@ -29,10 +29,19 @@ namespace tool_registrationrules\local;
 use core_component;
 
 class rule_checker {
-    private array $instances;
+    private static rule_checker $instance;
+
+    private array $rules;
     private array $results;
 
-    public function __construct() {
+    public static function get_instance(): rule_checker {
+        if (!isset(self::$instance)) {
+            self::$instance = new rule_checker();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
             $instance = new $rule();
@@ -40,16 +49,16 @@ class rule_checker {
                 debugging("Rule $ruleplugin does not implement rule_interface", DEBUG_DEVELOPER);
                 continue;
             }
-            $this->instances[] = $instance;
+            $this->rules[] = $instance;
         }
     }
 
-    public function get_instances(): array {
-        return $this->instances;
+    public function get_rules(): array {
+        return $this->rules;
     }
 
     public function check($data = null) {
-        foreach ($this->instances as $instance) {
+        foreach ($this->rules as $instance) {
             $results[] = $instance->get_results($data);
         }
     }
