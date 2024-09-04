@@ -47,20 +47,28 @@ class rule_checker {
     }
 
     private function __construct() {
+        global $DB;
         $this->adminconfig = $this->get_admin_config();
-        $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
-        foreach ($rules as $ruleplugin => $rule) {
-            $disabled = get_config($ruleplugin, 'disabled');
-            if ($disabled) {
-                continue;
+
+        $instances = $DB->get_records('tool_registrationrules');
+
+        foreach ($instances as $instance) {
+            $ruleplugins = core_component::get_plugin_list_with_class('registrationrule', 'rule');
+            foreach ($ruleplugins as $ruleplugin => $rule) {
+                $disabled = get_config($ruleplugin, 'disabled');
+                if ($disabled) {
+                    continue;
+                }
+                if ($instance->type == str_replace('registrationrule_', '', $ruleplugin)) {
+                    // TODO: Replace dummy config with actual config.
+                    $instance = new $rule($instance);
+                    if (!$instance instanceof rule\rule_base) {
+                        debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
+                        continue;
+                    }
+                    $this->rules[] = $instance;
+                }
             }
-            // TODO: Replace dummy config with actual config.
-            $instance = new $rule([]);
-            if (!$instance instanceof rule\rule_base) {
-                debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
-                continue;
-            }
-            $this->rules[] = $instance;
         }
     }
 

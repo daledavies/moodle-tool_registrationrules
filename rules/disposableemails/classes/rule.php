@@ -61,4 +61,7 @@ class rule extends rule_base implements rule_interface {
         $parts = explode('@', $email);
         return end($parts);
     }
+    public static function extend_settings_form($mform) {
+        $mform->addElement('static', 'test', 'Additional Settings', 'This rule type does not provide additional settings.');
+    }
 }
