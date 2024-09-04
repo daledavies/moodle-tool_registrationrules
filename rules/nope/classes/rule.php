@@ -30,18 +30,19 @@ use tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base
     implements configurable {
 
-    public function __construct() {
-        // Do something with config
-        $config = null;
+    private \stdClass $config;
+
+    public function __construct($config) {
+        $this->config = $config;
         parent::__construct($config);
     }
 
     public function post_data_check($data): rule_check_result {
-        return new rule_check_result(false, 'Nope', 50);
+        return new rule_check_result(false, 'Nope', $this->config->points);
     }
 
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(false, 'Double nope!');
+        return new rule_check_result(true);
     }
 
     public function extend_form($mform): void {
