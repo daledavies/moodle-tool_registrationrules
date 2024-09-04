@@ -35,7 +35,7 @@ function tool_registrationrules_pre_signup_requests() {
     if ($rulechecker->is_registration_allowed()) {
         return;
     }
-    $messages = implode('<br>', $rule_checker->get_messages());
+    $messages = implode('<br>', $rulechecker->get_messages());
     \core\notification::warning($messages);
     redirect(
         new moodle_url(
