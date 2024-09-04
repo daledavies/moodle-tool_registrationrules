@@ -30,7 +30,7 @@ use \tool_registrationrules\local\rule_check_result;
 
 class rule extends \tool_registrationrules\local\rule\rule_base {
     
-    public function post_data_check($data) {
+    public function post_data_check($data): rule_check_result {
         // Create the hash of the password and UPPER it for the API.
         $hash = strtoupper(sha1($data['password']));
         
@@ -77,4 +77,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         // Return our result.
         return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
     }
+    
+    public function pre_data_check(): rule_check_result { return new rule_check_result(false); }
+    public function extend_form($mform): void {}
 }

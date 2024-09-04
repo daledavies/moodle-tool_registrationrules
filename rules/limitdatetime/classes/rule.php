@@ -31,29 +31,25 @@ use \tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public $config = [];
     
-    public constant EXTEND_ADMIN_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
+    const EXTEND_ADMIN_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
     
     public function __construct($config) {
         $this->config = $config;
     }
     
-    public static function extend_admin_form($mform) {
+    public static function extend_admin_form($mform): void {
         $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
         
         $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
     }
     
-    public function extend_form($mform) {
-        return true;
-    }
-    
-    public function pre_check_data() {
+    public function pre_data_check(): rule_check_result {
         $now = time();
         
         return new rule_check_result(($now < $this->config['limitdate_from'] || $now > $this->config['limitdate_to']), 'Outside date');
     }
-    public function post_data_check($data) {        
-        return null;
-    }
+    
+    public function post_data_check($data): rule_check_result { return new rule_check_result(false); }
+    public function extend_form($mform): void {}
 }
 

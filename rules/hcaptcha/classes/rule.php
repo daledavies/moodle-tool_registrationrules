@@ -31,7 +31,7 @@ use \tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public $config = [];
     
-    public constant EXTEND_ADMIN_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
+    const EXTEND_ADMIN_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
     
     public function __construct($config) {
         $this->config = $config;
@@ -45,7 +45,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $mform->addRule('hcaptcha_secret', get_string('required'), 'required');
     }
     
-    public function extend_form($mform) {
+    public function extend_form($mform): void {
         
         // This is the basic JS for hCaptcha.
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
@@ -56,7 +56,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $mform->addElement('html', $html);
     }
     
-    public function post_data_check($data) {        
+    public function post_data_check($data): rule_check_result  {        
         // Build the data used for validation.
         $validationpost = [
             'secret' => $this->config['hcaptcha_secret'],
@@ -82,5 +82,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         
         return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
     }
+    
+    public function pre_data_check(): rule_check_result { return new rule_check_result(false); }
 }
 
