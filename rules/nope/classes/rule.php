@@ -24,9 +24,11 @@
 
 namespace registrationrule_nope;
 
+use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
 
-class rule extends \tool_registrationrules\local\rule\rule_base {
+class rule extends \tool_registrationrules\local\rule\rule_base
+    implements configurable {
 
     public function __construct() {
         // Do something with config
@@ -45,4 +47,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     public function extend_form($mform): void {
     }
 
+    public static function extend_settings_form($mform) {
+        $mform->addElement('static', 'test', 'Additional Settings', 'This rule type does not provide additional settings.');
+    }
 }
