@@ -24,3 +24,4 @@
 
 $string['pluginname'] = 'Nope rule';
 $string['resultmessage'] = 'Sorry, but nope!';
+$string['registrationrule:instance:name'] = 'nope';
