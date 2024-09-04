@@ -14,26 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Interface for registration rule subplugin classes.
- *
- * @package    tool_registrationrules
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+defined('MOODLE_INTERNAL') || die();
 
-namespace tool_registrationrules\local\rule;
-
-use tool_registrationrules\local\rule_check_result;
-
-abstract class rule_base implements rule_interface {
-    public function __construct($config) {
-    }
-
-    abstract public function extend_form($mform): void;
-
-    abstract public function pre_data_check(): rule_check_result;
-
-    abstract public function post_data_check($data): rule_check_result;
-
-}
+$plugin->version      = 2024090300; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires     = 2022041908; // Support Moodle 4.0 and higher.
+$plugin->component    = 'registrationrule_disposableemails';
+$plugin->release      = 'v0.1';
+$plugin->maturity     = MATURITY_STABLE;
+$plugin->dependencies = ['tool_registrationrules' => 2024090300];

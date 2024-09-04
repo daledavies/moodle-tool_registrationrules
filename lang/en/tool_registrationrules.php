@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Strings for component 'tool_profiling', language 'en', branch 'MOODLE_22_STABLE'
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,6 +31,7 @@ $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['maxpoints'] = 'Max rejection points';
 $string['pluginname'] = 'Registration rules';
+$string['registrationrulepluginname'] = 'Registration rule';
 $string['registrationrulessettings'] = 'Registration rules settings';
 $string['registrationpagemessage'] = 'Message on top of the registration page';
 $string['subplugintype_registrationrule'] = 'Registration rule';

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,14 +17,14 @@
 /**
  * Reference implementation of a registration rule subplugin.
  *
- * @package    registrationrule
+ * @package    registrationrule_nope
  * @subpackage nope
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace registrationrule_nope;
 
-use \tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result;
 
 class rule extends \tool_registrationrules\local\rule\rule_base {
 
@@ -40,7 +39,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     }
 
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true, 'Double nope!');
+        return new rule_check_result(false, 'Double nope!');
     }
 
     public function extend_form($mform): void {

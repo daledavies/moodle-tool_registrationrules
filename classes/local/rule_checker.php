@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -19,7 +18,7 @@
  * Facilitate exicution of registration rule plugins and enumeration/reposrting
  * of results.
  *
- * @package    tool
+ * @package    tool_registrationrules
  * @subpackage registrationrules
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -51,9 +50,14 @@ class rule_checker {
         $this->adminconfig = $this->get_admin_config();
         $rules = core_component::get_plugin_list_with_class('registrationrule', 'rule');
         foreach ($rules as $ruleplugin => $rule) {
-            $instance = new $rule();
+            $disabled = get_config($ruleplugin, 'disabled');
+            if ($disabled) {
+                continue;
+            }
+            // TODO: Replace dummy config with actual config.
+            $instance = new $rule([]);
             if (!$instance instanceof rule\rule_base) {
-                debugging("Rule $ruleplugin does not implement rule_interface", DEBUG_DEVELOPER);
+                debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
                 continue;
             }
             $this->rules[] = $instance;
@@ -98,7 +102,7 @@ class rule_checker {
     }
 
     public function is_registration_allowed(): bool {
-        if (!$this->adminconfig->enable) {
+        if (!($this->adminconfig->enable ?? 0)) {
             return true;
         }
         if (!$this->checked) {
@@ -118,7 +122,25 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
+            if ($result->get_allowed()) {
+                continue;
+            }
             $messages[] = $result->get_message();
+        }
+        return $messages;
+    }
+
+    public function get_validation_messages(): array {
+        if (!$this->checked) {
+            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_validation_messages()');
+        }
+        $messages = [];
+        foreach ($this->results as $result) {
+            foreach ($result->get_validation_messages() as $field => $message) {
+                // Note that this will overwrite any previous message for the same field.
+                // We may want to consider some kind of aggregation here.
+                $messages[$field] = $message;
+            }
         }
         return $messages;
     }
