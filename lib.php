@@ -45,6 +45,19 @@ function tool_registrationrules_pre_signup_requests() {
     );
 }
 
+/**
+ * Add general information about registration rules.
+ *
+ * @param MoodleQuickForm $mform
+ * @return void
+ */
+function tool_registrationrules_extend_signup_form($mform): void {
+    $mform->insertElementBefore($mform->createElement('static', 'registrationrules_information',
+    get_string('pluginname', 'tool_registrationrules'), get_config('tool_registrationrules', 'registrationpagemessage')), 'username');
+    $rule_checker = rule_checker::get_instance();
+    $rule_checker->extend_form($mform);
+}
+
 function tool_registrationrules_validate_extend_signup_form($data) {
     $rulechecker = rule_checker::get_instance();
     $rulechecker->run_post_data_checks($data);
