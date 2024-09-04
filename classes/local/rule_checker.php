@@ -102,7 +102,7 @@ class rule_checker {
     }
 
     public function is_registration_allowed(): bool {
-        if (!$this->adminconfig->enable) {
+        if (!($this->adminconfig->enable ?? 0)) {
             return true;
         }
         if (!$this->checked) {
