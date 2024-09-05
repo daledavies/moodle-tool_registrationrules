@@ -23,14 +23,13 @@
  */
 
 namespace tool_registrationrules\local;
-
+ 
 class rule_check_result {
     private bool $allowed;
     private string $message;
-    private int $score;
     private array $validationmessages;
 
-    public function __construct(bool $allowed, string $message = '', int $score = 100, array $validationmessages = []) {
+    public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
         $this->allowed = $allowed;
         $this->message = $message;
         $this->score = $score;
@@ -43,10 +42,6 @@ class rule_check_result {
 
     public function get_message(): string {
         return $this->message;
-    }
-
-    public function get_score(): int {
-        return $this->score;
     }
 
     public function get_validation_messages(): array {

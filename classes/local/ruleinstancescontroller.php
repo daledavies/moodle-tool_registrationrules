@@ -77,13 +77,19 @@ class ruleinstancescontroller implements renderable, \templatable {
     public function update_instance($formdata) {
         global $DB;
 
-        $record = $DB->get_record('tool_registrationrules', $formdata->id);
+        $record = $DB->get_record('tool_registrationrules', ['id' => $formdata->id]);
+        $formdata->type = $record->type;
         // Update default fields in record.
         foreach ($this->extract_instancedata($formdata) as $property => $value) {
-            $record->{$property} = $value;
+            if($property != 'type') {
+                $record->{$property} = $value;
+            }
         }
-        $record->other = $this->encode_instance_config($formdata);
 
+        unset($record->timecreated);
+        unset($record->sortorder);
+        $record->other = $this->encode_instance_config($formdata);
+        
         $DB->update_record('tool_registrationrules', $record);
     }
 
@@ -266,9 +272,17 @@ class ruleinstancescontroller implements renderable, \templatable {
      * @return string
      */
     public function encode_instance_config($formdata): string {
-        // TODO: get types extra fields information.
-        return '';
-        // TODO: json_encode
+        $extradata = [];
+        
+
+        // Class of our rule
+        $class = 'registrationrule_' . $formdata->type . '\rule';
+        
+        if (defined("$class::SETTINGS_FIELDS")) {
+            foreach($class::SETTINGS_FIELDS as $field) {
+                $extradata[$field] = $formdata->$field;
+            }
+        }
         return json_encode($extradata);
     }
 

@@ -23,18 +23,11 @@ use tool_registrationrules\local\rule_check_result;
 
 class rule extends rule_base implements rule_interface {
 
+    public function pre_data_check(): ?rule_check_result { return null; }
 
-    public function extend_form($mform): void {
-        // TODO: Implement extend_form() method.
-    }
-
-    public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true, 'Email address is not on disposable-email-domains blocklist', 0);
-    }
-
-    public function post_data_check($data): rule_check_result {
+    public function post_data_check($data): ?rule_check_result {
         if (!array_key_exists('email', $data)) {
-            return new rule_check_result(true, 'No email address provided', 0);
+            return null;
         }
 
         $email = $data['email'];
@@ -48,9 +41,9 @@ class rule extends rule_base implements rule_interface {
         $listmanager = new list_manager();
         $blockeddomains = $listmanager->get_blocked_domains();
         if (in_array($domain, $blockeddomains)) {
-            return new rule_check_result(false, 'Disposable email address not allowed', 100, ['email' => 'Email domain is on a disposable email domain list.']);
+            return new rule_check_result(false, '', ['email' => 'Email domain is on a disposable email domain list.']);
         }
-        return new rule_check_result(true, 'Email address is not on disposable-email-domains blocklist', 0);
+        return new rule_check_result(true);
     }
 
     /**
@@ -60,8 +53,5 @@ class rule extends rule_base implements rule_interface {
     private function extract_email_domain($email) {
         $parts = explode('@', $email);
         return end($parts);
-    }
-    public static function extend_settings_form($mform) {
-        $mform->addElement('static', 'test', 'Additional Settings', 'This rule type does not provide additional settings.');
     }
 }

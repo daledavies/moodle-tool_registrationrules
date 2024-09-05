@@ -30,11 +30,13 @@ use tool_registrationrules\local\rule_checker;
  * @return void
  */
 function tool_registrationrules_pre_signup_requests() {
-    $rulechecker = rule_checker::get_instance();
+    $rulechecker = rule_checker::get_instance('signup_form');
+
     $rulechecker->run_pre_data_checks();
     if ($rulechecker->is_registration_allowed()) {
         return;
     }
+    
     $messages = implode('<br>', $rulechecker->get_messages());
     \core\notification::warning($messages);
     redirect(
@@ -43,6 +45,7 @@ function tool_registrationrules_pre_signup_requests() {
             ['ver' =>'before']
         )
     );
+    exit;
 }
 
 /**
@@ -54,28 +57,20 @@ function tool_registrationrules_pre_signup_requests() {
 function tool_registrationrules_extend_signup_form($mform): void {
     $mform->insertElementBefore($mform->createElement('static', 'registrationrules_information',
     get_string('pluginname', 'tool_registrationrules'), get_config('tool_registrationrules', 'registrationpagemessage')), 'username');
-    $rule_checker = rule_checker::get_instance();
+    $rule_checker = rule_checker::get_instance('signup_form');
+    $rule_checker->add_error_field($mform);
     $rule_checker->extend_form($mform);
 }
 
 function tool_registrationrules_validate_extend_signup_form($data) {
-    $rulechecker = rule_checker::get_instance();
+    $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_post_data_checks($data);
+
     if ($rulechecker->is_registration_allowed()) {
         return [];
     }
 
-    $errors = $rulechecker->get_validation_messages();
-    if (count($errors) > 0) {
-        return $errors;
-    }
-
-    $messages = implode('<br>', $rulechecker->get_messages());
-    \core\notification::warning($messages);
-    redirect(
-        new moodle_url(
-            '/admin/tool/registrationrules/error.php',
-            ['ver' =>'after']
-        )
-    );
+    return $rulechecker->get_validation_messages();
+    
+    return ['tool_registrationrules_errors' => implode('<br />', $errors)];
 }

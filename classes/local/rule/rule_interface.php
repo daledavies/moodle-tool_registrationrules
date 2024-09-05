@@ -27,11 +27,12 @@ namespace tool_registrationrules\local\rule;
 use tool_registrationrules\local\rule_check_result;
 
 interface rule_interface {
-
+    public static function extend_settings_form($mform): void;
+    
     public function extend_form($mform): void;
 
-    public function pre_data_check(): rule_check_result;
+    public function pre_data_check(): ?rule_check_result;
 
-    public function post_data_check($data): rule_check_result;
+    public function post_data_check($data): ?rule_check_result;
 
 }

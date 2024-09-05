@@ -31,39 +31,41 @@ use \tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public $config = [];
     
-    const EXTEND_ADMIN_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
+    const SETTINGS_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
     
     public function __construct($config) {
         $this->config = $config;
     }
     
-    public static function extend_admin_form($mform) {
+    public static function extend_settings_form ($mform): void {
         $mform->addElement('text', 'hcaptcha_sitekey', get_string('sitekey', 'registrationrule_hcaptcha'));
         $mform->addRule('hcaptcha_sitekey', get_string('required'), 'required');
         
-        $mform->addElement('text', 'hcaptcha_sitekey', get_string('secret', 'registrationrule_hcaptcha'));
+        $mform->addElement('text', 'hcaptcha_secret', get_string('secret', 'registrationrule_hcaptcha'));
         $mform->addRule('hcaptcha_secret', get_string('required'), 'required');
     }
     
     public function extend_form($mform): void {
-        
+
         // This is the basic JS for hCaptcha.
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
         
         // But we also need to add the HTML for the result.
-        $html .= '<div class="h-captcha" data-sitekey="' . htmlspecialchars($config['hcaptcha_sitekey']) . '"></div>';
+        $html .= '<div class="h-captcha" data-sitekey="' . htmlspecialchars($this->config->hcaptcha_sitekey) . '"></div>';
         
+        $mform->addElement('hidden', 'h-captcha-response', '');
         $mform->addElement('html', $html);
     }
     
     public function post_data_check($data): rule_check_result  {        
         // Build the data used for validation.
         $validationpost = [
-            'secret' => $this->config['hcaptcha_secret'],
-            'sitekey' =>  $this->config['hcaptcha_sitekey'],
+            'secret' => $this->config->hcaptcha_secret,
+            'sitekey' =>  $this->config->hcaptcha_sitekey,
             'response' => $data['h-captcha-response'],
             ];
             
+        
         // Call the hCaptcha API for validation.
         $ch = curl_init('https://api.hcaptcha.com/siteverify'); 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
@@ -77,12 +79,12 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $error = curl_error($ch);
         curl_close($ch);
         
-        // If empty or false the rule is matched.
-        $result = empty($response->success);
+        // If empty or false the captcha failed and the result is negative.
+        $result = !empty($response->success);
         
         return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
     }
     
-    public function pre_data_check(): rule_check_result { return new rule_check_result(false); }
+    public function pre_data_check(): ?rule_check_result { return null; }
 }
 

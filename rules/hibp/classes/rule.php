@@ -31,20 +31,25 @@ use \tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base {
     
     public function post_data_check($data): rule_check_result {
+        
+        if (!isset($data['password']))
+            return null;
+        
         // Create the hash of the password and UPPER it for the API.
         $hash = strtoupper(sha1($data['password']));
         
         // Get cache.
-        $cache = cache::make('registrationrule_hibp', 'pwhashes');
+        $cache = \cache::make('registrationrule_hibp', 'pwhashes');
         
-        // Search for cached result for the hash.
-        try {
-            $result = $cache->get($hash, MUST_EXIST);
+        $cacheresult = $cache->get($hash);
+        
+        if (false && $cacheresult !== false) {
+            $matched = (bool)$cacheresult;            
         // Not found, do an API request.
-        } catch (coding_exception $e) {         
+        } else {
             // Prefix used for search.
             $hashprefix = substr($hash, 0, 5);
-            
+
             // Call the HIBP-Api with the prefix.
             $ch = curl_init('https://api.pwnedpasswords.com/range/' . $hashprefix); 
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
@@ -58,7 +63,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             curl_close($ch);
             
             // Default is "not matched".
-            $result = false;
+            $matched = false;
             
             // Loop through the list of given hashes.
             foreach(explode("\n", $response) as $testhash) {
@@ -66,18 +71,18 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
                 // If the hash matches, the password exists in a breach.
                 if ($hash == $hashprefix . substr($testhash, 0, 35))
                 {
-                    $result = true;
+                    $matched = true;
                 }
             }
             
             // Set cache-data for this hash.
-            $cache->set($hash, $result);
+            $cache->set($hash, (int)$matched);
         }
 
         // Return our result.
-        return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
+        return new rule_check_result(!$matched, '', ['password' => get_string('resultmessage', 'registrationrule_hibp')]);
     }
     
-    public function pre_data_check(): rule_check_result { return new rule_check_result(false); }
-    public function extend_form($mform): void {}
+    public function pre_data_check(): ?rule_check_result { return null; }
+    public static function extend_settings_form($mform) : void {}
 }

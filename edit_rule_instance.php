@@ -60,7 +60,7 @@ if ($fromform = $mform->get_data()) {
 
     // TODO: add id and/or addruletype to the hidden form fields!
     if (!empty($fromform->id)) {
-        $controller->update_instance($formdata);
+        $controller->update_instance($fromform);
         redirect(new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'));
     } else {
         // It's a new registration rule instance.

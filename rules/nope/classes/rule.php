@@ -38,7 +38,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base
     }
 
     public function post_data_check($data): rule_check_result {
-        return new rule_check_result(false, 'Nope', $this->config->points);
+        return new rule_check_result(false, 'Nope');
     }
 
     public function pre_data_check(): rule_check_result {

@@ -28,7 +28,7 @@ namespace tool_registrationrules\local;
 use core_component;
 
 class rule_checker {
-    private static rule_checker $instance;
+    private static array $instances = [];
 
     /**
      * @var array<rule\rule_interface>
@@ -39,37 +39,45 @@ class rule_checker {
 
     private bool $checked = false;
 
-    public static function get_instance(): rule_checker {
-        if (!isset(self::$instance)) {
-            self::$instance = new rule_checker();
+    public static function get_instance($type): rule_checker {
+        if (!isset(self::$instances[$type])) {
+            self::$instances[$type] = new rule_checker();
         }
-        return self::$instance;
+        return self::$instances[$type];
     }
 
     private function __construct() {
         global $DB;
+        $this->clear();
         $this->adminconfig = $this->get_admin_config();
 
-        $instances = $DB->get_records('tool_registrationrules');
+        $instances = $DB->get_records('tool_registrationrules', ['enabled' => 1]);
 
         foreach ($instances as $instance) {
-            $ruleplugins = core_component::get_plugin_list_with_class('registrationrule', 'rule');
-            foreach ($ruleplugins as $ruleplugin => $rule) {
-                $disabled = get_config($ruleplugin, 'disabled');
-                if ($disabled) {
-                    continue;
-                }
-                if ($instance->type == str_replace('registrationrule_', '', $ruleplugin)) {
-                    // TODO: Replace dummy config with actual config.
-                    $ruleinstance = new $rule($instance);
-                    if (!$ruleinstance instanceof rule\rule_base) {
-                        debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
-                        continue;
-                    }
-                    $this->rules[] = $ruleinstance;
-                }
+            if (get_config('registrationrule_' . $instance->type, 'disabled')) {
+                continue;
             }
+            
+            $pluginrule = 'registrationrule_' . $instance->type . '\rule';
+            
+            // Parse additional config and add to instance.
+            foreach(json_decode($instance->other) as $configkey => $configvalue) {
+                $instance->$configkey = $configvalue;
+            }
+            $ruleinstance = new $pluginrule($instance);
+            if (!$ruleinstance instanceof rule\rule_base) {
+                debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
+                continue;
+            }
+            $this->rules[] = $ruleinstance;
+
         }
+    }
+    
+    public function clear() {
+        $this->rules = [];
+        $this->results = [];
+        $this->checked = false;
     }
 
     /**
@@ -91,15 +99,26 @@ class rule_checker {
 
     public function run_pre_data_checks() {
         foreach ($this->rules as $instance) {
-            $this->results[] = $instance->pre_data_check();
+            $result = $instance->pre_data_check();
+            
+            // Ignore rules without post data check.
+            if ($result !== null) {
+                $this->results[] = $result;
+            }
         }
         $this->checked = true;
     }
 
     public function run_post_data_checks($data) {
         foreach ($this->rules as $instance) {
-            $this->results[] = $instance->post_data_check($data);
+            $result = $instance->post_data_check($data);
+
+            // Ignore rules without post data check.
+            if ($result !== null) {
+                $this->results[] = $result;
+            }
         }
+        
         $this->checked = true;
     }
 
@@ -116,11 +135,13 @@ class rule_checker {
         if (!$this->checked) {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::is_registration_allowed()');
         }
+
         foreach ($this->results as $result) {
             if (!$result->get_allowed()) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -130,7 +151,9 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
-            if ($result->get_allowed()) {
+            
+            // If not allowed add error message.
+            if (!$result->get_allowed()) {
                 continue;
             }
             $messages[] = $result->get_message();
@@ -143,14 +166,28 @@ class rule_checker {
             throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_validation_messages()');
         }
         $messages = [];
+        
         foreach ($this->results as $result) {
-            foreach ($result->get_validation_messages() as $field => $message) {
-                // Note that this will overwrite any previous message for the same field.
-                // We may want to consider some kind of aggregation here.
-                $messages[$field] = $message;
+            if (!$result->get_allowed()) {
+                foreach ($result->get_validation_messages() as $field => $message) {
+                    // Note that this will overwrite any previous message for the same field.
+                    // We may want to consider some kind of aggregation here.
+                    $messages[$field] = $message;
+                }
+                
+                // General messages.
+                if (!empty($result->get_message())) {
+                    if (!isset($messages['tool_registrationrules_errors'])) {
+                        $messages['tool_registrationrules_errors'] = '';
+                    }
+                    $messages['tool_registrationrules_errors'] .= '<br />' . $result->get_message();
+                }
             }
         }
         return $messages;
     }
-
+    
+    public function add_error_field($mform) {
+        $mform->addElement('static', 'tool_registrationrules_errors');
+    }
 }

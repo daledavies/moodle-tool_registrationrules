@@ -39,11 +39,18 @@ class rule_settings extends \moodleform {
     protected array $customfields = [];
 
     public static function from_rule_instance(int $instanceid) {
-        // TODO: get type from instance record in DB instead!
-        $type = 'nope';
+        global $DB;
+        
+        $instancerecord = $DB->get_record('tool_registrationrules', ['id' => $instanceid]);
 
-        $form = new static($type, $instanceid);
-        $form->set_data(['update' => $instanceid]);
+        $extrafields = json_decode($instancerecord->other);
+        
+        foreach($extrafields as $fieldname => $value) {
+            $instancerecord->$fieldname = $value;
+        }
+        
+        $form = new static($instancerecord->type, $instanceid);
+        $form->set_data($instancerecord);
 
         return $form;
     }
