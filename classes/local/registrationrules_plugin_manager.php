@@ -117,11 +117,9 @@ class registrationrules_plugin_manager {
         $this->view_header();
         $table = new \flexible_table($this->subtype . 'pluginsadminttable');
         $table->define_baseurl($this->pageurl);
-        $table->define_columns(['pluginname', 'version', 'hideshow', 'order',
-                'settings', 'uninstall']);
+        $table->define_columns(['pluginname', 'version', 'settings', 'uninstall']);
         $table->define_headers([get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
-                get_string('version'), get_string('hideshow', 'tool_registrationrules'),
-                get_string('order'), get_string('settings'), get_string('uninstallplugin', 'core_admin')]);
+                get_string('version'), get_string('settings'), get_string('uninstallplugin', 'core_admin')]);
         $table->set_attribute('id', $this->subtype . 'plugins');
         $table->set_attribute('class', 'admintable generaltable');
         $table->setup();
@@ -135,26 +133,6 @@ class registrationrules_plugin_manager {
 
             $row[] = get_string('pluginname', $this->subtype . '_' . $plugin);
             $row[] = get_config($this->subtype . '_' . $plugin, 'version');
-
-            $visible = !get_config($this->subtype . '_' . $plugin, 'disabled');
-
-            if ($visible) {
-                $row[] = $this->format_icon_link('hide', $plugin, 't/hide', get_string('disable'));
-            } else {
-                $row[] = $this->format_icon_link('show', $plugin, 't/show', get_string('enable'));
-                $class = 'dimmed_text';
-            }
-
-            $movelinks = '';
-            if (!$idx == 0) {
-                $movelinks .= $this->format_icon_link('moveup', $plugin, 't/up', get_string('up'));
-            } else {
-                $movelinks .= $OUTPUT->spacer(['width' => 16]);
-            }
-            if ($idx != count($plugins) - 1) {
-                $movelinks .= $this->format_icon_link('movedown', $plugin, 't/down', get_string('down'));
-            }
-            $row[] = $movelinks;
 
             $exists = file_exists($CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php');
             if ($row[1] != '' && $exists) {
@@ -209,78 +187,6 @@ class registrationrules_plugin_manager {
     }
 
     /**
-     * Hide this plugin.
-     *
-     * @param string $plugin - The plugin to hide
-     * @return string The next page to display
-     */
-    public function hide_plugin($plugin) {
-        $class = \core_plugin_manager::resolve_plugininfo_class($this->subtype);
-        $class::enable_plugin($plugin, false);
-        return 'view';
-    }
-
-    /**
-     * Change the order of this plugin.
-     *
-     * @param string $plugintomove - The plugin to move
-     * @param string $dir - up or down
-     * @return string The next page to display
-     */
-    public function move_plugin($plugintomove, $dir) {
-        // Get a list of the current plugins.
-        $plugins = $this->get_sorted_plugins_list();
-
-        $currentindex = 0;
-
-        // Throw away the keys.
-        $plugins = array_values($plugins);
-
-        // Find this plugin in the list.
-        foreach ($plugins as $key => $plugin) {
-            if ($plugin == $plugintomove) {
-                $currentindex = $key;
-                break;
-            }
-        }
-
-        // Make the switch.
-        if ($dir == 'up') {
-            if ($currentindex > 0) {
-                $tempplugin = $plugins[$currentindex - 1];
-                $plugins[$currentindex - 1] = $plugins[$currentindex];
-                $plugins[$currentindex] = $tempplugin;
-            }
-        } else if ($dir == 'down') {
-            if ($currentindex < (count($plugins) - 1)) {
-                $tempplugin = $plugins[$currentindex + 1];
-                $plugins[$currentindex + 1] = $plugins[$currentindex];
-                $plugins[$currentindex] = $tempplugin;
-            }
-        }
-
-        // Save the new normal order.
-        foreach ($plugins as $key => $plugin) {
-            set_config('sortorder', $key, $this->subtype . '_' . $plugin);
-        }
-        return 'view';
-    }
-
-
-    /**
-     * Show this plugin.
-     *
-     * @param string $plugin - The plugin to show
-     * @return string The next page to display
-     */
-    public function show_plugin($plugin) {
-        $class = \core_plugin_manager::resolve_plugininfo_class($this->subtype);
-        $class::enable_plugin($plugin, true);
-        return 'view';
-    }
-
-
-    /**
      * This is the entry point for this controller class.
      *
      * @param string $action - The action to perform
@@ -293,17 +199,6 @@ class registrationrules_plugin_manager {
         }
 
         $this->check_permissions();
-
-        // Process.
-        if ($action == 'hide' && $plugin != null) {
-            $action = $this->hide_plugin($plugin);
-        } else if ($action == 'show' && $plugin != null) {
-            $action = $this->show_plugin($plugin);
-        } else if ($action == 'moveup' && $plugin != null) {
-            $action = $this->move_plugin($plugin, 'up');
-        } else if ($action == 'movedown' && $plugin != null) {
-            $action = $this->move_plugin($plugin, 'down');
-        }
 
         // View.
         if ($action == 'view') {
