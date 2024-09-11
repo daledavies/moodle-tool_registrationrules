@@ -30,8 +30,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1']
-        moodle-branch: ['MOODLE_401_STABLE']
+        php: ['8.1']
+        # Exchange `main` with `MOODLE_405_STABLE` as soon as available!
+        moodle-branch: ['MOODLE_401_STABLE', 'main']
         database: [pgsql, mariadb]
 
     steps:
