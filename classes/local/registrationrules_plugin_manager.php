@@ -16,7 +16,9 @@
 
 namespace tool_registrationrules\local;
 
-require_once $CFG->libdir . '/adminlib.php';
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/adminlib.php');
 
 /**
  * Facilitate management of registration rule plugins.

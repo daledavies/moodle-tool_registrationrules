@@ -31,6 +31,8 @@ require_once(__DIR__ . '/../../../config.php');
 
 use tool_registrationrules\local\registrationrules_plugin_manager;
 
+require_admin();
+
 $subtype = required_param('subtype', PARAM_PLUGIN);
 $action = optional_param('action', null, PARAM_PLUGIN);
 $plugin = optional_param('plugin', null, PARAM_PLUGIN);

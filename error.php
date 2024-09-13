@@ -26,6 +26,12 @@
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+/*
+ * As the registration has been blocked, we can't be logged in at this point.
+ * phpcs:ignoreFile moodle.Files.RequireLogin.Missing
+ */
+
 require_once(__DIR__ . '/../../../config.php');
 
 $ver = optional_param('ver', null, PARAM_TEXT);
