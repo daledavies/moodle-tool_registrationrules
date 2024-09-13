@@ -71,9 +71,9 @@ function tool_registrationrules_extend_signup_form($mform): void {
         ),
         'username',
     );
-    $rule_checker = rule_checker::get_instance('signup_form');
-    $rule_checker->add_error_field($mform);
-    $rule_checker->extend_form($mform);
+    $rulechecker = rule_checker::get_instance('signup_form');
+    $rulechecker->add_error_field($mform);
+    $rulechecker->extend_form($mform);
 }
 
 function tool_registrationrules_validate_extend_signup_form($data) {
