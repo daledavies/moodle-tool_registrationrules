@@ -27,6 +27,9 @@ namespace tool_registrationrules\local;
 
 use action_menu;
 use action_menu_filler;
+use coding_exception;
+use dml_exception;
+use moodle_exception;
 use pix_icon;
 use renderable;
 use renderer_base;
@@ -41,8 +44,14 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_instances_controller implements renderable, \templatable {
+    /** @var stdClass[] rule instance records from the database, sorted by "sortorder" */
     protected $ruleinstances = [];
 
+    /**
+     * Constructor
+     *
+     * @throws dml_exception
+     */
     public function __construct() {
         global $DB;
 
@@ -62,6 +71,13 @@ class rule_instances_controller implements renderable, \templatable {
         return $this->ruleinstances;
     }
 
+    /**
+     * Add rule instance to database using submitted data from rule_settings form.
+     *
+     * @param stdClass $formdata
+     * @return void
+     * @throws dml_exception
+     */
     public function add_instance($formdata) {
         global $DB;
 
@@ -75,6 +91,13 @@ class rule_instances_controller implements renderable, \templatable {
         $this->ruleinstances[$instance->id] = $instance;
     }
 
+    /**
+     * Update rule instance in database using submitted rule_settings form's data
+     *
+     * @param stdClass $formdata
+     * @return void
+     * @throws dml_exception
+     */
     public function update_instance($formdata) {
         global $DB;
 
@@ -94,6 +117,13 @@ class rule_instances_controller implements renderable, \templatable {
         $DB->update_record('tool_registrationrules', $record);
     }
 
+    /**
+     * Delete the rule instance with the given database id.
+     *
+     * @param int $instanceid
+     * @return void
+     * @throws dml_exception
+     */
     public function delete_instance(int $instanceid) {
         global $DB;
         $DB->delete_records('tool_registrationrules', ['id' => $instanceid]);
@@ -101,13 +131,13 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Enable instance.
+     * Enable a single rule instance.
      *
      * TODO: replace magic value with ENUM or constant!
      *
      * @param int $instanceid
      * @return void
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public function enable_instance(int $instanceid) {
         global $DB;
@@ -116,6 +146,13 @@ class rule_instances_controller implements renderable, \templatable {
         $this->ruleinstances[$instanceid]->enabled = 1;
     }
 
+    /**
+     * Disable a single rule instance.
+     *
+     * @param int $instanceid
+     * @return void
+     * @throws dml_exception
+     */
     public function disable_instance(int $instanceid) {
         global $DB;
 
@@ -123,6 +160,12 @@ class rule_instances_controller implements renderable, \templatable {
         $this->ruleinstances[$instanceid]->enabled = 0;
     }
 
+    /**
+     * Move the given rule instance a single position up.
+     *
+     * @param int $instanceid
+     * @return void
+     */
     public function move_instance_up(int $instanceid) {
         global $DB;
 
@@ -134,6 +177,11 @@ class rule_instances_controller implements renderable, \templatable {
         // TODO: finish!
     }
 
+    /**
+     * Move the given rule instance a single position down.
+     * @param int $instanceid
+     * @return void
+     */
     public function move_instance_down(int $instanceid) {
         global $DB;
 
@@ -149,10 +197,12 @@ class rule_instances_controller implements renderable, \templatable {
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
      * 1. No complex types - only stdClass, array, int, string, float, bool
-     * 2. Any additional info that is required for the template is pre-calculated (e.g. capability checks).
+     * 2. Any additional info required for the template is pre-calculated (e.g. capability checks).
      *
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
-     * @return stdClass|array
+     * @return stdClass
+     * @throws coding_exception
+     * @throws moodle_exception
      */
     public function export_for_template(renderer_base $output) {
         $context = (object)[
@@ -239,7 +289,7 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Return an object ready to be written to DB from form data.
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return stdClass
      */
     private function extract_instancedata($formdata): stdClass {
@@ -268,7 +318,7 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Encode rule type's extra form field's data into json for storage in DB.
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return string
      */
     public function encode_instance_config($formdata): string {
@@ -285,6 +335,12 @@ class rule_instances_controller implements renderable, \templatable {
         return json_encode($extradata);
     }
 
+    /**
+     * Get available rule types to generate the add rule instance menu.
+     *
+     * @return array
+     * @throws moodle_exception
+     */
     public function get_types_for_add_menu(): array {
         $types = [];
         $pluginmanager = \core_plugin_manager::instance();
