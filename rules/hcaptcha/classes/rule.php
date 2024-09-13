@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Reference implementation of a registration rule subplugin.
- *
- * @package    registrationrule
- * @subpackage nope
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace registrationrule_hcaptcha;
 
 use \tool_registrationrules\local\rule_check_result;
 
-
+/**
+ * Reference implementation of a registration rule subplugin.
+ *
+ * @package   registrationrule_hcaptcha
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Lukas MuLu Müller <info@mulu.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public $config = [];
     

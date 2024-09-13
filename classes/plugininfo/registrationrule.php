@@ -14,16 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace tool_registrationrules\plugininfo;
+
 /**
  * Plugin info for registration rule sub plugin type.
  *
- * @package    tool_registrationrules
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace tool_registrationrules\plugininfo;
-
 class registrationrule extends \core\plugininfo\base {
 
     public static function enable_plugin(string $pluginname, int $enabled): bool {

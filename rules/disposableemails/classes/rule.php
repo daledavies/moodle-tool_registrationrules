@@ -21,6 +21,18 @@ use tool_registrationrules\local\rule\rule_base;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule_check_result;
 
+/**
+ * Registration rule based on usage of disposable mail addresses.
+ *
+ * @package   registrationrule_disposableemails
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @author    Lukas MuLu Müller <info@mulu.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class rule extends rule_base implements rule_interface {
 
     public function pre_data_check(): ?rule_check_result { return null; }

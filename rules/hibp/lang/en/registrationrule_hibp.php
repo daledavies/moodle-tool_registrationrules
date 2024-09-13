@@ -15,11 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for registrationrule_nope registration rule psublugin.
+ * Strings for registrationrule_hibp registration rule sublugin.
  *
- * @package    tool
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   registrationrule_hibp
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Lukas MuLu Müller <info@mulu.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Have I been pwned?!';

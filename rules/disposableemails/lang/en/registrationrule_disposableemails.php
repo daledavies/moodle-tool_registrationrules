@@ -15,11 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for registrationrule_nope registration rule psublugin.
+ * Strings for registrationrule_disposableemails sublugin.
  *
- * @package    registrationrule_disposableemails
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   registrationrule_disposableemails
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';

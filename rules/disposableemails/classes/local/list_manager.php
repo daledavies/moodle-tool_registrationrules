@@ -21,6 +21,17 @@ use core\exception\moodle_exception;
 use curl;
 use file_exception;
 
+/**
+ * Class managing lists of restricted domains (for disposable mail address restriction).
+ *
+ * @package   registrationrule_disposableemails
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class list_manager {
 
     private $filerecord;

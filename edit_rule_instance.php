@@ -17,9 +17,13 @@
 /**
  * Edit a single registration rule instance
  *
- * @package tool_registrationrules
- * @copyright 2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ * @package   tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Philipp Hager <philipp.hager@edaktik.at>
+ * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
