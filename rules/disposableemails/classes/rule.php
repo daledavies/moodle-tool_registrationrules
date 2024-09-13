@@ -61,7 +61,7 @@ class rule extends rule_base implements rule_interface {
 
     /**
      * @param $email
-     * @return rule_check_result|void
+     * @return false|string
      */
     private function extract_email_domain($email) {
         $parts = explode('@', $email);
