@@ -26,6 +26,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Execute steps to upgrade the database to the expected state.
+ *
+ * @param int $oldversion the currently installed plugin version
+ * @return void
+ * @throws ddl_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
+ */
 function xmldb_tool_registrationrules_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
