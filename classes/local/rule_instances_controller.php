@@ -27,13 +27,10 @@ namespace tool_registrationrules\local;
 
 use action_menu;
 use action_menu_filler;
-use action_menu_link;
-use core_component;
 use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
-use tool_registrationrules\local\rule\rule_interface;
 
 /**
  * Class rule_instances_controller
