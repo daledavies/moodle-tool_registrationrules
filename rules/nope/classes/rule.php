@@ -32,9 +32,7 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base
-    implements configurable {
-
+class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
     private \stdClass $config;
 
     public function __construct($config) {

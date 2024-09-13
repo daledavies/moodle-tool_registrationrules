@@ -35,12 +35,13 @@ abstract class rule_base implements rule_interface {
     public function __construct($config) {
     }
 
-    public static function extend_settings_form($mform): void { }
+    public static function extend_settings_form($mform): void {
+    }
 
-    public function extend_form($mform): void { }
+    public function extend_form($mform): void {
+    }
 
     abstract public function pre_data_check(): ?rule_check_result;
 
     abstract public function post_data_check($data): ?rule_check_result;
-
 }

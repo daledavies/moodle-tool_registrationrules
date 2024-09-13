@@ -16,7 +16,7 @@
 
 namespace tool_registrationrules\local;
 
-require_once $CFG->libdir.'/adminlib.php';
+require_once $CFG->libdir . '/adminlib.php';
 
 /**
  * Facilitate management of registration rule plugins.
@@ -32,7 +32,6 @@ require_once $CFG->libdir.'/adminlib.php';
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class registrationrules_plugin_manager {
-
     /** @var object the url of the manage submission plugin page */
     private $pageurl;
     /** @var string any error from the current action */
@@ -91,7 +90,7 @@ class registrationrules_plugin_manager {
         $url = $this->pageurl;
 
         if ($action === 'delete') {
-            $url = \core_plugin_manager::instance()->get_uninstall_url($this->subtype.'_'.$plugin, 'manage');
+            $url = \core_plugin_manager::instance()->get_uninstall_url($this->subtype . '_' . $plugin, 'manage');
             if (!$url) {
                 return '&nbsp;';
             }

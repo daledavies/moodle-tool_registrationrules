@@ -61,4 +61,3 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024090302, 'tool', 'registrationrules');
     }
 }
-

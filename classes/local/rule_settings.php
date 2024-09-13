@@ -31,7 +31,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_settings extends \moodleform {
-
     /** @var string The registrationrule's type */
     protected string $type;
 
@@ -40,15 +39,15 @@ class rule_settings extends \moodleform {
 
     public static function from_rule_instance(int $instanceid) {
         global $DB;
-        
+
         $instancerecord = $DB->get_record('tool_registrationrules', ['id' => $instanceid]);
 
         $extrafields = json_decode($instancerecord->other);
-        
-        foreach($extrafields as $fieldname => $value) {
+
+        foreach ($extrafields as $fieldname => $value) {
             $instancerecord->$fieldname = $value;
         }
-        
+
         $form = new static($instancerecord->type, $instanceid);
         $form->set_data($instancerecord);
 

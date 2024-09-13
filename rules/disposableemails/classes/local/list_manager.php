@@ -33,7 +33,6 @@ use file_exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class list_manager {
-
     private $filerecord;
 
     public function __construct() {
@@ -91,7 +90,6 @@ class list_manager {
             $this->filerecord,
             $url,
         );
-
     }
 
     /**
@@ -109,5 +107,4 @@ class list_manager {
             $this->filerecord['filename'],
         );
     }
-
 }

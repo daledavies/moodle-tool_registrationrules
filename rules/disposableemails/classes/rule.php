@@ -34,8 +34,9 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends rule_base implements rule_interface {
-
-    public function pre_data_check(): ?rule_check_result { return null; }
+    public function pre_data_check(): ?rule_check_result {
+        return null;
+    }
 
     public function post_data_check($data): ?rule_check_result {
         if (!array_key_exists('email', $data)) {

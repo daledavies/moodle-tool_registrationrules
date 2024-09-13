@@ -32,19 +32,19 @@ use \tool_registrationrules\local\rule_check_result;
  */
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public \StdClass $config;
-    
+
     const SETTINGS_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
-    
+
     public function __construct($config) {
         $this->config = $config;
     }
-    
+
     public static function extend_settings_form($mform): void {
         $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
-        
+
         $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
     }
-    
+
     public function pre_data_check(): rule_check_result {
         $now = time();
 
@@ -62,7 +62,8 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             'Outside date',
         );
     }
-    
-    public function post_data_check($data): ?rule_check_result { return null; }
-}
 
+    public function post_data_check($data): ?rule_check_result {
+        return null;
+    }
+}

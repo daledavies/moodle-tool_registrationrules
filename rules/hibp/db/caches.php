@@ -25,7 +25,7 @@
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 $definitions = [
     'pwhashes' => [
         'mode' => cache_store::MODE_APPLICATION,

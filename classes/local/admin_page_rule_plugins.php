@@ -30,7 +30,6 @@ namespace tool_registrationrules\local;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_page_rule_plugins extends \admin_externalpage {
-
     /** @var string the name of plugin subtype */
     private $subtype = '';
 

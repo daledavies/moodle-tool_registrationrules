@@ -86,7 +86,6 @@ if ($ADMIN->fulltree) {
         '',
     );
     $settings->add($setting);
-
 }
 $ADMIN->add('toolregistrationrules', $settings);
 

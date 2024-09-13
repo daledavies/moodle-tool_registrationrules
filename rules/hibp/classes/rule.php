@@ -30,52 +30,49 @@ use \tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base {
-    
     public function post_data_check($data): rule_check_result {
-        
+
         if (!isset($data['password']))
             return null;
-        
+
         // Create the hash of the password and UPPER it for the API.
         $hash = strtoupper(sha1($data['password']));
-        
+
         // Get cache.
         $cache = \cache::make('registrationrule_hibp', 'pwhashes');
-        
+
         $cacheresult = $cache->get($hash);
-        
+
         if (false && $cacheresult !== false) {
-            $matched = (bool)$cacheresult;            
-        // Not found, do an API request.
+            $matched = (bool)$cacheresult;
+            // Not found, do an API request.
         } else {
             // Prefix used for search.
             $hashprefix = substr($hash, 0, 5);
 
             // Call the HIBP-Api with the prefix.
-            $ch = curl_init('https://api.pwnedpasswords.com/range/' . $hashprefix); 
+            $ch = curl_init('https://api.pwnedpasswords.com/range/' . $hashprefix);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
             curl_setopt($ch, CURLOPT_TIMEOUT, 2);
             curl_setopt($ch, CURLOPT_FAILONERROR, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            
-            // Get Response 
+
+            // Get Response
             $response = curl_exec($ch);
             $error = curl_error($ch);
             curl_close($ch);
-            
+
             // Default is "not matched".
             $matched = false;
-            
+
             // Loop through the list of given hashes.
-            foreach(explode("\n", $response) as $testhash) {
-                
+            foreach (explode("\n", $response) as $testhash) {
                 // If the hash matches, the password exists in a breach.
-                if ($hash == $hashprefix . substr($testhash, 0, 35))
-                {
+                if ($hash == $hashprefix . substr($testhash, 0, 35)) {
                     $matched = true;
                 }
             }
-            
+
             // Set cache-data for this hash.
             $cache->set($hash, (int)$matched);
         }
@@ -87,7 +84,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             ['password' => get_string('resultmessage', 'registrationrule_hibp')],
         );
     }
-    
-    public function pre_data_check(): ?rule_check_result { return null; }
-    public static function extend_settings_form($mform) : void {}
+
+    public function pre_data_check(): ?rule_check_result {
+        return null;
+    }
+
+    public static function extend_settings_form($mform): void {
+    }
 }

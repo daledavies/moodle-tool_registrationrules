@@ -66,7 +66,7 @@ class rule_checker {
             $pluginrule = 'registrationrule_' . $instance->type . '\rule';
 
             // Parse additional config and add to instance.
-            foreach(json_decode($instance->other) as $configkey => $configvalue) {
+            foreach (json_decode($instance->other) as $configkey => $configvalue) {
                 $instance->$configkey = $configvalue;
             }
             $ruleinstance = new $pluginrule($instance);
@@ -75,7 +75,6 @@ class rule_checker {
                 continue;
             }
             $this->rules[] = $ruleinstance;
-
         }
     }
 
@@ -105,7 +104,7 @@ class rule_checker {
     public function run_pre_data_checks() {
         foreach ($this->rules as $instance) {
             $result = $instance->pre_data_check();
-            
+
             // Ignore rules without post data check.
             if ($result !== null) {
                 $this->results[] = $result;
@@ -123,7 +122,7 @@ class rule_checker {
                 $this->results[] = $result;
             }
         }
-        
+
         $this->checked = true;
     }
 
@@ -160,7 +159,6 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
-            
             // If not allowed add error message.
             if (!$result->get_allowed()) {
                 continue;
@@ -177,7 +175,7 @@ class rule_checker {
             );
         }
         $messages = [];
-        
+
         foreach ($this->results as $result) {
             if (!$result->get_allowed()) {
                 foreach ($result->get_validation_messages() as $field => $message) {
@@ -185,7 +183,7 @@ class rule_checker {
                     // We may want to consider some kind of aggregation here.
                     $messages[$field] = $message;
                 }
-                
+
                 // General messages.
                 if (!empty($result->get_message())) {
                     if (!isset($messages['tool_registrationrules_errors'])) {
@@ -197,7 +195,7 @@ class rule_checker {
         }
         return $messages;
     }
-    
+
     public function add_error_field($mform) {
         $mform->addElement('static', 'tool_registrationrules_errors');
     }

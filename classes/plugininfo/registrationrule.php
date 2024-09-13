@@ -29,7 +29,6 @@ namespace tool_registrationrules\plugininfo;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class registrationrule extends \core\plugininfo\base {
-
     public static function enable_plugin(string $pluginname, int $enabled): bool {
         $haschanged = false;
 
