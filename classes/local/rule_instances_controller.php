@@ -54,11 +54,6 @@ class rule_instances_controller implements renderable, \templatable {
             sort: 'sortorder ASC',
         );
         $this->ruleinstances = $instancerecords;
-        /*foreach ($instancerecords as $instancerecord) {
-            $ruleclass = 'registrationrule_' . $instancerecord->type . '\rule';
-            $rule = new $ruleclass();
-            $this->instancerecords[$rule->id] = $instancerecord;
-        }*/
     }
 
     /**
