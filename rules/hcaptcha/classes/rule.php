@@ -52,7 +52,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
 
         // But we also need to add the HTML for the result.
-        $sitekey = htmlspecialchars($this->config->hcaptcha_sitekey);
+        $sitekey = htmlspecialchars($this->config->hcaptcha_sitekey, ENT_COMPAT);
         $html .= '<div class="h-captcha" data-sitekey="' . $sitekey . '"></div>';
 
         $mform->addElement('hidden', 'h-captcha-response', '');
