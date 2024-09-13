@@ -17,7 +17,7 @@
 namespace registrationrule_disposableemails\local;
 
 use context_system;
-use core\exception\moodle_exception;
+use moodle_exception;
 use file_exception;
 
 /**
