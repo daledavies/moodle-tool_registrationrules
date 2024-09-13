@@ -85,6 +85,4 @@ function tool_registrationrules_validate_extend_signup_form($data) {
     }
 
     return $rulechecker->get_validation_messages();
-
-    return ['tool_registrationrules_errors' => implode('<br />', $errors)];
 }
