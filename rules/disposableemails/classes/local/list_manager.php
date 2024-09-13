@@ -93,7 +93,6 @@ class list_manager {
     }
 
     /**
-     * @param \file_storage|null $fs
      * @return bool
      */
     private function list_file_exists(): bool {
