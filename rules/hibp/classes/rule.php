@@ -30,7 +30,7 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base {
-    public function post_data_check($data): rule_check_result {
+    public function post_data_check($data): ?rule_check_result {
 
         if (!isset($data['password']))
             return null;
