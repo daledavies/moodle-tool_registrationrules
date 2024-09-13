@@ -75,7 +75,7 @@ class rule_settings extends \moodleform {
     protected function definition() {
         $mform = $this->_form;
 
-        // Quick and dirty hack to get our types/parameters:
+        // Quick and dirty hack to get our types/parameters...
         if ($addruletype = optional_param('addruletype', false, PARAM_ALPHANUM)) {
             $mform->addElement('hidden', 'addruletype', $addruletype);
             $mform->addElement('hidden', 'type', $addruletype);

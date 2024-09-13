@@ -281,7 +281,7 @@ class rule_instances_controller implements renderable, \templatable {
      */
     public function encode_instance_config($formdata): string {
         $extradata = [];
-        // Class of our rule
+        // Class of our rule.
 
         $class = 'registrationrule_' . $formdata->type . '\rule';
 
