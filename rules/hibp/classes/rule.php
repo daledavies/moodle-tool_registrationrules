@@ -57,7 +57,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             curl_setopt($ch, CURLOPT_FAILONERROR, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-            // Get Response
+            // Get Response.
             $response = curl_exec($ch);
             $error = curl_error($ch);
             curl_close($ch);

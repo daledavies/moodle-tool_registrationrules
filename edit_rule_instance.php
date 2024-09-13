@@ -45,7 +45,7 @@ if (empty($ruleinstanceid) && empty($addruletype)) {
 
 if (!empty($ruleinstanceid)) {
     $PAGE->set_title('Edit rule instance');
-    // TODO replace with name…
+    // TODO replace with name...
     $PAGE->set_heading('Edit rule instance ' . $ruleinstanceid);
     $mform = rule_settings::from_rule_instance($ruleinstanceid);
 } else {
