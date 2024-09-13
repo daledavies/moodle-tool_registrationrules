@@ -35,6 +35,8 @@ use tool_registrationrules\local\rule_checker;
  * Example of use in callback without passing data to rule_checker::check().
  *
  * @return void
+ * @throws coding_exception
+ * @throws moodle_exception
  */
 function tool_registrationrules_pre_signup_requests() {
     $rulechecker = rule_checker::get_instance('signup_form');
@@ -60,6 +62,8 @@ function tool_registrationrules_pre_signup_requests() {
  *
  * @param MoodleQuickForm $mform
  * @return void
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function tool_registrationrules_extend_signup_form($mform): void {
     $mform->insertElementBefore(
@@ -76,7 +80,14 @@ function tool_registrationrules_extend_signup_form($mform): void {
     $rulechecker->extend_form($mform);
 }
 
-function tool_registrationrules_validate_extend_signup_form($data) {
+/**
+ * Inject our own rule instance based validation into the signup form.
+ *
+ * @param array $data
+ * @return string[]
+ * @throws coding_exception
+ */
+function tool_registrationrules_validate_extend_signup_form($data): array {
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_post_data_checks($data);
 
