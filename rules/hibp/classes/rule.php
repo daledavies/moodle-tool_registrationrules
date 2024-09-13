@@ -16,7 +16,7 @@
 
 namespace registrationrule_hibp;
 
-use \tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result;
 
 /**
  * Registration rule restricting registrations based on data from HaveIBeenPwnd.

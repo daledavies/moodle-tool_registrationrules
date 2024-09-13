@@ -16,7 +16,7 @@
 
 namespace registrationrule_hcaptcha;
 
-use \tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result;
 
 /**
  * Reference implementation of a registration rule subplugin.
