@@ -32,8 +32,9 @@ use tool_registrationrules\local\rule_check_result;
 class rule extends \tool_registrationrules\local\rule\rule_base {
     public function post_data_check($data): ?rule_check_result {
 
-        if (!isset($data['password']))
+        if (!isset($data['password'])) {
             return null;
+        }
 
         // Create the hash of the password and UPPER it for the API.
         $hash = strtoupper(sha1($data['password']));
