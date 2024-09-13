@@ -51,7 +51,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
     public function extend_form($mform): void {
     }
 
-    public static function extend_settings_form($mform) {
+    public static function extend_settings_form($mform): void {
         $mform->addElement(
             'static',
             'test',
