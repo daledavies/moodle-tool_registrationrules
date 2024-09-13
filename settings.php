@@ -24,39 +24,62 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$ADMIN->add('tools', new admin_category('toolregistrationrules', new lang_string('pluginname', 'tool_registrationrules')));
+$ADMIN->add(
+    'tools',
+    new admin_category('toolregistrationrules', new lang_string('pluginname', 'tool_registrationrules')),
+);
 
-$settings = new admin_settingpage('generalsettings', get_string('registrationrulessettings', 'tool_registrationrules'), 'moodle/site:config');
+$settings = new admin_settingpage(
+    'generalsettings',
+    get_string('registrationrulessettings', 'tool_registrationrules'),
+    'moodle/site:config',
+);
 
 if ($ADMIN->fulltree) {
     $name = new lang_string('enable', 'tool_registrationrules');
-    $settings->add(new admin_setting_configcheckbox('tool_registrationrules/enable',
-                                                    $name,
-                                                    '',
-                                                    0));
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'tool_registrationrules/enable',
+            $name,
+            '',
+            0,
+        ),
+    );
 
-    $settings->add(new admin_setting_configtext('tool_registrationrules/maxpoints',
-    new lang_string('maxpoints', 'tool_registrationrules'), '', 100, PARAM_INT));
+    $setting = new admin_setting_configtext(
+        'tool_registrationrules/maxpoints',
+        new lang_string('maxpoints', 'tool_registrationrules'),
+        '',
+        100,
+        PARAM_INT,
+    );
+    $settings->add($setting);
 
     $name = new lang_string('registrationpagemessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea('tool_registrationrules/registrationpagemessage',
+    $setting = new admin_setting_configtextarea(
+        'tool_registrationrules/registrationpagemessage',
         $name,
         '',
-        '');
+        '',
+    );
     $settings->add($setting);
 
     $name = new lang_string('generalbeforemessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea('tool_registrationrules/generalbeforemessage',
+    $setting = new admin_setting_configtextarea(
+        'tool_registrationrules/generalbeforemessage',
         $name,
         '',
-        '');
+        '',
+    );
     $settings->add($setting);
 
     $name = new lang_string('generalaftermessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea('tool_registrationrules/generalaftermessage',
+    $setting = new admin_setting_configtextarea(
+        'tool_registrationrules/generalaftermessage',
         $name,
         '',
-        '');
+        '',
+    );
     $settings->add($setting);
 
 }

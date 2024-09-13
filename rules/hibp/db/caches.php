@@ -29,6 +29,6 @@ $definitions = [
         'simplekeys' => true,
         'simpledata' => true,
         'ttl' => 86400, // 1 day caching.
-        'canuselocalstore' => true
+        'canuselocalstore' => true,
     ],
 ];

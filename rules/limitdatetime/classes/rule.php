@@ -45,8 +45,20 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
     
     public function pre_data_check(): rule_check_result {
         $now = time();
-        
-        return new rule_check_result(($now < $this->config->limitdatetime_from || $now > $this->config->limitdatetime_to), 'Outside date');
+
+        /* A wizard is never late, nor is he early,
+         * he arrives precisely when he means to.
+         *
+         * Just like users don't.
+         * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
+         */
+        $tooearly = $now < $this->config->limitdatetime_from;
+        $toolate = $now > $this->config->limitdatetime_to;
+
+        return new rule_check_result(
+            ($tooearly || $toolate),
+            'Outside date',
+        );
     }
     
     public function post_data_check($data): ?rule_check_result { return null; }

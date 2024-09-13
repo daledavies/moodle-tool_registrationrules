@@ -61,16 +61,24 @@ class list_manager {
      * @throws file_exception
      */
     public function download_list() {
-        $url = 'https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf';
+        $url = 'https://raw.githubusercontent.com/' .
+            'disposable-email-domains/disposable-email-domains/' . // User and repository.
+            'master/' . // Branch.
+            'disposable_email_blocklist.conf'; // File to fetch.
 
         $fs = get_file_storage();
         if ($this->list_file_exists()) {
-            $fs->delete_area_files($this->filerecord['contextid'], $this->filerecord['component'], $this->filerecord['filearea'], $this->filerecord['itemid']);
+            $fs->delete_area_files(
+                $this->filerecord['contextid'],
+                $this->filerecord['component'],
+                $this->filerecord['filearea'],
+                $this->filerecord['itemid'],
+            );
         }
 
         $fs->create_file_from_url(
             $this->filerecord,
-            $url
+            $url,
         );
 
     }
@@ -87,7 +95,7 @@ class list_manager {
             $this->filerecord['filearea'],
             $this->filerecord['itemid'],
             $this->filerecord['filepath'],
-            $this->filerecord['filename']
+            $this->filerecord['filename'],
         );
     }
 

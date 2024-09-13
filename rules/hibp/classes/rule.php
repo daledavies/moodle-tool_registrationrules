@@ -80,7 +80,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         }
 
         // Return our result.
-        return new rule_check_result(!$matched, '', ['password' => get_string('resultmessage', 'registrationrule_hibp')]);
+        return new rule_check_result(
+            !$matched,
+            '',
+            ['password' => get_string('resultmessage', 'registrationrule_hibp')],
+        );
     }
     
     public function pre_data_check(): ?rule_check_result { return null; }

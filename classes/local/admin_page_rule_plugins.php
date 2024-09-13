@@ -38,9 +38,11 @@ class admin_page_rule_plugins extends \admin_externalpage {
     public function __construct($subtype) {
         $this->subtype = $subtype;
         $url = new \moodle_url('/admin/tool/registrationrules/managerules.php', ['subtype' => $subtype]);
-        parent::__construct('manage' . $subtype . 'plugins',
-                            get_string('manageregistrationruleplugins', 'tool_registrationrules'),
-                            $url);
+        parent::__construct(
+            'manage' . $subtype . 'plugins',
+            get_string('manageregistrationruleplugins', 'tool_registrationrules'),
+            $url,
+        );
     }
 
     /**
@@ -57,8 +59,8 @@ class admin_page_rule_plugins extends \admin_externalpage {
         $found = false;
 
         foreach (\core_component::get_plugin_list($this->subtype) as $name => $notused) {
-            if (strpos(\core_text::strtolower(get_string('pluginname', $this->subtype . '_' . $name)),
-                    $query) !== false) {
+            $position = strpos(\core_text::strtolower(get_string('pluginname', $this->subtype . '_' . $name)), $query);
+            if ($position !== false) {
                 $found = true;
                 break;
             }

@@ -132,7 +132,9 @@ class rule_checker {
             return true;
         }
         if (!$this->checked) {
-            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::is_registration_allowed()');
+            throw new \coding_exception(
+                'rule_checker::check() must be called before using rule_checker::is_registration_allowed()',
+            );
         }
 
         foreach ($this->results as $result) {
@@ -146,7 +148,9 @@ class rule_checker {
 
     public function get_messages(): array {
         if (!$this->checked) {
-            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_messages()');
+            throw new \coding_exception(
+                'rule_checker::check() must be called before using rule_checker::get_messages()',
+            );
         }
         $messages = [];
         foreach ($this->results as $result) {
@@ -162,7 +166,9 @@ class rule_checker {
 
     public function get_validation_messages(): array {
         if (!$this->checked) {
-            throw new \coding_exception('rule_checker::check() must be called before using rule_checker::get_validation_messages()');
+            throw new \coding_exception(
+                'rule_checker::check() must be called before using rule_checker::get_validation_messages()',
+            );
         }
         $messages = [];
         

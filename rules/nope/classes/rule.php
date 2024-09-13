@@ -49,6 +49,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base
     }
 
     public static function extend_settings_form($mform) {
-        $mform->addElement('static', 'test', 'Additional Settings', 'This rule type does not provide additional settings.');
+        $mform->addElement(
+            'static',
+            'test',
+            'Additional Settings',
+            'This rule type does not provide additional settings.',
+        );
     }
 }

@@ -98,10 +98,15 @@ class registrationrules_plugin_manager {
             return \html_writer::link($url, get_string('uninstallplugin', 'core_admin'));
         }
 
-        return $OUTPUT->action_icon(new \moodle_url($url,
-                ['action' => $action, 'plugin' => $plugin, 'sesskey' => sesskey()]),
-                new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
-                null, ['title' => $alt]) . ' ';
+        return $OUTPUT->action_icon(
+            new \moodle_url(
+                $url,
+                ['action' => $action, 'plugin' => $plugin, 'sesskey' => sesskey()],
+            ),
+            new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+            null,
+            ['title' => $alt]
+        ) . ' ';
     }
 
     /**
@@ -117,11 +122,16 @@ class registrationrules_plugin_manager {
         $this->view_header();
         $table = new \flexible_table($this->subtype . 'pluginsadminttable');
         $table->define_baseurl($this->pageurl);
-        $table->define_columns(['pluginname', 'version', 'hideshow', 'order',
-                'settings', 'uninstall']);
-        $table->define_headers([get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
-                get_string('version'), get_string('hideshow', 'tool_registrationrules'),
-                get_string('order'), get_string('settings'), get_string('uninstallplugin', 'core_admin')]);
+        $headers = [
+            'pluginname' => get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
+            'version' => get_string('version'),
+            'hideshow' => get_string('hideshow', 'tool_registrationrules'),
+            'order' => get_string('order'),
+            'settings' => get_string('settings'),
+            'uninstall' => get_string('uninstallplugin', 'core_admin'),
+        ];
+        $table->define_columns(array_keys($headers));
+        $table->define_headers(array_values($headers));
         $table->set_attribute('id', $this->subtype . 'plugins');
         $table->set_attribute('class', 'admintable generaltable');
         $table->setup();
@@ -156,15 +166,27 @@ class registrationrules_plugin_manager {
             }
             $row[] = $movelinks;
 
-            $exists = file_exists($CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php');
+            $exists = file_exists(
+                $CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php',
+            );
             if ($row[1] != '' && $exists) {
-                $row[] = \html_writer::link(new \moodle_url('/admin/settings.php',
-                        ['section' => $this->subtype . '_' . $plugin]), get_string('settings'));
+                $row[] = \html_writer::link(
+                    new \moodle_url(
+                        '/admin/settings.php',
+                        ['section' => $this->subtype . '_' . $plugin]
+                    ),
+                    get_string('settings'),
+                );
             } else {
                 $row[] = '&nbsp;';
             }
 
-            $row[] = $this->format_icon_link('delete', $plugin, 't/delete', get_string('uninstallplugin', 'core_admin'));
+            $row[] = $this->format_icon_link(
+                'delete',
+                $plugin,
+                't/delete',
+                get_string('uninstallplugin', 'core_admin'),
+            );
 
             $table->add_data($row, $class);
         }

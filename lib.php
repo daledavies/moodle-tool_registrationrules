@@ -42,8 +42,8 @@ function tool_registrationrules_pre_signup_requests() {
     redirect(
         new moodle_url(
             '/admin/tool/registrationrules/error.php',
-            ['ver' =>'before']
-        )
+            ['ver' =>'before'],
+        ),
     );
     exit;
 }
@@ -55,8 +55,15 @@ function tool_registrationrules_pre_signup_requests() {
  * @return void
  */
 function tool_registrationrules_extend_signup_form($mform): void {
-    $mform->insertElementBefore($mform->createElement('static', 'registrationrules_information',
-    get_string('pluginname', 'tool_registrationrules'), get_config('tool_registrationrules', 'registrationpagemessage')), 'username');
+    $mform->insertElementBefore(
+        $mform->createElement(
+            'static',
+            'registrationrules_information',
+            get_string('pluginname', 'tool_registrationrules'),
+            get_config('tool_registrationrules', 'registrationpagemessage'),
+        ),
+        'username',
+    );
     $rule_checker = rule_checker::get_instance('signup_form');
     $rule_checker->add_error_field($mform);
     $rule_checker->extend_form($mform);

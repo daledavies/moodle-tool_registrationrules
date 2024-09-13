@@ -51,8 +51,9 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
         
         // But we also need to add the HTML for the result.
-        $html .= '<div class="h-captcha" data-sitekey="' . htmlspecialchars($this->config->hcaptcha_sitekey) . '"></div>';
         
+        $sitekey = htmlspecialchars($this->config->hcaptcha_sitekey);
+        $html .= '<div class="h-captcha" data-sitekey="' . $sitekey . '"></div>';
         $mform->addElement('hidden', 'h-captcha-response', '');
         $mform->addElement('html', $html);
     }
@@ -63,9 +64,9 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             'secret' => $this->config->hcaptcha_secret,
             'sitekey' =>  $this->config->hcaptcha_sitekey,
             'response' => $data['h-captcha-response'],
-            ];
             
         
+        ];
         // Call the hCaptcha API for validation.
         $ch = curl_init('https://api.hcaptcha.com/siteverify'); 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
