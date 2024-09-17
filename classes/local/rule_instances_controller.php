@@ -36,14 +36,14 @@ use stdClass;
 use tool_registrationrules\local\rule\rule_interface;
 
 /**
- * Class ruleinstancescontroller
+ * Class rule_instances_controller
  *
  * @package tool_registrationrules
  * @copyright 2024 eDaktik GmbH {@link https://www.edaktik.at/}
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class ruleinstancescontroller implements renderable, \templatable {
+class rule_instances_controller implements renderable, \templatable {
     protected $ruleinstances = [];
 
     public function __construct() {
@@ -59,6 +59,15 @@ class ruleinstancescontroller implements renderable, \templatable {
             $rule = new $ruleclass();
             $this->instancerecords[$rule->id] = $instancerecord;
         }*/
+    }
+
+    /**
+     * Get the rule instance records from the DB.
+     *
+     * @return array Array of rule instance DB records.
+    */
+    public function get_rule_instance_records(): array {
+        return $this->ruleinstances;
     }
 
     public function add_instance($formdata) {

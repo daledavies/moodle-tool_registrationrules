@@ -26,7 +26,7 @@ require_once(__DIR__ . '/../../../config.php');
 
 require_once($CFG->libdir . '/adminlib.php');
 
-use tool_registrationrules\local\ruleinstancescontroller;
+use tool_registrationrules\local\rule_instances_controller;
 
 $action = optional_param('action', null, PARAM_PLUGIN);
 $instanceid = optional_param('instanceid', null, PARAM_INT);
@@ -34,7 +34,7 @@ $instanceid = optional_param('instanceid', null, PARAM_INT);
 admin_externalpage_setup('toolregistrationrules_instances');
 
 // Create the class for this controller.
-$controller = new ruleinstancescontroller();
+$controller = new rule_instances_controller();
 
 $PAGE->set_context(context_system::instance());
 
