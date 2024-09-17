@@ -47,19 +47,18 @@ class rule_checker {
     }
 
     private function __construct() {
-        global $DB;
         $this->clear();
         $this->adminconfig = $this->get_admin_config();
 
-        $instances = $DB->get_records('tool_registrationrules', ['enabled' => 1]);
+        $instances = (new \tool_registrationrules\local\rule_instances_controller())->get_rule_instance_records();
 
         foreach ($instances as $instance) {
             if (get_config('registrationrule_' . $instance->type, 'disabled')) {
                 continue;
             }
-            
+
             $pluginrule = 'registrationrule_' . $instance->type . '\rule';
-            
+
             // Parse additional config and add to instance.
             foreach(json_decode($instance->other) as $configkey => $configvalue) {
                 $instance->$configkey = $configvalue;
@@ -73,7 +72,7 @@ class rule_checker {
 
         }
     }
-    
+
     public function clear() {
         $this->rules = [];
         $this->results = [];
