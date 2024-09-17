@@ -55,7 +55,7 @@ if ($mform->is_cancelled()) {
 }
 
 if ($fromform = $mform->get_data()) {
-    $controller = new \tool_registrationrules\local\ruleinstancescontroller();
+    $controller = new \tool_registrationrules\local\rule_instances_controller();
     // TODO: Process add/update here and redirect to our management page!
 
     // TODO: add id and/or addruletype to the hidden form fields!
