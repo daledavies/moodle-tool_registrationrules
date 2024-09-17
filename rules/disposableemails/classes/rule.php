@@ -16,6 +16,7 @@
 
 namespace registrationrule_disposableemails;
 
+use moodle_exception;
 use registrationrule_disposableemails\local\list_manager;
 use tool_registrationrules\local\rule\rule_base;
 use tool_registrationrules\local\rule\rule_interface;
@@ -34,11 +35,23 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends rule_base implements rule_interface {
+    /**
+     * Perform rule's checks applicable without any user input before the signup form is displayed.
+     *
+     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     */
     public function pre_data_check(): ?rule_check_result {
         return null;
     }
 
-    public function post_data_check($data): ?rule_check_result {
+    /**
+     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
+     * @throws moodle_exception
+     */
+    public function post_data_check(array $data): ?rule_check_result {
         if (!array_key_exists('email', $data)) {
             return null;
         }
@@ -60,10 +73,12 @@ class rule extends rule_base implements rule_interface {
     }
 
     /**
-     * @param $email
+     * Extract domain part of the given mail address.
+     *
+     * @param string $email
      * @return false|string
      */
-    private function extract_email_domain($email) {
+    private function extract_email_domain(string $email) {
         $parts = explode('@', $email);
         return end($parts);
     }

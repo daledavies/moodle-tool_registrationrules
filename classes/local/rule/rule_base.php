@@ -16,6 +16,7 @@
 
 namespace tool_registrationrules\local\rule;
 
+use MoodleQuickForm;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -35,13 +36,36 @@ abstract class rule_base implements rule_interface {
     public function __construct($config) {
     }
 
-    public static function extend_settings_form($mform): void {
+    /**
+     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public static function extend_settings_form(MoodleQuickForm $mform): void {
     }
 
-    public function extend_form($mform): void {
+    /**
+     * Inject additional fields into the signup form for usage by the rule instance after submission.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_form(MoodleQuickForm $mform): void {
     }
 
+    /**
+     * Perform rule's checks applicable without any user input before the signup form is displayed.
+     *
+     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     */
     abstract public function pre_data_check(): ?rule_check_result;
 
-    abstract public function post_data_check($data): ?rule_check_result;
+    /**
+     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
+     */
+    abstract public function post_data_check(array $data): ?rule_check_result;
 }

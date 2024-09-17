@@ -16,6 +16,8 @@
 
 namespace registrationrule_hcaptcha;
 
+use coding_exception;
+use MoodleQuickForm;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -38,7 +40,14 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $this->config = $config;
     }
 
-    public static function extend_settings_form($mform): void {
+    /**
+     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     * @throws coding_exception
+     */
+    public static function extend_settings_form(MoodleQuickForm $mform): void {
         $mform->addElement('text', 'hcaptcha_sitekey', get_string('sitekey', 'registrationrule_hcaptcha'));
         $mform->addRule('hcaptcha_sitekey', get_string('required'), 'required');
 
@@ -46,7 +55,13 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $mform->addRule('hcaptcha_secret', get_string('required'), 'required');
     }
 
-    public function extend_form($mform): void {
+    /**
+     * Inject additional fields into the signup form for usage by the rule instance after submission.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_form(MoodleQuickForm $mform): void {
 
         // This is the basic JS for hCaptcha.
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
@@ -59,7 +74,14 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $mform->addElement('html', $html);
     }
 
-    public function post_data_check($data): rule_check_result {
+    /**
+     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
+     * @throws coding_exception
+     */
+    public function post_data_check(array $data): ?rule_check_result {
         // Build the data used for validation.
         $validationpost = [
             'secret' => $this->config->hcaptcha_secret,
@@ -86,6 +108,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
     }
 
+    /**
+     * Perform rule's checks applicable without any user input before the signup form is displayed.
+     *
+     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     */
     public function pre_data_check(): ?rule_check_result {
         return null;
     }

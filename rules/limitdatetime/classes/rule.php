@@ -16,6 +16,9 @@
 
 namespace registrationrule_limitdatetime;
 
+use coding_exception;
+use MoodleQuickForm;
+use stdClass;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -39,13 +42,25 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         $this->config = $config;
     }
 
-    public static function extend_settings_form($mform): void {
+    /**
+     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     * @throws coding_exception
+     */
+    public static function extend_settings_form(MoodleQuickForm $mform): void {
         $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
 
         $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
     }
 
-    public function pre_data_check(): rule_check_result {
+    /**
+     * Perform rule's checks applicable without any user input before the signup form is displayed.
+     *
+     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     */
+    public function pre_data_check(): ?rule_check_result {
         $now = time();
 
         /* A wizard is never late, nor is he early,
@@ -63,7 +78,13 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         );
     }
 
-    public function post_data_check($data): ?rule_check_result {
+    /**
+     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
+     */
+    public function post_data_check(array $data): ?rule_check_result {
         return null;
     }
 }
