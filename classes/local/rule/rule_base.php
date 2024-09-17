@@ -17,6 +17,7 @@
 namespace tool_registrationrules\local\rule;
 
 use MoodleQuickForm;
+use stdClass;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -33,7 +34,14 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class rule_base implements rule_interface {
-    public function __construct($config) {
+    /**
+     * Constructor
+     *
+     * TODO: should we move configuration processing to this base class?
+     *
+     * @param stdClass $config rule instance configuration
+     */
+    public function __construct(stdClass $config) {
     }
 
     /**

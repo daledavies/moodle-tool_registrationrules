@@ -17,6 +17,7 @@
 namespace registrationrule_disposableemails\local;
 
 use context_system;
+use dml_exception;
 use moodle_exception;
 use file_exception;
 
@@ -32,8 +33,14 @@ use file_exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class list_manager {
+    /** @var array files table record */
     private $filerecord;
 
+    /**
+     * List manager constructor
+     *
+     * @throws dml_exception
+     */
     public function __construct() {
         $this->filerecord = [
             'contextid' => context_system::instance()->id,
@@ -45,6 +52,13 @@ class list_manager {
         ];
     }
 
+    /**
+     * Returns array of blocked domains, not to be accepted as user email address domains.
+     *
+     * @return string[]
+     * @throws file_exception
+     * @throws moodle_exception
+     */
     public function get_blocked_domains() {
         if (!$this->list_file_exists()) {
             $this->download_list();
@@ -66,6 +80,8 @@ class list_manager {
     }
 
     /**
+     * Fetch the up-to-date list of disposable email domains from a public GitHub repository and store it here.
+     *
      * @return void
      * @throws file_exception
      */
@@ -92,6 +108,8 @@ class list_manager {
     }
 
     /**
+     * Return if a list of disposable mail address-domains is currently stored in Moodle.
+     *
      * @return bool
      */
     private function list_file_exists(): bool {

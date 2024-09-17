@@ -35,9 +35,15 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    private \stdClass $config;
+    /** @var stdClass rule instance configuration */
+    private stdClass $config;
 
-    public function __construct($config) {
+    /**
+     * Constructor
+     *
+     * @param stdClass $config
+     */
+    public function __construct(stdClass $config) {
         $this->config = $config;
         parent::__construct($config);
     }

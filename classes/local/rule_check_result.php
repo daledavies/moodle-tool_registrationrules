@@ -30,10 +30,24 @@ namespace tool_registrationrules\local;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_check_result {
+    /** @var bool true if this result does allow the protected action (e.g. registration) */
     private bool $allowed;
+
+    /** @var string feedback message to be returned based on check's outcome */
     private string $message;
+
+    /** @var string[] validation messages to be displayed in the form based on check's outcome */
     private array $validationmessages;
 
+    /**
+     * Rule check result constructor
+     *
+     * TODO: add score!
+     *
+     * @param bool $allowed does this rule's check result allow proceeding?
+     * @param string $message check result's feedback message
+     * @param array $validationmessages check result's validation messages to be displayed appropriately
+     */
     public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
         $this->allowed = $allowed;
         $this->message = $message;
@@ -41,14 +55,29 @@ class rule_check_result {
         $this->validationmessages = $validationmessages;
     }
 
+    /**
+     * Get allowance to proceed based on this check result
+     *
+     * @return bool
+     */
     public function get_allowed(): bool {
         return $this->allowed;
     }
 
+    /**
+     * Get this check result's feedback message
+     *
+     * @return string
+     */
     public function get_message(): string {
         return $this->message;
     }
 
+    /**
+     * Get this check result's form validation messages
+     *
+     * @return array|string[]
+     */
     public function get_validation_messages(): array {
         return $this->validationmessages;
     }

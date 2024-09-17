@@ -18,11 +18,14 @@ namespace registrationrule_hcaptcha;
 
 use coding_exception;
 use MoodleQuickForm;
+use stdClass;
 use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**
- * Reference implementation of a registration rule subplugin.
+ * Registration rule restricting registrations based on hCaptcha detecting human and automated threats.
+ *
+ * For further information see {@link https://www.hcaptcha.com/}
  *
  * @package   registrationrule_hcaptcha
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
@@ -33,11 +36,18 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    public $config = [];
+    /** @var stdClass rule instance configuration */
+    private $config;
 
+    /** Names of fields added to the rule's settings form */
     const SETTINGS_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
 
-    public function __construct($config) {
+    /**
+     * Constructor
+     *
+     * @param stdClass $config rule instance configuration
+     */
+    public function __construct(stdClass $config) {
         $this->config = $config;
     }
 

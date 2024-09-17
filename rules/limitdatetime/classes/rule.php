@@ -35,10 +35,17 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    public StdClass $config;
+    /** @var stdClass rule instance configuration */
+    private stdClass $config;
 
+    /** Names of fields added to the rule's settings form */
     const SETTINGS_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
 
+    /**
+     * Constructor
+     *
+     * @param stdClass $config rule instance configuration
+     */
     public function __construct($config) {
         $this->config = $config;
     }

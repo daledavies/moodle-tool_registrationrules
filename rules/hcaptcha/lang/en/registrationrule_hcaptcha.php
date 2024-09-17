@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for registrationrule_nope registration rule psublugin.
+ * Strings for registrationrule_hcaptcha registration rule subplugin.
  *
  * @package   registrationrule_hcaptcha
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}

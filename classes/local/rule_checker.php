@@ -16,7 +16,10 @@
 
 namespace tool_registrationrules\local;
 
-use core_component;
+use coding_exception;
+use dml_exception;
+use MoodleQuickForm;
+use stdClass;
 
 /**
  * Facilitate exicution of registration rule plugins and enumeration/reposrting
@@ -34,24 +37,49 @@ use core_component;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_checker {
+    /**
+     * @var static[] rule checker singleton instances for each rule checker type instantiated
+     */
     private static array $instances = [];
 
     /**
      * @var array<rule\rule_interface>
      */
     private array $rules;
+
+    /**
+     * @var array rule check results
+     */
     private array $results;
+
+    /**
+     * @var stdClass|null site-wide config for tool_registrationrules
+     */
     private ?\stdClass $adminconfig = null;
 
+    /**
+     * @var bool (at least) some checks ran already
+     */
     private bool $checked = false;
 
-    public static function get_instance($type): rule_checker {
+    /**
+     * Get singleton rule checker instance (given the specified type).
+     *
+     * @param string $type rule checker instance type to return
+     * @return rule_checker
+     */
+    public static function get_instance(string $type): rule_checker {
         if (!isset(self::$instances[$type])) {
             self::$instances[$type] = new rule_checker();
         }
         return self::$instances[$type];
     }
 
+    /**
+     * Rule checker constructor
+     *
+     * @throws dml_exception
+     */
     private function __construct() {
         $this->clear();
         $this->adminconfig = $this->get_admin_config();
@@ -78,7 +106,12 @@ class rule_checker {
         }
     }
 
-    public function clear() {
+    /**
+     * Remove all rules from object, empty previous results and reset checked status.
+     *
+     * @return void
+     */
+    public function clear(): void {
         $this->rules = [];
         $this->results = [];
         $this->checked = false;
@@ -87,9 +120,10 @@ class rule_checker {
     /**
      * Load and cache the admin config for this module.
      *
-     * @return stdClass the plugin config
+     * @return stdClass|null the plugin config
+     * @throws dml_exception
      */
-    public function get_admin_config() {
+    public function get_admin_config(): ?stdClass {
         if ($this->adminconfig) {
             return $this->adminconfig;
         }
@@ -97,11 +131,21 @@ class rule_checker {
         return $this->adminconfig;
     }
 
+    /**
+     * Return rule checker's rule objects.
+     *
+     * @return rule\rule_interface[]
+     */
     public function get_rules(): array {
         return $this->rules;
     }
 
-    public function run_pre_data_checks() {
+    /**
+     * Run all checks applicable before user input
+     *
+     * @return void
+     */
+    public function run_pre_data_checks(): void {
         foreach ($this->rules as $instance) {
             $result = $instance->pre_data_check();
 
@@ -113,7 +157,13 @@ class rule_checker {
         $this->checked = true;
     }
 
-    public function run_post_data_checks($data) {
+    /**
+     * Run all rules' checks in need of user input
+     *
+     * @param array $data the data array from submitted form values.
+     * @return void
+     */
+    public function run_post_data_checks(array $data): void {
         foreach ($this->rules as $instance) {
             $result = $instance->post_data_check($data);
 
@@ -126,18 +176,30 @@ class rule_checker {
         $this->checked = true;
     }
 
-    public function extend_form($mform) {
+    /**
+     * Let configured rule instances extend the user signup form.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_form(MoodleQuickForm $mform): void {
         foreach ($this->rules as $instance) {
             $instance->extend_form($mform);
         }
     }
 
+    /**
+     * Return if registration is allowed.
+     *
+     * @return bool true if registration is allowed, false if registration should be blocked
+     * @throws coding_exception
+     */
     public function is_registration_allowed(): bool {
         if (!($this->adminconfig->enable ?? 0)) {
             return true;
         }
         if (!$this->checked) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 'rule_checker::check() must be called before using rule_checker::is_registration_allowed()',
             );
         }
@@ -151,15 +213,23 @@ class rule_checker {
         return true;
     }
 
+    /**
+     * Return the resulting messages from each check.
+     *
+     * TODO: improve documentation and discern from get_validation_messages()
+     *
+     * @return string[]
+     * @throws coding_exception
+     */
     public function get_messages(): array {
         if (!$this->checked) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 'rule_checker::check() must be called before using rule_checker::get_messages()',
             );
         }
         $messages = [];
         foreach ($this->results as $result) {
-            // If not allowed add error message.
+            // If not allowed, add an error message.
             if (!$result->get_allowed()) {
                 continue;
             }
@@ -168,9 +238,17 @@ class rule_checker {
         return $messages;
     }
 
+    /**
+     * Return the aggregated messages from each check, to be displayed as validation errors.
+     *
+     * TODO: improve documentation and discern from get_messsages()
+     *
+     * @return array
+     * @throws coding_exception
+     */
     public function get_validation_messages(): array {
         if (!$this->checked) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 'rule_checker::check() must be called before using rule_checker::get_validation_messages()',
             );
         }
@@ -196,7 +274,13 @@ class rule_checker {
         return $messages;
     }
 
-    public function add_error_field($mform) {
+    /**
+     * Inject a form element so we can append information about failed checks to it as validation errors.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function add_error_field(MoodleQuickForm $mform) {
         $mform->addElement('static', 'tool_registrationrules_errors');
     }
 }

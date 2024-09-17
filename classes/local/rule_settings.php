@@ -16,6 +16,8 @@
 
 namespace tool_registrationrules\local;
 
+use dml_exception;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
@@ -35,7 +37,14 @@ class rule_settings extends \moodleform {
     /** @var array $customfields the registrationrule type's added form fields' names */
     protected array $customfields = [];
 
-    public static function from_rule_instance(int $instanceid) {
+    /**
+     * Construct the form object from rule instance's id
+     *
+     * @param int $instanceid rule instance's database id
+     * @return static
+     * @throws dml_exception
+     */
+    public static function from_rule_instance(int $instanceid): static {
         global $DB;
 
         $instancerecord = $DB->get_record('tool_registrationrules', ['id' => $instanceid]);
@@ -52,6 +61,37 @@ class rule_settings extends \moodleform {
         return $form;
     }
 
+    /**
+     * The constructor function calls the abstract function definition() and it will then
+     * process, clean and attempt to validate incoming data.
+     *
+     * It will call your custom validate method to validate data and will also check any rules
+     * you have specified in definition using addRule
+     *
+     * The name of the form (id attribute of the form) is automatically generated depending on
+     * the name you gave the class extending moodleform.
+     *
+     * @param string $type rule instance type
+     * @param int|null $instanceid rule instance id (when updating existing rule instance)
+     *                             TODO: implement proper usage of $instanceid here during instance updates!
+     * @param mixed $action the action attribute for the form. If left empty, defaults to auto-detect the current url.
+     *                      If a moodle_url object then outputs params as hidden variables.
+     * @param mixed $customdata if your form definition method needs access to data such as $course,  $cm, etc. to
+     *                          construct the form definition then pass it in this array.
+     * @param string $method if you set this to anything other than 'post' then _GET and _POST will
+     *                       be merged and used as incoming data to the form.
+     * @param string $target target frame for form submission. You will rarely use this. Don't use
+     *                       it if you don't need to as the target attribute is deprecated in xhtml strict.
+     * @param mixed $attributes you can pass a string of HTML attributes here or an array.
+     *                          Special attribute 'data-random-ids' will randomise generated elements' id attributes.
+     *                          This is necessary when there are several forms on the same page.
+     *                          Special attribute 'data-double-submit-protection' set to 'off' will turn off
+     *                          double-submit protection JavaScript - this may be necessary if your form sends
+     *                          downloadable files in response to a submit-button, and can't call
+     *                          \core_form\util::form_download_complete();
+     * @param bool $editable
+     * @param array $ajaxformdata Forms submitted via ajax, must pass their data here, instead of relying on _GET and _POST.
+     */
     public function __construct(
         string $type,
         ?int $instanceid = null,
@@ -70,7 +110,7 @@ class rule_settings extends \moodleform {
     /**
      * Form definition.
      */
-    protected function definition() {
+    protected function definition(): void {
         $mform = $this->_form;
 
         // Quick and dirty hack to get our types/parameters...
