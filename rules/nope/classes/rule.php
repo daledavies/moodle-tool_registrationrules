@@ -16,9 +16,9 @@
 
 namespace registrationrule_nope;
 
-use tool_registrationrules\local\rule\configurable;
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**

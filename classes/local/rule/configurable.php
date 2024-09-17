@@ -16,6 +16,8 @@
 
 namespace tool_registrationrules\local\rule;
 
+use MoodleQuickForm;
+
 /**
  * Configurable registration rules have to implement this interface.
  *
@@ -24,5 +26,11 @@ namespace tool_registrationrules\local\rule;
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later */
 interface configurable {
-    public static function extend_settings_form($mform);
+    /**
+     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public static function extend_settings_form(MoodleQuickForm $mform): void;
 }

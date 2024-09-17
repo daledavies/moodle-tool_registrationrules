@@ -19,6 +19,7 @@ namespace registrationrule_limitdatetime;
 use coding_exception;
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -33,8 +34,8 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base {
-    public \StdClass $config;
+class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
+    public StdClass $config;
 
     const SETTINGS_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
 
