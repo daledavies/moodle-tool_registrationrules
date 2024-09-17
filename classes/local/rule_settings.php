@@ -16,8 +16,6 @@
 
 namespace tool_registrationrules\local;
 
-use tool_registrationrules\local\rule\rule_interface;
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
