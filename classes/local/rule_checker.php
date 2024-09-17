@@ -99,7 +99,7 @@ class rule_checker {
             }
             $ruleinstance = new $pluginrule($instance);
             if (!$ruleinstance instanceof rule\rule_base) {
-                debugging("Rule $ruleplugin does not extend rule_base", DEBUG_DEVELOPER);
+                debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
                 continue;
             }
             $this->rules[] = $ruleinstance;
