@@ -48,6 +48,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
      */
     public function __construct($config) {
         $this->config = $config;
+        parent::__construct($config);
     }
 
     /**
