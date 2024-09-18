@@ -28,3 +28,4 @@
 
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
 $string['pluginname'] = 'Disposable emails rule';
+$string['registrationrule:instance:name'] = 'Disposable emails';

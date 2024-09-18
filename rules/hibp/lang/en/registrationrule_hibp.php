@@ -27,4 +27,5 @@
  */
 
 $string['pluginname'] = 'Have I been pwned?!';
+$string['registrationrule:instance:name'] = 'Have I been pwned';
 $string['resultmessage'] = 'Sorry, your password was found in a data breach.';

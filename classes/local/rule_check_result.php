@@ -42,7 +42,7 @@ class rule_check_result {
     /**
      * Rule check result constructor
      *
-     * TODO: add score!
+     * TODO: add $score, get_score() etc
      *
      * @param bool $allowed does this rule's check result allow proceeding?
      * @param string $message check result's feedback message
@@ -51,7 +51,6 @@ class rule_check_result {
     public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
         $this->allowed = $allowed;
         $this->message = $message;
-        $this->score = $score;
         $this->validationmessages = $validationmessages;
     }
 

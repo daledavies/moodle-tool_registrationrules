@@ -116,9 +116,12 @@ class rule_settings extends \moodleform {
         // Quick and dirty hack to get our types/parameters...
         if ($addruletype = optional_param('addruletype', false, PARAM_ALPHANUM)) {
             $mform->addElement('hidden', 'addruletype', $addruletype);
+            $mform->setType('addruletype', PARAM_ALPHANUM);
             $mform->addElement('hidden', 'type', $addruletype);
+            $mform->setType('type', PARAM_ALPHANUM);
         }
         $mform->addElement('hidden', 'id', optional_param('id', 0, PARAM_INT));
+        $mform->setType('id', PARAM_INT);
 
         $mform->addElement(
             'selectyesno',

@@ -298,7 +298,6 @@ class rule_instances_controller implements renderable, \templatable {
         $instance = (object)[
             'type' => $formdata->type,
             'enabled' => $formdata->enabled,
-            'sortorder' => $formdata->sortorder,
             'name' => $formdata->name,
             'description' => $formdata->description,
             'points' => $formdata->points,
