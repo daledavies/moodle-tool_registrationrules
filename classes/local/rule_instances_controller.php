@@ -66,7 +66,7 @@ class rule_instances_controller implements renderable, \templatable {
      * Get the rule instance records from the DB.
      *
      * @return array Array of rule instance DB records.
-    */
+     */
     public function get_rule_instance_records(): array {
         return $this->ruleinstances;
     }
