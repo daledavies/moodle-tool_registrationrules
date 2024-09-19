@@ -31,42 +31,55 @@ namespace tool_registrationrules\local;
  */
 class rule_check_result {
     /** @var bool true if this result does allow the protected action (e.g. registration) */
-    private bool $allowed;
+    private bool $allowed = false;
 
-    /** @var string feedback message to be returned based on check's outcome */
-    private string $feedbackmessage;
+    /** @var string|null feedback message to be returned based on check's outcome */
+    private ?string $feedbackmessage = null;
 
     /** @var int score given to this result */
-    private int $score;
+    private int $score = 0;
 
     /** @var string[] validation messages to be displayed in the form based on check's outcome */
-    private array $validationmessages;
+    private array $validationmessages = [];
 
     /**
-     * Rule check result constructor
+     * Set allowed property.
      *
-     * TODO: add $score, get_score() etc
-     *
-     * @param bool $allowed does this rule's check result allow proceeding?
-     * @param int $score check result's score
-     * @param string $feedbackmessage check result's feedback message
-     * @param array $validationmessages check result's validation messages to be displayed appropriately
+     * @param bool $value
+     * @return void
      */
-    public function __construct(
-        bool $allowed = false,
-        int $score = 100,
-        string $feedbackmessage = null,
-        array $validationmessages = [],
-    ) {
-        $this->allowed = $allowed;
-        $this->feedbackmessage = $feedbackmessage;
-        $this->score = $score;
-        $this->validationmessages = $validationmessages;
+    public function set_allowed(bool $value): void {
+        $this->allowed = $value;
+    }
 
-        if ($this->score > 100) {
-            debugging('Score must not be greater than 100 and will be set to 100 now');
-            $this->score = 100;
-        }
+    /**
+     * Set feedback message.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function set_feedback_message(string $message): void {
+        $this->feedbackmessage = $message;
+    }
+
+    /**
+     * Set score.
+     *
+     * @param int $score
+     * @return void
+     */
+    public function set_score(int $score): void {
+        $this->score = $score;
+    }
+
+    /**
+     * Set validation messages.
+     *
+     * @param array $messages
+     * @return void
+     */
+    public function set_validation_messages(array $messages): void {
+        $this->validationmessages = $messages;
     }
 
     /**

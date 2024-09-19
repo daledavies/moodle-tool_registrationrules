@@ -191,6 +191,8 @@ class rule_checker {
     /**
      * Return if registration is allowed.
      *
+     * TODO: Implement the "invert score feature".
+     *
      * @return bool true if registration is allowed, false if registration should be blocked
      * @throws coding_exception
      */
@@ -204,10 +206,18 @@ class rule_checker {
             );
         }
 
+        // Get a total of all points returned from rule checks.
+        $totalpoints = 0;
         foreach ($this->results as $result) {
-            if (!$result->get_allowed()) {
-                return false;
+            if ($result->get_allowed()) {
+                continue;
             }
+            $totalpoints += $result->get_score();
+        }
+        // If the total of all points returned from rule checks is greater
+        // than the maximum allowed points then registration is not allowed.
+        if ($totalpoints >= $this->adminconfig->maxpoints) {
+            return false;
         }
 
         return true;
