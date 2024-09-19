@@ -58,18 +58,43 @@ class rule extends rule_base implements rule_interface {
 
         $email = $data['email'];
 
-        if (strpos($email, '@') === false) {
-            return new rule_check_result(true, 'Invalid email address', 0);
+        // Proper validation for email addresses should be handled by the
+        // form instance, but we'll check here anyway and return null if this
+        // isn't actually an email address.
+        if (validate_email($email) === false) {
+            return null;
         }
 
+        // Get just the domain part of the user's email address.
         $domain = $this->extract_email_domain($email);
 
+        // Get an instance of list_manager so we can begin checking the user's
+        // email domain against a list of disposable email domains.
         $listmanager = new list_manager();
-        $blockeddomains = $listmanager->get_blocked_domains();
-        if (in_array($domain, $blockeddomains)) {
-            return new rule_check_result(false, '', ['email' => 'Email domain is on a disposable email domain list.']);
+
+        // Retrieve a list of disposable email domains, if anything goes wrong while
+        // retrieving the list then return a fail with the configured fallback points.
+        try {
+            $blockeddomains = $listmanager->get_blocked_domains();
+        } catch (moodle_exception) {
+            return $this->deny(
+                score: $this->config->fallbackpoints,
+                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_disposableemails')
+            );
         }
-        return new rule_check_result(true);
+
+        // If we get a list of domains then check the provided domain and
+        // return a failure with the configured score if the email domain is
+        // on the list.
+        if (in_array($domain, $blockeddomains)) {
+            return $this->deny(
+                score: $this->config->points,
+                validationmessages: ['email' => get_string('failuremessage', 'registrationrule_disposableemails')],
+            );
+        }
+
+        // If the email domain is not on the list the return a success result.
+        return $this->allow();
     }
 
     /**
@@ -80,6 +105,7 @@ class rule extends rule_base implements rule_interface {
      */
     private function extract_email_domain(string $email) {
         $parts = explode('@', $email);
+
         return end($parts);
     }
 }
