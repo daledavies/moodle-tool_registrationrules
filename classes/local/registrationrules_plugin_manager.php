@@ -14,25 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace tool_registrationrules\local;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/adminlib.php');
+
 /**
  * Facilitate management of registration rule plugins.
  *
- * @package    tool_registrationrules
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace tool_registrationrules\local;
-
-require_once $CFG->libdir.'/adminlib.php';
-
-/**
- * Class that handles the display and configuration of the list of submission plugins.
- *
  * @package   tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
+ * @author    Philipp Hager <philipp.hager@edaktik.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class registrationrules_plugin_manager {
-
     /** @var object the url of the manage submission plugin page */
     private $pageurl;
     /** @var string any error from the current action */
@@ -91,17 +92,22 @@ class registrationrules_plugin_manager {
         $url = $this->pageurl;
 
         if ($action === 'delete') {
-            $url = \core_plugin_manager::instance()->get_uninstall_url($this->subtype.'_'.$plugin, 'manage');
+            $url = \core_plugin_manager::instance()->get_uninstall_url($this->subtype . '_' . $plugin, 'manage');
             if (!$url) {
                 return '&nbsp;';
             }
             return \html_writer::link($url, get_string('uninstallplugin', 'core_admin'));
         }
 
-        return $OUTPUT->action_icon(new \moodle_url($url,
-                ['action' => $action, 'plugin' => $plugin, 'sesskey' => sesskey()]),
-                new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
-                null, ['title' => $alt]) . ' ';
+        return $OUTPUT->action_icon(
+            new \moodle_url(
+                $url,
+                ['action' => $action, 'plugin' => $plugin, 'sesskey' => sesskey()],
+            ),
+            new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+            null,
+            ['title' => $alt]
+        ) . ' ';
     }
 
     /**
@@ -117,11 +123,16 @@ class registrationrules_plugin_manager {
         $this->view_header();
         $table = new \flexible_table($this->subtype . 'pluginsadminttable');
         $table->define_baseurl($this->pageurl);
-        $table->define_columns(['pluginname', 'version', 'hideshow', 'order',
-                'settings', 'uninstall']);
-        $table->define_headers([get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
-                get_string('version'), get_string('hideshow', 'tool_registrationrules'),
-                get_string('order'), get_string('settings'), get_string('uninstallplugin', 'core_admin')]);
+        $headers = [
+            'pluginname' => get_string($this->subtype . 'pluginname', 'tool_registrationrules'),
+            'version' => get_string('version'),
+            'hideshow' => get_string('hideshow', 'tool_registrationrules'),
+            'order' => get_string('order'),
+            'settings' => get_string('settings'),
+            'uninstall' => get_string('uninstallplugin', 'core_admin'),
+        ];
+        $table->define_columns(array_keys($headers));
+        $table->define_headers(array_values($headers));
         $table->set_attribute('id', $this->subtype . 'plugins');
         $table->set_attribute('class', 'admintable generaltable');
         $table->setup();
@@ -156,15 +167,27 @@ class registrationrules_plugin_manager {
             }
             $row[] = $movelinks;
 
-            $exists = file_exists($CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php');
+            $exists = file_exists(
+                $CFG->dirroot . '/admin/tool/registrationrules/' . $shortsubtype . '/' . $plugin . '/settings.php',
+            );
             if ($row[1] != '' && $exists) {
-                $row[] = \html_writer::link(new \moodle_url('/admin/settings.php',
-                        ['section' => $this->subtype . '_' . $plugin]), get_string('settings'));
+                $row[] = \html_writer::link(
+                    new \moodle_url(
+                        '/admin/settings.php',
+                        ['section' => $this->subtype . '_' . $plugin]
+                    ),
+                    get_string('settings'),
+                );
             } else {
                 $row[] = '&nbsp;';
             }
 
-            $row[] = $this->format_icon_link('delete', $plugin, 't/delete', get_string('uninstallplugin', 'core_admin'));
+            $row[] = $this->format_icon_link(
+                'delete',
+                $plugin,
+                't/delete',
+                get_string('uninstallplugin', 'core_admin'),
+            );
 
             $table->add_data($row, $class);
         }

@@ -17,9 +17,16 @@
 /**
  * Registration rules admin tool lib.php
  *
- * @package    tool_registrationrules
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
+ * @author    Philipp Hager <philipp.hager@edaktik.at>
+ * @author    Lukas MuLu Müller <info@mulu.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_registrationrules\local\rule_checker;
@@ -28,6 +35,8 @@ use tool_registrationrules\local\rule_checker;
  * Example of use in callback without passing data to rule_checker::check().
  *
  * @return void
+ * @throws coding_exception
+ * @throws moodle_exception
  */
 function tool_registrationrules_pre_signup_requests() {
     $rulechecker = rule_checker::get_instance('signup_form');
@@ -36,14 +45,14 @@ function tool_registrationrules_pre_signup_requests() {
     if ($rulechecker->is_registration_allowed()) {
         return;
     }
-    
+
     $messages = implode('<br>', $rulechecker->get_messages());
     \core\notification::warning($messages);
     redirect(
         new moodle_url(
             '/admin/tool/registrationrules/error.php',
-            ['ver' =>'before']
-        )
+            ['ver' => 'before'],
+        ),
     );
     exit;
 }
@@ -53,16 +62,32 @@ function tool_registrationrules_pre_signup_requests() {
  *
  * @param MoodleQuickForm $mform
  * @return void
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function tool_registrationrules_extend_signup_form($mform): void {
-    $mform->insertElementBefore($mform->createElement('static', 'registrationrules_information',
-    get_string('pluginname', 'tool_registrationrules'), get_config('tool_registrationrules', 'registrationpagemessage')), 'username');
-    $rule_checker = rule_checker::get_instance('signup_form');
-    $rule_checker->add_error_field($mform);
-    $rule_checker->extend_form($mform);
+    $mform->insertElementBefore(
+        $mform->createElement(
+            'static',
+            'registrationrules_information',
+            get_string('pluginname', 'tool_registrationrules'),
+            get_config('tool_registrationrules', 'registrationpagemessage'),
+        ),
+        'username',
+    );
+    $rulechecker = rule_checker::get_instance('signup_form');
+    $rulechecker->add_error_field($mform);
+    $rulechecker->extend_form($mform);
 }
 
-function tool_registrationrules_validate_extend_signup_form($data) {
+/**
+ * Inject our own rule instance based validation into the signup form.
+ *
+ * @param array $data
+ * @return string[]
+ * @throws coding_exception
+ */
+function tool_registrationrules_validate_extend_signup_form($data): array {
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_post_data_checks($data);
 
@@ -71,6 +96,4 @@ function tool_registrationrules_validate_extend_signup_form($data) {
     }
 
     return $rulechecker->get_validation_messages();
-    
-    return ['tool_registrationrules_errors' => implode('<br />', $errors)];
 }

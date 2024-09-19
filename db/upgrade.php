@@ -15,14 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * upgrade upgrade.php
+ * Upgrade steps
  *
  * @package tool_registrationrules
- * @copyright 2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Execute steps to upgrade the database to the expected state.
+ *
+ * @param int $oldversion the currently installed plugin version
+ * @return void
+ * @throws ddl_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
+ */
 function xmldb_tool_registrationrules_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
@@ -58,4 +70,3 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024090302, 'tool', 'registrationrules');
     }
 }
-

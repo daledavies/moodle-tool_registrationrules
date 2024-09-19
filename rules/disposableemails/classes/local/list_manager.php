@@ -17,14 +17,30 @@
 namespace registrationrule_disposableemails\local;
 
 use context_system;
-use core\exception\moodle_exception;
-use curl;
+use dml_exception;
+use moodle_exception;
 use file_exception;
 
+/**
+ * Class managing lists of restricted domains (for disposable mail address restriction).
+ *
+ * @package   registrationrule_disposableemails
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class list_manager {
-
+    /** @var array files table record */
     private $filerecord;
 
+    /**
+     * List manager constructor
+     *
+     * @throws dml_exception
+     */
     public function __construct() {
         $this->filerecord = [
             'contextid' => context_system::instance()->id,
@@ -36,6 +52,13 @@ class list_manager {
         ];
     }
 
+    /**
+     * Returns array of blocked domains, not to be accepted as user email address domains.
+     *
+     * @return string[]
+     * @throws file_exception
+     * @throws moodle_exception
+     */
     public function get_blocked_domains() {
         if (!$this->list_file_exists()) {
             $this->download_list();
@@ -57,26 +80,36 @@ class list_manager {
     }
 
     /**
+     * Fetch the up-to-date list of disposable email domains from a public GitHub repository and store it here.
+     *
      * @return void
      * @throws file_exception
      */
     public function download_list() {
-        $url = 'https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf';
+        $url = 'https://raw.githubusercontent.com/' .
+            'disposable-email-domains/disposable-email-domains/' . // User and repository.
+            'master/' . // Branch.
+            'disposable_email_blocklist.conf'; // File to fetch.
 
         $fs = get_file_storage();
         if ($this->list_file_exists()) {
-            $fs->delete_area_files($this->filerecord['contextid'], $this->filerecord['component'], $this->filerecord['filearea'], $this->filerecord['itemid']);
+            $fs->delete_area_files(
+                $this->filerecord['contextid'],
+                $this->filerecord['component'],
+                $this->filerecord['filearea'],
+                $this->filerecord['itemid'],
+            );
         }
 
         $fs->create_file_from_url(
             $this->filerecord,
-            $url
+            $url,
         );
-
     }
 
     /**
-     * @param \file_storage|null $fs
+     * Return if a list of disposable mail address-domains is currently stored in Moodle.
+     *
      * @return bool
      */
     private function list_file_exists(): bool {
@@ -87,8 +120,7 @@ class list_manager {
             $this->filerecord['filearea'],
             $this->filerecord['itemid'],
             $this->filerecord['filepath'],
-            $this->filerecord['filename']
+            $this->filerecord['filename'],
         );
     }
-
 }

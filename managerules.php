@@ -17,14 +17,21 @@
 /**
  * Sub plugin management UI for tool_registrationrules.
  *
- * @package    tool_registrationrules
- * @subpackage registrationrules
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Michael Aherne <michael.aherne@strath.ac.uk>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../../config.php');
 
 use tool_registrationrules\local\registrationrules_plugin_manager;
+
+require_admin();
 
 $subtype = required_param('subtype', PARAM_PLUGIN);
 $action = optional_param('action', null, PARAM_PLUGIN);
