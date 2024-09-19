@@ -34,7 +34,10 @@ class rule_check_result {
     private bool $allowed;
 
     /** @var string feedback message to be returned based on check's outcome */
-    private string $message;
+    private string $feedbackmessage;
+
+    /** @var int score given to this result */
+    private int $score;
 
     /** @var string[] validation messages to be displayed in the form based on check's outcome */
     private array $validationmessages;
@@ -45,13 +48,25 @@ class rule_check_result {
      * TODO: add $score, get_score() etc
      *
      * @param bool $allowed does this rule's check result allow proceeding?
-     * @param string $message check result's feedback message
+     * @param int $score check result's score
+     * @param string $feedbackmessage check result's feedback message
      * @param array $validationmessages check result's validation messages to be displayed appropriately
      */
-    public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
+    public function __construct(
+        bool $allowed = false,
+        int $score = 100,
+        string $feedbackmessage = null,
+        array $validationmessages = [],
+    ) {
         $this->allowed = $allowed;
-        $this->message = $message;
+        $this->feedbackmessage = $feedbackmessage;
+        $this->score = $score;
         $this->validationmessages = $validationmessages;
+
+        if ($this->score > 100) {
+            debugging('Score must not be greater than 100 and will be set to 100 now');
+            $this->score = 100;
+        }
     }
 
     /**
@@ -66,10 +81,19 @@ class rule_check_result {
     /**
      * Get this check result's feedback message
      *
-     * @return string
+     * @return ?string
      */
-    public function get_message(): string {
-        return $this->message;
+    public function get_feedback_message(): ?string {
+        return $this->feedbackmessage;
+    }
+
+    /**
+     * Get the score associated with this check result.
+     *
+     * @return int
+     */
+    public function get_score(): int {
+        return $this->score;
     }
 
     /**
