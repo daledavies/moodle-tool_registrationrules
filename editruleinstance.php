@@ -36,7 +36,7 @@ require_login();
 $ruleinstanceid = optional_param('id', 0, PARAM_INT);
 $addruletype = optional_param('addruletype', null, PARAM_ALPHANUM);
 
-$PAGE->set_url('/admin/tool/registrationrules/edit_rule_instance.php');
+$PAGE->set_url('/admin/tool/registrationrules/editruleinstance.php');
 $PAGE->set_context(context_system::instance());
 
 if (empty($ruleinstanceid) && empty($addruletype)) {
