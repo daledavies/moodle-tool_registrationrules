@@ -214,7 +214,7 @@ class rule_instances_controller implements renderable, \templatable {
             $actions = new action_menu([
                 new \action_menu_link_primary(
                     url: new \moodle_url(
-                        '/admin/tool/registrationrules/edit_rule_instance.php',
+                        '/admin/tool/registrationrules/editruleinstance.php',
                         [
                             'id' => $ruleinstance->id,
                         ],
@@ -348,7 +348,7 @@ class rule_instances_controller implements renderable, \templatable {
         foreach (array_keys($ruletypes) as $ruleplugin) {
             $types[] = (object)[
                 'addurl' => new \moodle_url(
-                    '/admin/tool/registrationrules/edit_rule_instance.php',
+                    '/admin/tool/registrationrules/editruleinstance.php',
                     ['addruletype' => $ruleplugin],
                 ),
                 'name' => $ruleplugin,
