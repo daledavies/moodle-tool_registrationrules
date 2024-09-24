@@ -44,8 +44,11 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_instances_controller implements renderable, \templatable {
-    /** @var stdClass[] rule instance records from the database, sorted by "sortorder" */
+    /** @var stdClass[] external representation of rule instance records, sorted by "sortorder" */
     protected $ruleinstances = [];
+
+    /** @var stdClass[] internal representation of $ruleinstances (used for tracking changes) */
+    protected $ruleinstancesinternal = [];
 
     /**
      * Constructor
@@ -54,80 +57,125 @@ class rule_instances_controller implements renderable, \templatable {
      */
     public function __construct() {
         global $DB;
-
+        // Get a sorted list of rule instance records from the database.
         $instancerecords = $DB->get_records(
             table: 'tool_registrationrules',
             sort: 'sortorder ASC',
         );
-        $this->ruleinstances = $instancerecords;
+        $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
 
     /**
-     * Get the rule instance records from the DB.
+     * Commit all changes to rule instances to the database, sorts the new
+     * list of rule instance records and resets the internal representation.
      *
-     * @return array Array of rule instance DB records.
+     * @return void
+     */
+    protected function commit(): void {
+        global $DB;
+        // We'll possibly be committing a number of new records and updates
+        // to the databse so best to create a new transaction.
+        $transaction = $DB->start_delegated_transaction();
+        // Iterate over the internal rule insatnces list, determine if we have
+        // anything to commit and perform the appropriate database operation.
+        foreach ($this->ruleinstancesinternal as $internal) {
+            // New instances.
+            if (!isset($internal->id)) {
+                $internal->id = $DB->insert_record('tool_registrationrules', $internal);
+                $this->ruleinstances[$internal->id] = $internal;
+            }
+            // Modified instances.
+            if (isset($internal->modified)) {
+                unset($internal->modified);
+                $DB->update_record('tool_registrationrules', $internal);
+                $this->ruleinstances[$internal->id] = $internal;
+            }
+            // Deleted instances.
+            if (isset($internal->deleted)) {
+                $DB->delete_records('tool_registrationrules', ['id' => $internal->id]);
+                unset($this->ruleinstances[$internal->id]);
+            }
+        }
+        // Signify that we are happy for the changes within this transaction to be
+        // committed when ready.
+        $transaction->allow_commit();
+        // Reorder array of ruleinstances based on each instance's sortorder.
+        uasort($this->ruleinstances, function($a, $b) {
+            return ($a->sortorder < $b->sortorder) ? -1 : 1;
+        });
+        // Reset the internal list of rule instances.
+        $this->ruleinstancesinternal = $this->ruleinstances;
+    }
+
+    /**
+     * Return an up to date array of rule instances in teh correct order.
+     *
+     * @return array Array of rule instance records.
      */
     public function get_rule_instance_records(): array {
         return $this->ruleinstances;
     }
 
     /**
-     * Add rule instance to database using submitted data from rule_settings form.
+     * Add a rule instance to the database using submitted data from rule_settings form.
      *
      * @param stdClass $formdata
      * @return void
-     * @throws dml_exception
      */
-    public function add_instance($formdata) {
-        global $DB;
-
+    public function add_instance(stdClass $formdata): void {
+        // Extract the standard rule config from the form and create a new
+        // instance record object.
         $instance = $this->extract_instancedata($formdata);
-        // Ugly hack to get a new sortorder value for now. TODO: fix!
-        $instance->sortorder = $DB->count_records('tool_registrationrules') + 1;
+        // Encode rule specific config data from the form and add to
+        // the instance record.
         $instance->other = $this->encode_instance_config($formdata);
-
-        $instance->id = $DB->insert_record('tool_registrationrules', $instance);
-
-        $this->ruleinstances[$instance->id] = $instance;
+        // Find the highest sortorder in the list of rule instances so far.
+        $highestsortorder = 0;
+        foreach ($this->ruleinstancesinternal as $i) {
+            if (!isset($i->deleted) && $i->sortorder > $highestsortorder) {
+                $highestsortorder = $i->sortorder;
+            }
+        }
+        // Increment the new instance's sortorder by 1 so it is added to
+        // the end of the list.
+        $instance->sortorder = $highestsortorder + 1;
+        // Add the new object to the internal list of rule instances and
+        // commit the update to the database.
+        $this->ruleinstancesinternal[] = $instance;
+        $this->commit();
     }
 
     /**
-     * Update rule instance in database using submitted rule_settings form's data
+     * Update a rule instance in the database using submitted rule_settings form's data.
      *
      * @param stdClass $formdata
      * @return void
-     * @throws dml_exception
      */
-    public function update_instance($formdata) {
-        global $DB;
-
-        $record = $DB->get_record('tool_registrationrules', ['id' => $formdata->id]);
-        $formdata->type = $record->type;
+    public function update_instance(stdClass $formdata): void {
+         $formdata->type = $this->ruleinstancesinternal[$formdata->id]->type;
         // Update default fields in record.
         foreach ($this->extract_instancedata($formdata) as $property => $value) {
             if ($property != 'type') {
-                $record->{$property} = $value;
+                $this->ruleinstancesinternal[$formdata->id]->{$property} = $value;
             }
         }
-
-        unset($record->timecreated);
-        unset($record->sortorder);
-        $record->other = $this->encode_instance_config($formdata);
-
-        $DB->update_record('tool_registrationrules', $record);
+        // Encode rule specific config data from the form and add to the instance record.
+        $this->ruleinstancesinternal[$formdata->id]->other = $this->encode_instance_config($formdata);
+        // Signify we have made a modification and commit the update to the database.
+        $this->ruleinstancesinternal[$formdata->id]->modified = true;
+        $this->commit();
     }
 
     /**
-     * Delete the rule instance with the given database id.
+     * Delete a rule instance with the given id.
      *
      * @param int $instanceid
      * @return void
-     * @throws dml_exception
      */
-    public function delete_instance(int $instanceid) {
-        global $DB;
-        $DB->delete_records('tool_registrationrules', ['id' => $instanceid]);
-        unset($this->ruleinstances[$instanceid]);
+    public function delete_instance(int $instanceid): void {
+        // Set the internal version of this record as deleted commit the update to the database.
+        $this->ruleinstancesinternal[$instanceid]->deleted = true;
+        $this->commit();
     }
 
     /**
@@ -137,13 +185,12 @@ class rule_instances_controller implements renderable, \templatable {
      *
      * @param int $instanceid
      * @return void
-     * @throws dml_exception
      */
-    public function enable_instance(int $instanceid) {
-        global $DB;
-
-        $DB->set_field('tool_registrationrules', 'enabled', 1, ['id' => $instanceid]);
-        $this->ruleinstances[$instanceid]->enabled = 1;
+    public function enable_instance(int $instanceid): void {
+        $this->ruleinstancesinternal[$instanceid]->enabled = 1;
+        // Signify we have made a modification and commit the update to the database.
+        $this->ruleinstancesinternal[$instanceid]->modified = true;
+        $this->commit();
     }
 
     /**
@@ -151,13 +198,12 @@ class rule_instances_controller implements renderable, \templatable {
      *
      * @param int $instanceid
      * @return void
-     * @throws dml_exception
      */
-    public function disable_instance(int $instanceid) {
-        global $DB;
-
-        $DB->set_field('tool_registrationrules', 'enabled', 0, ['id' => $instanceid]);
-        $this->ruleinstances[$instanceid]->enabled = 0;
+    public function disable_instance(int $instanceid): void {
+        $this->ruleinstancesinternal[$instanceid]->enabled = 0;
+        // Signify we have made a modification and commit the update to the database.
+        $this->ruleinstancesinternal[$instanceid]->modified = true;
+        $this->commit();
     }
 
     /**
@@ -199,12 +245,16 @@ class rule_instances_controller implements renderable, \templatable {
      * 1. No complex types - only stdClass, array, int, string, float, bool
      * 2. Any additional info required for the template is pre-calculated (e.g. capability checks).
      *
+     * TODO: Need to use a sesskey for all actions!
+     * TODO: Only add up icon if not at top of the list.
+     * TODO: Only add down icon if not at bottom of the list.
+     *
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return stdClass
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output): stdClass {
         $context = (object)[
             'instances' => [],
             'types' => $this->get_types_for_add_menu(),
@@ -292,13 +342,12 @@ class rule_instances_controller implements renderable, \templatable {
      * @param stdClass $formdata
      * @return stdClass
      */
-    private function extract_instancedata($formdata): stdClass {
+    private function extract_instancedata(stdClass $formdata): stdClass {
         global $USER;
 
         $instance = (object)[
             'type' => $formdata->type,
             'enabled' => $formdata->enabled,
-            'sortorder' => $formdata->sortorder,
             'name' => $formdata->name,
             'description' => $formdata->description,
             'points' => $formdata->points,
@@ -321,12 +370,14 @@ class rule_instances_controller implements renderable, \templatable {
      * @param stdClass $formdata
      * @return string
      */
-    public function encode_instance_config($formdata): string {
+    public function encode_instance_config(stdClass $formdata): string {
         $extradata = [];
-        // Class of our rule.
 
+        // Class of our rule.
         $class = 'registrationrule_' . $formdata->type . '\rule';
 
+        // Extract only the rule specific settings fields from the form
+        // data if the rule defines any.
         if (defined("$class::SETTINGS_FIELDS")) {
             foreach ($class::SETTINGS_FIELDS as $field) {
                 $extradata[$field] = $formdata->$field;
