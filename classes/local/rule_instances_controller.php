@@ -108,6 +108,47 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Find the rule instance ID that comes after the given instance in the sorted
+     * list of rule instances.
+     *
+     * @param int $instanceid
+     * @return int|null
+     */
+    protected function find_previous_instance_id(int $instanceid): ?int {
+        $previnstancekey = null;
+        // Iterate over the rule instances until we find a find an instance with a
+        // sortorder that is greater than or equal to the given instances sortorder
+        // value, keeping a record of the current iterations sortorder as we go.
+        foreach ($this->ruleinstancesinternal as $key => $instance) {
+            if ($instance->sortorder >= $this->ruleinstancesinternal[$instanceid]->sortorder) {
+                break;
+            }
+            $previnstancekey = $key;
+        }
+        // Return the key of the instance found during the last iteration.
+        return $previnstancekey;
+    }
+
+    /**
+     * Find the rule instance ID that comes before the given instance in the sorted
+     * list of rule instances.
+     *
+     * @param int $instanceid
+     * @return int|null
+     */
+    protected function find_next_instance_id(int $instanceid): ?int {
+        // Iterate over the rule instances, skipping all the one's that have
+        // a sortorder that is less than or equal to the given instance's sortorder.
+        foreach ($this->ruleinstancesinternal as $key => $instance) {
+            if ($instance->sortorder <= $this->ruleinstancesinternal[$instanceid]->sortorder) {
+                continue;
+            }
+            // Return the next instance's key.
+            return $key;
+        }
+    }
+
+    /**
      * Return an up to date array of rule instances in teh correct order.
      *
      * @return array Array of rule instance records.
@@ -212,31 +253,50 @@ class rule_instances_controller implements renderable, \templatable {
      * @param int $instanceid
      * @return void
      */
-    public function move_instance_up(int $instanceid) {
-        global $DB;
-
-        if ($instanceid === array_key_first($this->ruleinstances)) {
-            // No more moving up!
+    public function move_instance_up(int $instanceid): void {
+        // If the instance is already at the top of the list then do nothing.
+        if ($instanceid === array_key_first($this->ruleinstancesinternal)) {
             return;
         }
-
-        // TODO: finish!
+        // Find the array key of the previous instance in the list.
+        $previnstancekey = $this->find_previous_instance_id($instanceid);
+        // Swap the sortorder for the given rule instance and the previous instance.
+        if (isset($previnstancekey)) {
+            $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
+            $previnstancesortorder = $this->ruleinstancesinternal[$previnstancekey]->sortorder;
+            $this->ruleinstancesinternal[$instanceid]->sortorder = $previnstancesortorder;
+            $this->ruleinstancesinternal[$previnstancekey]->sortorder = $thisinstancesortorder;
+            // Signify we have made a modification and commit the update to the database.
+            $this->ruleinstancesinternal[$instanceid]->modified = true;
+            $this->ruleinstancesinternal[$previnstancekey]->modified = true;
+            $this->commit();
+        }
     }
 
     /**
      * Move the given rule instance a single position down.
+     *
      * @param int $instanceid
      * @return void
      */
-    public function move_instance_down(int $instanceid) {
-        global $DB;
-
+    public function move_instance_down(int $instanceid): void {
+        // If the instance is already at the bottom of the list then do nothing.
         if ($instanceid === array_key_last($this->ruleinstances)) {
-            // No more moving down!
             return;
         }
-
-        // TODO: finish!
+        // Find the array key of the next instance in the list.
+        $nextinstancekey = $this->find_next_instance_id($instanceid);
+        // Swap the sortorder for the given rule instance and the previous instance.
+        if (isset($nextinstancekey)) {
+            $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
+            $nextinstancesortorder = $this->ruleinstancesinternal[$nextinstancekey]->sortorder;
+            $this->ruleinstancesinternal[$instanceid]->sortorder = $nextinstancesortorder;
+            $this->ruleinstancesinternal[$nextinstancekey]->sortorder = $thisinstancesortorder;
+            // Signify we have made a modification and commit the update to the database.
+            $this->ruleinstancesinternal[$instanceid]->modified = true;
+            $this->ruleinstancesinternal[$nextinstancekey]->modified = true;
+            $this->commit();
+        }
     }
 
     /**
