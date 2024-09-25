@@ -26,5 +26,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['plugindescription'] = 'Check if user password is listed on Have I Been Pwnd';
 $string['pluginname'] = 'Have I been pwned?!';
 $string['resultmessage'] = 'Sorry, your password was found in a data breach.';

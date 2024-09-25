@@ -34,6 +34,22 @@ use moodle_url;
  */
 class registrationrule extends \core\plugininfo\base {
     /**
+     * Finds all enabled plugins, the result may include missing plugins.
+     *
+     * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
+     */
+    public static function get_enabled_plugins() {
+        global $CFG;
+
+        $order = (!empty($CFG->registrationrule_plugins_sortorder)) ? explode(',', $CFG->registrationrule_plugins_sortorder) : [];
+        if ($order) {
+            $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
+            $order = array_intersect($order, array_keys($plugins));
+        }
+        return array_combine($order, $order);
+    }
+
+    /**
      * Enable or disable a plugin.
      * When possible, the change will be stored into the config_log table, to let admins check when/who has modified it.
      *
@@ -42,24 +58,60 @@ class registrationrule extends \core\plugininfo\base {
      * as filters or repositories, might support more statuses than just enabled/disabled.
      *
      * @return bool Whether $pluginname has been updated or not.
-     * @throws dml_exception
      */
     public static function enable_plugin(string $pluginname, int $enabled): bool {
+        global $CFG;
+
         $haschanged = false;
-
-        $plugin = 'registrationrule_' . $pluginname;
-        $oldvalue = get_config($plugin, 'disabled');
-        $disabled = !$enabled;
-        // Only set value if there is no config setting or if the value is different from the previous one.
-        if ($oldvalue === false || ((bool) $oldvalue != $disabled)) {
-            set_config('disabled', $disabled, $plugin);
+        $plugins = [];
+        if (!empty($CFG->registrationrule_plugins_sortorder)) {
+            $plugins = array_flip(explode(',', $CFG->registrationrule_plugins_sortorder));
+        }
+        // Only set visibility if it's different from the current value.
+        if ($enabled && !array_key_exists($pluginname, $plugins)) {
+            $plugins[$pluginname] = $pluginname;
             $haschanged = true;
+        } else if (!$enabled && array_key_exists($pluginname, $plugins)) {
+            unset($plugins[$pluginname]);
+            $haschanged = true;
+        }
 
-            add_to_config_log('disabled', $oldvalue, $disabled, $plugin);
-            \core_plugin_manager::reset_caches();
+        if ($haschanged) {
+            add_to_config_log('registrationrule_plugins_sortorder', !$enabled, $enabled, $pluginname);
+            self::set_enabled_plugins(array_flip($plugins));
         }
 
         return $haschanged;
+    }
+
+    /**
+     * Set the registrationrule plugin as enabled or disabled
+     * When enabling tries to guess the sortorder based on default rank returned by the plugin.
+     *
+     * @param bool $newstate
+     */
+    public function set_enabled(bool $newstate = true) {
+        self::enable_plugin($this->name, $newstate);
+    }
+
+    /**
+     * Set the list of enabled registrationrule plugins in the specified sort order
+     * To be used when changing settings or in unit tests
+     *
+     * @param string|array $list list of plugin names without frankenstyle prefix - comma-separated string or an array
+     */
+    public static function set_enabled_plugins($list): void {
+        if (empty($list)) {
+            $list = [];
+        } else if (!is_array($list)) {
+            $list = explode(',', $list);
+        }
+        if ($list) {
+            $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
+            $list = array_intersect($list, array_keys($plugins));
+        }
+        set_config('registrationrule_plugins_sortorder', join(',', $list));
+        \core_plugin_manager::reset_caches();
     }
 
     /**
@@ -79,7 +131,66 @@ class registrationrule extends \core\plugininfo\base {
      * @return moodle_url
      * @throws moodle_exception
      */
-    public static function get_manage_url() {
-        return new \moodle_url('/admin/tool/registrationrules/managerules.php', ['subtype' => 'registrationrule']);
+    public static function get_manage_url(): \moodle_url {
+        return new \moodle_url('/admin/settings.php?section=manageregistrationrules');
+    }
+
+    /**
+     * Returns the node name used in admin settings menu for this plugin settings (if applicable)
+     *
+     * @return null|string node name or null if plugin does not create settings node (default)
+     */
+    public function get_settings_section_name(): string {
+        return 'toolregistrationrules' . $this->name;
+    }
+
+    /**
+     * Returns the URL of the plugin settings screen
+     *
+     * Null value means that the plugin either does not have the settings screen
+     * or its location is not available via this library.
+     *
+     * @return null|moodle_url
+     */
+    public function get_settings_url(): ?moodle_url {
+        $section = $this->get_settings_section_name();
+        if ($section === null) {
+            return null;
+        }
+
+        $settings = admin_get_root()->locate($section);
+        if ($settings && $settings instanceof \core_admin\local\settings\linkable_settings_page) {
+            return $settings->get_settings_page_url();
+        }
+
+        return null;
+    }
+
+    /**
+     * Loads rule subplugin settings to the settings tree.
+     *
+     * This function usually includes settings.php file in plugins folder.
+     * Alternatively it can create a link to some settings page (instance of admin_externalpage)
+     *
+     * @param \part_of_admin_tree $adminroot
+     * @param string $parentnodename
+     * @param bool $hassiteconfig whether the current user has moodle/site:config capability
+     */
+    public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig): void {
+        if (!$this->is_installed_and_upgraded()) {
+            return;
+        }
+
+        if (!$hassiteconfig || !file_exists($this->full_path('settings.php'))) {
+            return;
+        }
+
+        $section = $this->get_settings_section_name();
+
+        $settings = new \admin_settingpage($section, $this->displayname, 'moodle/site:config', $this->is_enabled() === false);
+
+        include($this->full_path('settings.php'));
+
+        $adminroot->add($parentnodename, $settings);
     }
 }

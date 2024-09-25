@@ -27,4 +27,5 @@
  */
 
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
+$string['plugindescription'] = 'Check if user email is on a list of disposable email domains';
 $string['pluginname'] = 'Disposable emails rule';

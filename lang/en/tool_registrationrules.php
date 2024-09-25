@@ -30,6 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['description'] = 'Description';
 $string['enable'] = 'Enable';
 $string['generalaftermessage'] = 'General message for users rejected AFTER user input';
 $string['generalbeforemessage'] = 'General message for users rejected BEFORE user input';

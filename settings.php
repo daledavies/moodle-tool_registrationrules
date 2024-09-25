@@ -34,13 +34,14 @@ $ADMIN->add(
     new admin_category('toolregistrationrules', new lang_string('pluginname', 'tool_registrationrules')),
 );
 
+// The main registrationrules plugin settings.
 $settings = new admin_settingpage(
     'generalsettings',
     get_string('registrationrulessettings', 'tool_registrationrules'),
     'moodle/site:config',
 );
-
 if ($ADMIN->fulltree) {
+    // Enable/disable.
     $name = new lang_string('enable', 'tool_registrationrules');
     $settings->add(
         new admin_setting_configcheckbox(
@@ -50,7 +51,7 @@ if ($ADMIN->fulltree) {
             0,
         ),
     );
-
+    // Max points.
     $setting = new admin_setting_configtext(
         'tool_registrationrules/maxpoints',
         new lang_string('maxpoints', 'tool_registrationrules'),
@@ -59,7 +60,7 @@ if ($ADMIN->fulltree) {
         PARAM_INT,
     );
     $settings->add($setting);
-
+    // Generic message for registration page.
     $name = new lang_string('registrationpagemessage', 'tool_registrationrules');
     $setting = new admin_setting_configtextarea(
         'tool_registrationrules/registrationpagemessage',
@@ -68,7 +69,7 @@ if ($ADMIN->fulltree) {
         '',
     );
     $settings->add($setting);
-
+    // General message to show on the error page before any rule specific messages.
     $name = new lang_string('generalbeforemessage', 'tool_registrationrules');
     $setting = new admin_setting_configtextarea(
         'tool_registrationrules/generalbeforemessage',
@@ -77,7 +78,7 @@ if ($ADMIN->fulltree) {
         '',
     );
     $settings->add($setting);
-
+    // General message to show on the error page after any rule specific messages.
     $name = new lang_string('generalaftermessage', 'tool_registrationrules');
     $setting = new admin_setting_configtextarea(
         'tool_registrationrules/generalaftermessage',
@@ -89,13 +90,23 @@ if ($ADMIN->fulltree) {
 }
 $ADMIN->add('toolregistrationrules', $settings);
 
+// Link to registration rule subplugin management page.
+$temp = new admin_settingpage('manageregistrationrules', get_string('manageregistrationruleplugins', 'tool_registrationrules'));
+$temp->add(new tool_registrationrules\admin\manage_rule_plugins());
+$ADMIN->add('toolregistrationrules', $temp);
+
+// Link to rule instances management page.
 $manageinstancespage = new admin_externalpage(
     'toolregistrationrules_instances',
     get_string('registrationruleinstances', 'tool_registrationrules'),
     new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'),
     'moodle/site:config',
 );
-
 $ADMIN->add('toolregistrationrules', $manageinstancespage);
 
-$ADMIN->add('toolregistrationrules', new \tool_registrationrules\local\admin_page_rule_plugins('registrationrule'));
+// Load the settings from registration rule subplugins and add a link to them.
+$plugins = core_plugin_manager::instance()->get_plugins_of_type('registrationrule');
+core_collator::asort_objects_by_property($plugins, 'displayname');
+foreach ($plugins as $plugin) {
+    $plugin->load_settings($ADMIN, 'toolregistrationrules', $hassiteconfig);
+}

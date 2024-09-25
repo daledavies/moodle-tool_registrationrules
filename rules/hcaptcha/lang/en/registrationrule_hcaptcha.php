@@ -26,6 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['plugindescription'] = 'Enable hCaptcha on registration form';
 $string['pluginname'] = 'hCaptcha rule';
 $string['resultmessage'] = 'Sorry, the captcha was not solved.';
 $string['secret'] = 'Secret';

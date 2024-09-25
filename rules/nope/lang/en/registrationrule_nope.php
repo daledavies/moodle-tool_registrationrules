@@ -26,6 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['plugindescription'] = 'Disallow registration entirely';
 $string['pluginname'] = 'Nope rule';
 $string['registrationrule:instance:name'] = 'nope';
 $string['resultmessage'] = 'Sorry, but nope!';
