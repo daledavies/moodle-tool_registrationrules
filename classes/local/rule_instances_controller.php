@@ -306,8 +306,6 @@ class rule_instances_controller implements renderable, \templatable {
      * 2. Any additional info required for the template is pre-calculated (e.g. capability checks).
      *
      * TODO: Need to use a sesskey for all actions!
-     * TODO: Only add up icon if not at top of the list.
-     * TODO: Only add down icon if not at bottom of the list.
      *
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return stdClass
@@ -320,39 +318,43 @@ class rule_instances_controller implements renderable, \templatable {
             'types' => $this->get_types_for_add_menu(),
         ];
 
-        foreach ($this->ruleinstances as $ruleinstance) {
-            $actions = new action_menu([
+        foreach ($this->ruleinstances as $key => $ruleinstance) {
+            $moveuplink = $movedownlink = null;
+
+            // Determine if we should add a link to move the instance up or down.
+            $index = array_search($key, array_column($this->ruleinstances, 'id'));
+            // If we are at the top then there should be no move up link
+            if ($index != 0) {
+                $moveuplink = new \moodle_url(
+                    '/admin/tool/registrationrules/manageruleinstances.php',
+                    [
+                        'instanceid' => $ruleinstance->id,
+                        'action' => 'moveup',
+                    ],
+                );
+            }
+            // If we are at the bottom then there should be no move down
+            if ($index != count($this->ruleinstances)-1) {
+                $movedownlink = new \moodle_url(
+                    '/admin/tool/registrationrules/manageruleinstances.php',
+                    [
+                        'instanceid' => $ruleinstance->id,
+                        'action' => 'movedown',
+                    ],
+                );
+            }
+
+            // Get a list of action links to add to our action menu.
+            $actions = [
                 new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/editruleinstance.php',
-                        [
-                            'id' => $ruleinstance->id,
-                        ],
-                    ),
-                    icon: new pix_icon('t/edit', get_string('edit')),
-                    text: get_string('edit'),
+                url: new \moodle_url(
+                    '/admin/tool/registrationrules/editruleinstance.php',
+                    [
+                        'id' => $ruleinstance->id,
+                    ],
                 ),
-                new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/manageruleinstances.php',
-                        [
-                            'instanceid' => $ruleinstance->id,
-                            'action' => 'moveup',
-                        ],
-                    ),
-                    icon: new pix_icon('t/up', get_string('moveup')),
-                    text: get_string('moveup'),
-                ),
-                new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/manageruleinstances.php',
-                        [
-                            'instanceid' => $ruleinstance->id,
-                            'action' => 'movedown',
-                        ],
-                    ),
-                    icon: new pix_icon('t/down', get_string('movedown')),
-                    text: get_string('movedown'),
+                icon: new pix_icon('t/edit', get_string('edit')),
+                text: get_string('edit'),
                 ),
                 new action_menu_filler(),
                 new \action_menu_link_primary(
@@ -365,9 +367,10 @@ class rule_instances_controller implements renderable, \templatable {
                     ),
                     icon: new pix_icon('t/delete', get_string('delete')),
                     text: get_string('delete'),
-                ),
-            ]);
+                )
+            ];
 
+            // Add the instance row details to our template context.
             $context->instances[] = (object)[
                 'id' => $ruleinstance->id,
                 'name' => $ruleinstance->name,
@@ -388,7 +391,9 @@ class rule_instances_controller implements renderable, \templatable {
                     ),
                 ),
                 'sortorder' => $ruleinstance->sortorder,
-                'actions' => $actions->export_for_template($output),
+                'moveuplink' => $moveuplink,
+                'movedownlink' => $movedownlink,
+                'actions' => (new action_menu($actions))->export_for_template($output),
             ];
         }
 
@@ -462,7 +467,7 @@ class rule_instances_controller implements renderable, \templatable {
                     '/admin/tool/registrationrules/editruleinstance.php',
                     ['addruletype' => $ruleplugin],
                 ),
-                'name' => $ruleplugin,
+                'name' => new \lang_string('pluginname', 'registrationrule_' . $ruleplugin),
             ];
         }
         return $types;

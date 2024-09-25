@@ -44,6 +44,7 @@
             <th>{{#str}} ruleinstancestable:name, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:points, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:fallbackpoints, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:move, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:actions, tool_registrationrules {{/str}}</th>
         </tr>
         </thead>
@@ -54,6 +55,25 @@
                 <td>{{name}}</td>
                 <td>{{points}}</td>
                 <td>{{fallbackpoints}}</td>
+                <td class="text-nowrap">
+                    {{#moveuplink}}
+                        <a href="{{{moveuplink}}}">
+                            {{#pix}}t/up, moodle, {{#str}} up, moodle {{/str}}{{/pix}}
+                        </a>
+                    {{/moveuplink}}
+                    {{^moveuplink}}
+                        {{#pix}}spacer, moodle{{/pix}}
+                    {{/moveuplink}}
+
+                    {{#movedownlink}}
+                        <a href="{{{movedownlink}}}">
+                            {{#pix}}t/down, moodle, {{#str}} down, moodle {{/str}}{{/pix}}
+                        </a>
+                    {{/movedownlink}}
+                    {{^movedownlink}}
+                        {{#pix}}spacer, moodle{{/pix}}
+                    {{/movedownlink}}
+                </td>
                 <td>{{#actions}}{{>core/action_menu}}{{/actions}}</td>
             </tr>
         {{/instances}}</tbody>

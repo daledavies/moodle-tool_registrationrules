@@ -54,6 +54,7 @@ $string['ruleinstancestable:actions'] = 'Actions';
 $string['ruleinstancestable:addrule'] = 'Add rule';
 $string['ruleinstancestable:enabled'] = 'Enabled';
 $string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
+$string['ruleinstancestable:move'] = 'Move';
 $string['ruleinstancestable:name'] = 'Name';
 $string['ruleinstancestable:points'] = 'Points';
 $string['ruleinstancestable:type'] = 'Type';
