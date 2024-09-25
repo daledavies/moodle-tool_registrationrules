@@ -39,12 +39,12 @@
     <table class="table generaltable">
         <thead>
         <tr>
-            <th>type</th>
-            <th>enabled</th>
-            <th>name</th>
-            <th>points</th>
-            <th>fallback points</th>
-            <th>actions</th>
+            <th>{{#str}} ruleinstancestable:type, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:enabled, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:name, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:points, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:fallbackpoints, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:actions, tool_registrationrules {{/str}}</th>
         </tr>
         </thead>
         <tbody>{{#instances}}
@@ -60,12 +60,13 @@
     </table>
     <div class="dropdown show">
         <a class="btn btn-text dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            add rule
+            {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
         </a>
 
-        <div class="dropdown-menu" aria-labelledby="addRule">{{#types}}
-            <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
-        {{/types}}
+        <div class="dropdown-menu" aria-labelledby="addRule">
+            {{#types}}
+                <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
+            {{/types}}
         </div>
     </div>
 </div>

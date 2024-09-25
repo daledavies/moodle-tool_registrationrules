@@ -329,8 +329,8 @@ class rule_instances_controller implements renderable, \templatable {
                             'id' => $ruleinstance->id,
                         ],
                     ),
-                    icon: new pix_icon('t/edit', 'edit'),
-                    text: 'edit',
+                    icon: new pix_icon('t/edit', get_string('edit')),
+                    text: get_string('edit'),
                 ),
                 new \action_menu_link_primary(
                     url: new \moodle_url(
@@ -340,8 +340,8 @@ class rule_instances_controller implements renderable, \templatable {
                             'action' => 'moveup',
                         ],
                     ),
-                    icon: new pix_icon('t/up', 'up'),
-                    text: 'moveup',
+                    icon: new pix_icon('t/up', get_string('moveup')),
+                    text: get_string('moveup'),
                 ),
                 new \action_menu_link_primary(
                     url: new \moodle_url(
@@ -351,8 +351,8 @@ class rule_instances_controller implements renderable, \templatable {
                             'action' => 'movedown',
                         ],
                     ),
-                    icon: new pix_icon('t/down', 'down'),
-                    text: 'movedown',
+                    icon: new pix_icon('t/down', get_string('movedown')),
+                    text: get_string('movedown'),
                 ),
                 new action_menu_filler(),
                 new \action_menu_link_primary(
@@ -363,8 +363,8 @@ class rule_instances_controller implements renderable, \templatable {
                             'action' => 'delete',
                         ],
                     ),
-                    icon: new pix_icon('t/delete', 'delete'),
-                    text: 'delete',
+                    icon: new pix_icon('t/delete', get_string('delete')),
+                    text: get_string('delete'),
                 ),
             ]);
 
@@ -383,8 +383,8 @@ class rule_instances_controller implements renderable, \templatable {
                                 'action' => $ruleinstance->enabled ? 'disable' : 'enable',
                             ],
                         ),
-                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', 'hide') : new pix_icon('t/show', 'show'),
-                        text: $ruleinstance->enabled ? 'disable' : 'enable',
+                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable')) : new pix_icon('t/show', get_string('enable')),
+                        text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
                     ),
                 ),
                 'sortorder' => $ruleinstance->sortorder,
