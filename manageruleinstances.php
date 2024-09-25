@@ -27,43 +27,75 @@
  */
 
 require_once(__DIR__ . '/../../../config.php');
-
 require_once($CFG->libdir . '/adminlib.php');
 
 use tool_registrationrules\local\rule_instances_controller;
 
 $action = optional_param('action', null, PARAM_PLUGIN);
+$confirm = optional_param('confirm', null, PARAM_INT);
 $instanceid = optional_param('instanceid', null, PARAM_INT);
+$sesskey = optional_param('sesskey', null, PARAM_RAW);
 
 admin_externalpage_setup('toolregistrationrules_instances');
+
+$PAGE->set_context(context_system::instance());
 
 // Create the class for this controller.
 $controller = new rule_instances_controller();
 
-$PAGE->set_context(context_system::instance());
-
-
-// TODO: move to ruleinstancecontroller.
-switch ($action) {
-    case 'moveup':
-        $controller->move_instance_up($instanceid);
-        break;
-    case 'movedown':
-        $controller->move_instance_down($instanceid);
-        break;
-    case 'delete':
-        $controller->delete_instance($instanceid);
-        break;
-    case 'enable':
-        $controller->enable_instance($instanceid);
-        break;
-    case 'disable':
-        $controller->disable_instance($instanceid);
-        break;
+// Perform any required actions if we have the correct sesskey.
+if ($action !== null && $sesskey) {
+    // TODO: move to ruleinstancecontroller.
+    switch ($action) {
+        case 'moveup':
+            require_sesskey();
+            $controller->move_instance_up($instanceid);
+            break;
+        case 'movedown':
+            require_sesskey();
+            $controller->move_instance_down($instanceid);
+            break;
+        case 'delete':
+            if ($confirm === 1 && confirm_sesskey()) {
+                $controller->delete_instance($instanceid);
+            }
+            break;
+        case 'enable':
+            require_sesskey();
+            $controller->enable_instance($instanceid);
+            break;
+        case 'disable':
+            require_sesskey();
+            $controller->disable_instance($instanceid);
+            break;
+    }
+    // Redirect away to minimise CSRF frontend leaking.
+    redirect($PAGE->url);
 }
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render($controller);
+// If we have been asked to delete an instance but the user has not confirmed then
+// display a confirmation step.
+if ($action === 'delete' && $confirm === null) {
+    $confirmurl = new \moodle_url(
+        $PAGE->url,
+        [
+            'instanceid' => $instanceid,
+            'action' => $action,
+            'confirm' => 1,
+            'sesskey' => sesskey(),
+        ]
+    );
+    $ruleinstance = $controller->get_rule_instance_by_id($instanceid);
+    echo $OUTPUT->confirm(
+        get_string('confirmdelete', 'tool_registrationrules', $ruleinstance->name),
+        $confirmurl,
+        $PAGE->url,
+        ['continuestr' => get_string('delete')]
+    );
+} else {
+    echo $OUTPUT->render($controller);
+}
 
 echo $OUTPUT->footer();

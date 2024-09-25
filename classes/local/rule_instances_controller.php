@@ -158,6 +158,21 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Return the rule instance record matching the given instanceid.
+     *
+     * @param integer $instanceid
+     * @return \stdClass|null A single rule instance record.
+     */
+    public function get_rule_instance_by_id(int $instanceid) {
+        $instance = array_column($this->ruleinstances, null, 'id')[$instanceid];
+        if (!$instance) {
+            throw new coding_exception('Invalid instance ID');
+        }
+
+        return $instance;
+    }
+
+    /**
      * Add a rule instance to the database using submitted data from rule_settings form.
      *
      * @param stdClass $formdata
@@ -305,8 +320,6 @@ class rule_instances_controller implements renderable, \templatable {
      * 1. No complex types - only stdClass, array, int, string, float, bool
      * 2. Any additional info required for the template is pre-calculated (e.g. capability checks).
      *
-     * TODO: Need to use a sesskey for all actions!
-     *
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return stdClass
      * @throws coding_exception
@@ -330,6 +343,7 @@ class rule_instances_controller implements renderable, \templatable {
                     [
                         'instanceid' => $ruleinstance->id,
                         'action' => 'moveup',
+                        'sesskey' => sesskey(),
                     ],
                 );
             }
@@ -340,6 +354,7 @@ class rule_instances_controller implements renderable, \templatable {
                     [
                         'instanceid' => $ruleinstance->id,
                         'action' => 'movedown',
+                        'sesskey' => sesskey(),
                     ],
                 );
             }
@@ -384,6 +399,7 @@ class rule_instances_controller implements renderable, \templatable {
                             [
                                 'instanceid' => $ruleinstance->id,
                                 'action' => $ruleinstance->enabled ? 'disable' : 'enable',
+                                'sesskey' => sesskey(),
                             ],
                         ),
                         icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable')) : new pix_icon('t/show', get_string('enable')),
