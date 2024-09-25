@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - https://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,10 +12,15 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+namespace registrationrule_disposableemails\task;
+
+use core\task\scheduled_task;
+use registrationrule_disposableemails\local\list_manager;
 
 /**
- * Strings for registrationrule_disposableemails sublugin.
+ * Scheduled task to update the list of blocked email domains.
  *
  * @package   registrationrule_disposableemails
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
@@ -25,8 +30,22 @@
  * @author    Michael Aherne <michael.aherne@strath.ac.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class update_blocked_domains_list extends scheduled_task {
 
-$string['cachedef_blockedemaildomains'] = 'Blocked email domains';
-$string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
-$string['pluginname'] = 'Disposable emails rule';
-$string['taskupdateblockeddomainslist'] = 'Update blocked domains list';
+    /**
+     * {@inheritdoc}
+     */
+    public function get_name() {
+        return get_string('taskupdateblockeddomainslist', 'registrationrule_disposableemails');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute() {
+        $listmanager = new list_manager();
+        $listmanager->download_list();
+        $cache = \cache::make('registrationrule_disposableemails', 'blockedemaildomains');
+        $cache->purge();
+    }
+}

@@ -64,11 +64,12 @@ class rule extends rule_base implements rule_interface {
 
         $domain = $this->extract_email_domain($email);
 
-        $listmanager = new list_manager();
-        $blockeddomains = $listmanager->get_blocked_domains();
-        if (in_array($domain, $blockeddomains)) {
+        $cache = \cache::make('registrationrule_disposableemails', 'blockedemaildomains');
+
+        if ($cache->get($domain)) {
             return new rule_check_result(false, '', ['email' => 'Email domain is on a disposable email domain list.']);
         }
+
         return new rule_check_result(true);
     }
 
