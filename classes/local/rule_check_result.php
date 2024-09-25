@@ -51,7 +51,6 @@ class rule_check_result {
     public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
         $this->allowed = $allowed;
         $this->message = $message;
-        $this->score = $score;
         $this->validationmessages = $validationmessages;
     }
 

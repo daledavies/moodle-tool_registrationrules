@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - https://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Strings for registrationrule_disposableemails sublugin.
+ * Definition of caches used by the disposable email rule.
  *
  * @package   registrationrule_disposableemails
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
@@ -26,7 +26,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['cachedef_blockedemaildomains'] = 'Blocked email domains';
-$string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
-$string['pluginname'] = 'Disposable emails rule';
-$string['taskupdateblockeddomainslist'] = 'Update blocked domains list';
+defined('MOODLE_INTERNAL') || die();
+
+use registrationrule_disposableemails\cache\blockedemail_datasource;
+
+$definitions = [
+    'blockedemaildomains' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'datasource' => blockedemail_datasource::class,
+    ],
+];
