@@ -49,8 +49,8 @@
         </tr>
         </thead>
         <tbody>{{#instances}}
-            <tr>
-                <td>{{type}}</td>
+            <tr{{^pluginenabled}} class="dimmed_text"{{/pluginenabled}}>
+                <td>{{type}}{{^pluginenabled}} ({{#str}} disabled, admin {{/str}}){{/pluginenabled}}</td>
                 <td>{{{enabled}}}</td>
                 <td>{{name}}</td>
                 <td>{{points}}</td>

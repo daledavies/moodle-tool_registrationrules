@@ -62,6 +62,16 @@ class rule_instances_controller implements renderable, \templatable {
             table: 'tool_registrationrules',
             sort: 'sortorder ASC',
         );
+        // Get a list of enabled rule plugins and update each instance record
+        // to show if it refers to an enabled or disabled plugin.
+        $enabledplugins = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
+        foreach ($instancerecords as $key => $instance) {
+            $instancerecords[$key]->pluginenabled = false;
+            if (in_array($instance->type, $enabledplugins)) {
+                $instancerecords[$key]->pluginenabled = true;
+            }
+        }
+        // Initialise the external and internal representation of instance records.
         $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
 
@@ -478,6 +488,7 @@ class rule_instances_controller implements renderable, \templatable {
                         text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
                     ),
                 ),
+                'pluginenabled' => $ruleinstance->pluginenabled,
                 'sortorder' => $ruleinstance->sortorder,
                 'moveuplink' => $moveuplink,
                 'movedownlink' => $movedownlink,
@@ -540,16 +551,15 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Get available rule types to generate the add rule instance menu.
+     * Get enabled rule types to generate the add rule instance menu.
      *
      * @return array
      * @throws moodle_exception
      */
     public function get_types_for_add_menu(): array {
         $types = [];
-        $pluginmanager = \core_plugin_manager::instance();
-        $ruletypes = $pluginmanager->get_installed_plugins('registrationrule');
-        foreach (array_keys($ruletypes) as $ruleplugin) {
+        $ruletypes = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
+        foreach ($ruletypes as $ruleplugin) {
             $types[] = (object)[
                 'addurl' => new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',
