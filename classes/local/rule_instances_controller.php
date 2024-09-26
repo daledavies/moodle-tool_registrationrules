@@ -173,12 +173,33 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Return all rule instance records matching the given type.
+     *
+     * @param string $type
+     * @return array Array of rule instance records
+     */
+    public function get_rule_instances_by_type(string $type) {
+        $instances = array_filter($this->ruleinstances, function ($instance) use ($type) {
+            return $instance->type === $type;
+        });
+        if (!$instances) {
+            throw new coding_exception('Invalid rule plugin type');
+        }
+
+        return $instances;
+    }
+
+    /**
      * Add a rule instance to the database using submitted data from rule_settings form.
      *
+     * The change will be committed immediately, if $commit is false you will need to
+     * call $this->commit when you have finished making changes.
+     *
      * @param stdClass $formdata
+     * @param bool $commit Commit the change now
      * @return void
      */
-    public function add_instance(stdClass $formdata): void {
+    public function add_instance(stdClass $formdata, bool $commit = true): void {
         // Extract the standard rule config from the form and create a new
         // instance record object.
         $instance = $this->extract_instancedata($formdata);
@@ -195,19 +216,25 @@ class rule_instances_controller implements renderable, \templatable {
         // Increment the new instance's sortorder by 1 so it is added to
         // the end of the list.
         $instance->sortorder = $highestsortorder + 1;
-        // Add the new object to the internal list of rule instances and
-        // commit the update to the database.
+        // Add the new object to the internal list of rule instances.
         $this->ruleinstancesinternal[] = $instance;
-        $this->commit();
+        // Commit the update to the database now if required.
+        if ($commit) {
+            $this->commit();
+        }
     }
 
     /**
      * Update a rule instance in the database using submitted rule_settings form's data.
      *
+     * The change will be committed immediately, if $commit is false you will need to
+     * call $this->commit when you have finished making changes.
+     *
      * @param stdClass $formdata
+     * @param bool $commit Commit the change now
      * @return void
      */
-    public function update_instance(stdClass $formdata): void {
+    public function update_instance(stdClass $formdata, bool $commit = true): void {
          $formdata->type = $this->ruleinstancesinternal[$formdata->id]->type;
         // Update default fields in record.
         foreach ($this->extract_instancedata($formdata) as $property => $value) {
@@ -217,53 +244,96 @@ class rule_instances_controller implements renderable, \templatable {
         }
         // Encode rule specific config data from the form and add to the instance record.
         $this->ruleinstancesinternal[$formdata->id]->other = $this->encode_instance_config($formdata);
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modification.
         $this->ruleinstancesinternal[$formdata->id]->modified = true;
-        $this->commit();
+        // Commit the update to the database now if required.
+        if ($commit) {
+            $this->commit();
+        }
     }
 
     /**
      * Delete a rule instance with the given id.
      *
+     * The change will be committed immediately, if $commit is false you will need to
+     * call $this->commit when you have finished making changes.
+     *
      * @param int $instanceid
+     * @param bool $commit Commit the change now
      * @return void
      */
-    public function delete_instance(int $instanceid): void {
-        // Set the internal version of this record as deleted commit the update to the database.
+    public function delete_instance(int $instanceid, bool $commit = true): void {
+        // Set the internal version of this record as deleted.
         $this->ruleinstancesinternal[$instanceid]->deleted = true;
+        // Commit the update to the database now if required.
+        if ($commit) {
+            $this->commit();
+        }
+    }
+
+    /**
+     * Delete all instances of a given rule plugin.
+     *
+     * @param string $plugintype
+     * @return void
+     */
+    public function delete_all_instances_of_plugin(string $plugintype): void {
+        $ruleinstances = $this->get_rule_instances_by_type($plugintype);
+        // Delete all instances found but don't commit until after we've
+        // done all of them.
+        foreach ($ruleinstances as $instance) {
+            $this->delete_instance($instance->id, false);
+        }
+        // Finally we can commit all the changes in one go.
         $this->commit();
     }
 
     /**
      * Enable a single rule instance.
      *
+     * The change will be committed immediately, if $commit is false you will need to
+     * call $this->commit when you have finished making changes.
+     *
      * TODO: replace magic value with ENUM or constant!
      *
      * @param int $instanceid
+     * @param bool $commit Commit the change now
      * @return void
      */
-    public function enable_instance(int $instanceid): void {
+    public function enable_instance(int $instanceid, bool $commit = true): void {
         $this->ruleinstancesinternal[$instanceid]->enabled = 1;
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modification.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        $this->commit();
+        // Commit the update to the database now if required.
+        if ($commit) {
+            $this->commit();
+        }
     }
 
     /**
      * Disable a single rule instance.
      *
+     * The change will be committed immediately, if $commit is false you will need to
+     * call $this->commit when you have finished making changes.
+     *
      * @param int $instanceid
+     * @param bool $commit Commit the change now
      * @return void
      */
-    public function disable_instance(int $instanceid): void {
+    public function disable_instance(int $instanceid, bool $commit = true): void {
         $this->ruleinstancesinternal[$instanceid]->enabled = 0;
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modificatio.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        $this->commit();
+        // Commit the update to the database now if required.
+        if ($commit) {
+            $this->commit();
+        }
     }
 
     /**
      * Move the given rule instance a single position up.
+     *
+     * The change will be committed immediately.
      *
      * @param int $instanceid
      * @return void
@@ -290,6 +360,8 @@ class rule_instances_controller implements renderable, \templatable {
 
     /**
      * Move the given rule instance a single position down.
+     *
+     * The change will be committed immediately.
      *
      * @param int $instanceid
      * @return void

@@ -19,6 +19,7 @@ namespace tool_registrationrules\plugininfo;
 use dml_exception;
 use moodle_exception;
 use moodle_url;
+use tool_registrationrules\local\rule_instances_controller;
 
 /**
  * Plugin info for registration rule sub plugin type.
@@ -123,6 +124,17 @@ class registrationrule extends \core\plugininfo\base {
      */
     public function is_uninstall_allowed(): bool {
         return true;
+    }
+
+    /**
+     * Pre-uninstall hook, removes rule instances of this plugin.
+     *
+     * @return void
+     */
+    public function uninstall_cleanup(): void {
+        $controller = new rule_instances_controller();
+        $controller->delete_all_instances_of_plugin($this->name);
+        parent::uninstall_cleanup();
     }
 
     /**
