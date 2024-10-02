@@ -62,9 +62,11 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
     public static function extend_settings_form(MoodleQuickForm $mform): void {
         $mform->addElement('text', 'hcaptcha_sitekey', get_string('sitekey', 'registrationrule_hcaptcha'));
         $mform->addRule('hcaptcha_sitekey', get_string('required'), 'required');
+        $mform->setType('hcaptcha_sitekey', PARAM_ALPHANUMEXT);
 
         $mform->addElement('text', 'hcaptcha_secret', get_string('secret', 'registrationrule_hcaptcha'));
         $mform->addRule('hcaptcha_secret', get_string('required'), 'required');
+        $mform->setType('hcaptcha_secret', PARAM_ALPHANUMEXT);
     }
 
     /**

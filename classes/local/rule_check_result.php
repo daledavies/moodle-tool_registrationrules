@@ -31,28 +31,55 @@ namespace tool_registrationrules\local;
  */
 class rule_check_result {
     /** @var bool true if this result does allow the protected action (e.g. registration) */
-    private bool $allowed;
+    private bool $allowed = false;
 
-    /** @var string feedback message to be returned based on check's outcome */
-    private string $message;
+    /** @var string|null feedback message to be returned based on check's outcome */
+    private ?string $feedbackmessage = null;
+
+    /** @var int score given to this result */
+    private int $score = 0;
 
     /** @var string[] validation messages to be displayed in the form based on check's outcome */
-    private array $validationmessages;
+    private array $validationmessages = [];
 
     /**
-     * Rule check result constructor
+     * Set allowed property.
      *
-     * TODO: add score!
-     *
-     * @param bool $allowed does this rule's check result allow proceeding?
-     * @param string $message check result's feedback message
-     * @param array $validationmessages check result's validation messages to be displayed appropriately
+     * @param bool $value
+     * @return void
      */
-    public function __construct(bool $allowed, string $message = '', array $validationmessages = []) {
-        $this->allowed = $allowed;
-        $this->message = $message;
+    public function set_allowed(bool $value): void {
+        $this->allowed = $value;
+    }
+
+    /**
+     * Set feedback message.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function set_feedback_message(string $message): void {
+        $this->feedbackmessage = $message;
+    }
+
+    /**
+     * Set score.
+     *
+     * @param int $score
+     * @return void
+     */
+    public function set_score(int $score): void {
         $this->score = $score;
-        $this->validationmessages = $validationmessages;
+    }
+
+    /**
+     * Set validation messages.
+     *
+     * @param array $messages
+     * @return void
+     */
+    public function set_validation_messages(array $messages): void {
+        $this->validationmessages = $messages;
     }
 
     /**
@@ -67,10 +94,19 @@ class rule_check_result {
     /**
      * Get this check result's feedback message
      *
-     * @return string
+     * @return ?string
      */
-    public function get_message(): string {
-        return $this->message;
+    public function get_feedback_message(): ?string {
+        return $this->feedbackmessage;
+    }
+
+    /**
+     * Get the score associated with this check result.
+     *
+     * @return int
+     */
+    public function get_score(): int {
+        return $this->score;
     }
 
     /**

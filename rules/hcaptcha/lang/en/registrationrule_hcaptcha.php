@@ -27,6 +27,7 @@
  */
 
 $string['pluginname'] = 'hCaptcha rule';
+$string['registrationrule:instance:name'] = 'hCaptcha';
 $string['resultmessage'] = 'Sorry, the captcha was not solved.';
 $string['secret'] = 'Secret';
 $string['sitekey'] = 'Site Key';
