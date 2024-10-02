@@ -30,8 +30,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['addnewruleinstance'] = 'Add new rule instance';
 $string['confirmdelete'] = 'Are you sure you want to delete the "{$a}" rule instance?';
 $string['description'] = 'Description';
+$string['editruleinstance'] = 'Edit rule instance';
+$string['editruleinstancename'] = 'Edit rule instance... {$a}';
 $string['enable'] = 'Enable';
 $string['generalaftermessage'] = 'General message for users rejected AFTER user input';
 $string['generalbeforemessage'] = 'General message for users rejected BEFORE user input';

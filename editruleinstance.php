@@ -40,37 +40,38 @@ $PAGE->set_url('/admin/tool/registrationrules/editruleinstance.php');
 $PAGE->set_context(context_system::instance());
 
 if (empty($ruleinstanceid) && empty($addruletype)) {
-    throw new coding_exception('Either id of rule instance to be edited or type of rule instance to add needs to be specified.');
+    throw new coding_exception('Either id of rule instance to be edited, or type of rule instance to be added must be specified.');
 }
 
+$managementurl = new moodle_url('/admin/tool/registrationrules/manageruleinstances.php');
+
+// If we have a rule instance ID supplied then we are editing, otherwise
+// we are adding a new rule instance.
 if (!empty($ruleinstanceid)) {
-    $PAGE->set_title('Edit rule instance');
-    // TODO replace with name...
-    $PAGE->set_heading('Edit rule instance ' . $ruleinstanceid);
-    $mform = rule_settings::from_rule_instance($ruleinstanceid);
+    $controller = new \tool_registrationrules\local\rule_instances_controller();
+    $ruleinstance = $controller->get_rule_instance_by_id($ruleinstanceid);
+    $PAGE->set_title(get_string('editruleinstance', 'tool_registrationrules'));
+    $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->name));
+    $mform = rule_settings::from_rule_instance($ruleinstance->id);
 } else {
-    $PAGE->set_title('Add new rule instance');
-    $PAGE->set_heading('Add new rule instance');
+    $PAGE->set_title(get_string('addnewruleinstance', 'tool_registrationrules'));
+    $PAGE->set_heading(get_string('addnewruleinstance', 'tool_registrationrules'));
     $mform = new rule_settings($addruletype);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'));
+    redirect($managementurl);
 }
 
 if ($fromform = $mform->get_data()) {
-    $controller = new \tool_registrationrules\local\rule_instances_controller();
-    // TODO: Process add/update here and redirect to our management page!
-
-    // TODO: add id and/or addruletype to the hidden form fields!
+    // If there is an ID supplied from the hidden form field then we are updating,
+    // if not we are adding a new instance.
     if (!empty($fromform->id)) {
         $controller->update_instance($fromform);
-        redirect(new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'));
     } else {
-        // It's a new registration rule instance.
         $controller->add_instance($fromform);
-        redirect(new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'));
     }
+    redirect($managementurl);
 }
 
 echo $OUTPUT->header();
