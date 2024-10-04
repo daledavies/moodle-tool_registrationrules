@@ -170,7 +170,7 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Return the rule instance record matching the given instanceid.
      *
-     * @param integer $instanceid
+     * @param int $instanceid
      * @return \stdClass|null A single rule instance record.
      */
     public function get_rule_instance_by_id(int $instanceid) {
@@ -418,7 +418,7 @@ class rule_instances_controller implements renderable, \templatable {
 
             // Determine if we should add a link to move the instance up or down.
             $index = array_search($key, array_column($this->ruleinstances, 'id'));
-            // If we are at the top then there should be no move up link
+            // If we are at the top then there should be no move up link.
             if ($index != 0) {
                 $moveuplink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
@@ -429,8 +429,8 @@ class rule_instances_controller implements renderable, \templatable {
                     ],
                 );
             }
-            // If we are at the bottom then there should be no move down
-            if ($index != count($this->ruleinstances)-1) {
+            // If we are at the bottom then there should be no move down.
+            if ($index != count($this->ruleinstances) - 1) {
                 $movedownlink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
                     [
@@ -464,7 +464,7 @@ class rule_instances_controller implements renderable, \templatable {
                     ),
                     icon: new pix_icon('t/delete', get_string('delete')),
                     text: get_string('delete'),
-                )
+                ),
             ];
 
             // Add the instance row details to our template context.
@@ -484,7 +484,8 @@ class rule_instances_controller implements renderable, \templatable {
                                 'sesskey' => sesskey(),
                             ],
                         ),
-                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable')) : new pix_icon('t/show', get_string('enable')),
+                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable'))
+                                                     : new pix_icon('t/show', get_string('enable')),
                         text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
                     ),
                 ),
