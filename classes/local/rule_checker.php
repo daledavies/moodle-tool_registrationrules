@@ -191,6 +191,8 @@ class rule_checker {
     /**
      * Return if registration is allowed.
      *
+     * TODO: Implement the "invert score feature".
+     *
      * @return bool true if registration is allowed, false if registration should be blocked
      * @throws coding_exception
      */
@@ -204,24 +206,32 @@ class rule_checker {
             );
         }
 
+        // Get a total of all points returned from rule checks.
+        $totalpoints = 0;
         foreach ($this->results as $result) {
-            if (!$result->get_allowed()) {
-                return false;
+            if ($result->get_allowed()) {
+                continue;
             }
+            $totalpoints += $result->get_score();
+        }
+        // If the total of all points returned from rule checks is greater
+        // than the maximum allowed points then registration is not allowed.
+        if ($totalpoints >= $this->adminconfig->maxpoints) {
+            return false;
         }
 
         return true;
     }
 
     /**
-     * Return the resulting messages from each check.
+     * Return any general feedback messages added to a check's result object.
      *
      * TODO: improve documentation and discern from get_validation_messages()
      *
      * @return string[]
      * @throws coding_exception
      */
-    public function get_messages(): array {
+    public function get_feedback_messages(): array {
         if (!$this->checked) {
             throw new coding_exception(
                 'rule_checker::check() must be called before using rule_checker::get_messages()',
@@ -229,19 +239,35 @@ class rule_checker {
         }
         $messages = [];
         foreach ($this->results as $result) {
-            // If not allowed, add an error message.
-            if (!$result->get_allowed()) {
+            // If registration is allowed we don't need to retrieve feedback messages
+            // from the result.
+            if ($result->get_allowed()) {
                 continue;
             }
-            $messages[] = $result->get_message();
+            // If we have a null or empty message then don't add it to the $messages array.
+            $message = $result->get_feedback_message();
+            if (empty($message)) {
+                continue;
+            }
+            $messages[] = $message;
         }
+
         return $messages;
     }
 
     /**
-     * Return the aggregated messages from each check, to be displayed as validation errors.
+     * Flatten the result of get_feedback_messages() to a string suitable for use in
+     * form validation errors.
      *
-     * TODO: improve documentation and discern from get_messsages()
+     * @return string
+     */
+    public function get_feedback_messages_string(): string {
+        return implode('<br>', $this->get_feedback_messages());
+    }
+
+    /**
+     * Return the validation messages from each check as an array, to be displayed as
+     * validation errors. E.g. a group of messages from each check per field.
      *
      * @return array
      * @throws coding_exception
@@ -252,25 +278,37 @@ class rule_checker {
                 'rule_checker::check() must be called before using rule_checker::get_validation_messages()',
             );
         }
-        $messages = [];
+
+        $validationmessages = [];
 
         foreach ($this->results as $result) {
-            if (!$result->get_allowed()) {
-                foreach ($result->get_validation_messages() as $field => $message) {
-                    // Note that this will overwrite any previous message for the same field.
-                    // We may want to consider some kind of aggregation here.
-                    $messages[$field] = $message;
-                }
-
-                // General messages.
-                if (!empty($result->get_message())) {
-                    if (!isset($messages['tool_registrationrules_errors'])) {
-                        $messages['tool_registrationrules_errors'] = '';
-                    }
-                    $messages['tool_registrationrules_errors'] .= '<br />' . $result->get_message();
-                }
+            // If registration is allowed we don't need to retrieve messages from the result.
+            if ($result->get_allowed()) {
+                continue;
+            }
+            foreach ($result->get_validation_messages() as $field => $message) {
+                $validationmessages[$field][] = $message;
             }
         }
+        foreach ($validationmessages as $field => $messages) {
+            $validationmessages[$field] = implode('<br>', $messages);
+        }
+
+        return $validationmessages;
+    }
+
+    /**
+     * Get all messages as an array of strings indexed by field.
+     *
+     * @return array
+     */
+    public function get_all_messages(): array {
+        $messages = $this->get_validation_messages();
+        $feedbackmessages = $this->get_feedback_messages_string();
+        if (!empty($feedbackmessages)) {
+            $messages['tool_registrationrules_errors'] = $feedbackmessages;
+        }
+
         return $messages;
     }
 

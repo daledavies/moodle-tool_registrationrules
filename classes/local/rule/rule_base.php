@@ -16,6 +16,7 @@
 
 namespace tool_registrationrules\local\rule;
 
+use coding_exception;
 use MoodleQuickForm;
 use stdClass;
 use tool_registrationrules\local\rule_check_result;
@@ -34,6 +35,13 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class rule_base implements rule_interface {
+
+    /** @var stdClass rule plugin instance config. */
+    protected stdClass $config;
+
+    /** @var rule_check_result object representing the result this rule will return. */
+    protected rule_check_result $result;
+
     /**
      * Constructor
      *
@@ -42,6 +50,46 @@ abstract class rule_base implements rule_interface {
      * @param stdClass $config rule instance configuration
      */
     public function __construct(stdClass $config) {
+        $this->config = $config;
+        $this->result = new rule_check_result();
+    }
+
+    /**
+     * Return a result indicating this check will allow user registration.
+     *
+     * @return rule_check_result
+     */
+    public function allow(): rule_check_result {
+        $this->result->set_allowed(true);
+
+        return $this->result;
+    }
+
+    /**
+     * Return a result indicating this check will deny user registration.
+     *
+     * @param int $score
+     * @param string $feedbackmessage
+     * @param array $validationmessages
+     * @throws coding_exception
+     *
+     * @return rule_check_result
+     */
+    public function deny(
+        int $score,
+        string $feedbackmessage = '',
+        array $validationmessages = []
+    ): rule_check_result {
+        // At least one of $feedbackmessage or $validationmessages must be set...
+        if (!empty($feedbackmessage) && !empty($validationmessages)) {
+            throw new coding_exception('One of feedbackmessage or validationmessages params must be set');
+        }
+        $this->result->set_allowed(false);
+        $this->result->set_score($score);
+        $this->result->set_feedback_message($feedbackmessage);
+        $this->result->set_validation_messages($validationmessages);
+
+        return $this->result;
     }
 
     /**

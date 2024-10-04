@@ -46,8 +46,7 @@ function tool_registrationrules_pre_signup_requests() {
         return;
     }
 
-    $messages = implode('<br>', $rulechecker->get_messages());
-    \core\notification::warning($messages);
+    \core\notification::warning($rulechecker->get_feedback_messages_string());
     redirect(
         new moodle_url(
             '/admin/tool/registrationrules/error.php',
@@ -95,5 +94,5 @@ function tool_registrationrules_validate_extend_signup_form($data): array {
         return [];
     }
 
-    return $rulechecker->get_validation_messages();
+    return $rulechecker->get_all_messages();
 }

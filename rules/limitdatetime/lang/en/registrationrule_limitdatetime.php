@@ -28,4 +28,5 @@
 
  $string['plugindescription'] = 'Only allow registration between two dates';
 $string['pluginname'] = 'Limit by date';
+$string['registrationrule:instance:name'] = 'Limit by dat';
 $string['resultmessage'] = 'Sorry, the captcha was not solved.';

@@ -27,5 +27,8 @@
  */
 
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
+$string['failuremessage'] = 'Email domain is on a disposable email domain list.';
+$string['fallbackfailuremessage'] = 'Your email address cannot be veriefied at the moment';
 $string['plugindescription'] = 'Check if user email is on a list of disposable email domains';
 $string['pluginname'] = 'Disposable emails rule';
+$string['registrationrule:instance:name'] = 'Disposable emails';
