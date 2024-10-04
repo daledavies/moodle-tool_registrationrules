@@ -69,4 +69,8 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         // Registrationrules savepoint reached.
         upgrade_plugin_savepoint(true, 2024090302, 'tool', 'registrationrules');
     }
+
+    // Apparently we must always return true here, or we get an "unkown error" dusing upgrade.
+    // See https://moodledev.io/docs/guides/upgrade#dbupgradephp for info.
+    return true;
 }
