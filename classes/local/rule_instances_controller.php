@@ -81,7 +81,7 @@ class rule_instances_controller implements renderable, \templatable {
      *
      * @return void
      */
-    protected function commit(): void {
+    public function commit(): void {
         global $DB;
         // We'll possibly be committing a number of new records and updates
         // to the databse so best to create a new transaction.
@@ -202,14 +202,10 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Add a rule instance to the database using submitted data from rule_settings form.
      *
-     * The change will be committed immediately, if $commit is false you will need to
-     * call $this->commit when you have finished making changes.
-     *
      * @param stdClass $formdata
-     * @param bool $commit Commit the change now
-     * @return void
+     * @return rule_instances_controller
      */
-    public function add_instance(stdClass $formdata, bool $commit = true): void {
+    public function add_instance(stdClass $formdata): rule_instances_controller {
         // Extract the standard rule config from the form and create a new
         // instance record object.
         $instance = $this->extract_instancedata($formdata);
@@ -228,23 +224,17 @@ class rule_instances_controller implements renderable, \templatable {
         $instance->sortorder = $highestsortorder + 1;
         // Add the new object to the internal list of rule instances.
         $this->ruleinstancesinternal[] = $instance;
-        // Commit the update to the database now if required.
-        if ($commit) {
-            $this->commit();
-        }
+
+        return $this;
     }
 
     /**
      * Update a rule instance in the database using submitted rule_settings form's data.
      *
-     * The change will be committed immediately, if $commit is false you will need to
-     * call $this->commit when you have finished making changes.
-     *
      * @param stdClass $formdata
-     * @param bool $commit Commit the change now
-     * @return void
+     * @return rule_instances_controller
      */
-    public function update_instance(stdClass $formdata, bool $commit = true): void {
+    public function update_instance(stdClass $formdata): rule_instances_controller {
          $formdata->type = $this->ruleinstancesinternal[$formdata->id]->type;
         // Update default fields in record.
         foreach ($this->extract_instancedata($formdata) as $property => $value) {
@@ -256,29 +246,21 @@ class rule_instances_controller implements renderable, \templatable {
         $this->ruleinstancesinternal[$formdata->id]->other = $this->encode_instance_config($formdata);
         // Signify we have made a modification.
         $this->ruleinstancesinternal[$formdata->id]->modified = true;
-        // Commit the update to the database now if required.
-        if ($commit) {
-            $this->commit();
-        }
+
+        return $this;
     }
 
     /**
      * Delete a rule instance with the given id.
      *
-     * The change will be committed immediately, if $commit is false you will need to
-     * call $this->commit when you have finished making changes.
-     *
      * @param int $instanceid
-     * @param bool $commit Commit the change now
-     * @return void
+     * @return rule_instances_controller
      */
-    public function delete_instance(int $instanceid, bool $commit = true): void {
+    public function delete_instance(int $instanceid): rule_instances_controller {
         // Set the internal version of this record as deleted.
         $this->ruleinstancesinternal[$instanceid]->deleted = true;
-        // Commit the update to the database now if required.
-        if ($commit) {
-            $this->commit();
-        }
+
+        return $this;
     }
 
     /**
@@ -301,62 +283,45 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Enable a single rule instance.
      *
-     * The change will be committed immediately, if $commit is false you will need to
-     * call $this->commit when you have finished making changes.
-     *
      * TODO: replace magic value with ENUM or constant!
      *
      * @param int $instanceid
-     * @param bool $commit Commit the change now
-     * @return void
+     * @return rule_instances_controller
      */
-    public function enable_instance(int $instanceid, bool $commit = true): void {
+    public function enable_instance(int $instanceid): rule_instances_controller {
         $this->ruleinstancesinternal[$instanceid]->enabled = 1;
         // Signify we have made a modification.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        // Commit the update to the database now if required.
-        if ($commit) {
-            $this->commit();
-        }
+
+        return $this;
     }
 
     /**
      * Disable a single rule instance.
      *
-     * The change will be committed immediately, if $commit is false you will need to
-     * call $this->commit when you have finished making changes.
-     *
      * @param int $instanceid
-     * @param bool $commit Commit the change now
-     * @return void
+     * @return rule_instances_controller
      */
-    public function disable_instance(int $instanceid, bool $commit = true): void {
+    public function disable_instance(int $instanceid): rule_instances_controller {
         $this->ruleinstancesinternal[$instanceid]->enabled = 0;
         // Signify we have made a modificatio.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        // Commit the update to the database now if required.
-        if ($commit) {
-            $this->commit();
-        }
+
+        return $this;
     }
 
     /**
      * Move the given rule instance a single position up.
      *
-     * The change will be committed immediately.
-     *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function move_instance_up(int $instanceid): void {
+    public function move_instance_up(int $instanceid): rule_instances_controller {
         // If the instance is already at the top of the list then do nothing.
-        if ($instanceid === array_key_first($this->ruleinstancesinternal)) {
-            return;
-        }
-        // Find the array key of the previous instance in the list.
-        $previnstancekey = $this->find_previous_instance_id($instanceid);
-        // Swap the sortorder for the given rule instance and the previous instance.
-        if (isset($previnstancekey)) {
+        if ($instanceid !== array_key_first($this->ruleinstancesinternal)) {
+            // Find the array key of the previous instance in the list.
+            $previnstancekey = $this->find_previous_instance_id($instanceid);
+            // Swap the sortorder for the given rule instance and the previous instance.
             $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
             $previnstancesortorder = $this->ruleinstancesinternal[$previnstancekey]->sortorder;
             $this->ruleinstancesinternal[$instanceid]->sortorder = $previnstancesortorder;
@@ -364,27 +329,23 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$previnstancekey]->modified = true;
-            $this->commit();
         }
+
+        return $this;
     }
 
     /**
      * Move the given rule instance a single position down.
      *
-     * The change will be committed immediately.
-     *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function move_instance_down(int $instanceid): void {
+    public function move_instance_down(int $instanceid): rule_instances_controller {
         // If the instance is already at the bottom of the list then do nothing.
-        if ($instanceid === array_key_last($this->ruleinstances)) {
-            return;
-        }
-        // Find the array key of the next instance in the list.
-        $nextinstancekey = $this->find_next_instance_id($instanceid);
-        // Swap the sortorder for the given rule instance and the previous instance.
-        if (isset($nextinstancekey)) {
+        if ($instanceid !== array_key_last($this->ruleinstances)) {
+            // Find the array key of the next instance in the list.
+            $nextinstancekey = $this->find_next_instance_id($instanceid);
+            // Swap the sortorder for the given rule instance and the previous instance.
             $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
             $nextinstancesortorder = $this->ruleinstancesinternal[$nextinstancekey]->sortorder;
             $this->ruleinstancesinternal[$instanceid]->sortorder = $nextinstancesortorder;
@@ -392,8 +353,9 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$nextinstancekey]->modified = true;
-            $this->commit();
         }
+
+        return $this;
     }
 
     /**

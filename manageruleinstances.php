@@ -49,24 +49,24 @@ if ($action !== null && $sesskey) {
     switch ($action) {
         case 'moveup':
             require_sesskey();
-            $controller->move_instance_up($instanceid);
+            $controller->move_instance_up($instanceid)->commit();
             break;
         case 'movedown':
             require_sesskey();
-            $controller->move_instance_down($instanceid);
+            $controller->move_instance_down($instanceid)->commit();
             break;
         case 'delete':
             if ($confirm === 1 && confirm_sesskey()) {
-                $controller->delete_instance($instanceid);
+                $controller->delete_instance($instanceid)->commit();
             }
             break;
         case 'enable':
             require_sesskey();
-            $controller->enable_instance($instanceid);
+            $controller->enable_instance($instanceid)->commit();
             break;
         case 'disable':
             require_sesskey();
-            $controller->disable_instance($instanceid);
+            $controller->disable_instance($instanceid)->commit();
             break;
     }
     // Redirect away to minimise CSRF frontend leaking.

@@ -45,10 +45,11 @@ if (empty($ruleinstanceid) && empty($addruletype)) {
 
 $managementurl = new moodle_url('/admin/tool/registrationrules/manageruleinstances.php');
 
+$controller = new \tool_registrationrules\local\rule_instances_controller();
+
 // If we have a rule instance ID supplied then we are editing, otherwise
 // we are adding a new rule instance.
 if (!empty($ruleinstanceid)) {
-    $controller = new \tool_registrationrules\local\rule_instances_controller();
     $ruleinstance = $controller->get_rule_instance_by_id($ruleinstanceid);
     $PAGE->set_title(get_string('editruleinstance', 'tool_registrationrules'));
     $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->name));
@@ -67,9 +68,9 @@ if ($fromform = $mform->get_data()) {
     // If there is an ID supplied from the hidden form field then we are updating,
     // if not we are adding a new instance.
     if (!empty($fromform->id)) {
-        $controller->update_instance($fromform);
+        $controller->update_instance($fromform)->commit();
     } else {
-        $controller->add_instance($fromform);
+        $controller->add_instance($fromform)->commit();
     }
     redirect($managementurl);
 }
