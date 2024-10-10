@@ -62,6 +62,16 @@ class rule_instances_controller implements renderable, \templatable {
             table: 'tool_registrationrules',
             sort: 'sortorder ASC',
         );
+        // Get a list of enabled rule plugins and update each instance record
+        // to show if it refers to an enabled or disabled plugin.
+        $enabledplugins = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
+        foreach ($instancerecords as $key => $instance) {
+            $instancerecords[$key]->pluginenabled = false;
+            if (in_array($instance->type, $enabledplugins)) {
+                $instancerecords[$key]->pluginenabled = true;
+            }
+        }
+        // Initialise the external and internal representation of instance records.
         $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
 
@@ -71,7 +81,7 @@ class rule_instances_controller implements renderable, \templatable {
      *
      * @return void
      */
-    protected function commit(): void {
+    public function commit(): void {
         global $DB;
         // We'll possibly be committing a number of new records and updates
         // to the databse so best to create a new transaction.
@@ -158,12 +168,44 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Return the rule instance record matching the given instanceid.
+     *
+     * @param int $instanceid
+     * @return \stdClass|null A single rule instance record.
+     */
+    public function get_rule_instance_by_id(int $instanceid) {
+        $instance = array_column($this->ruleinstances, null, 'id')[$instanceid];
+        if (!$instance) {
+            throw new coding_exception('Invalid instance ID');
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Return all rule instance records matching the given type.
+     *
+     * @param string $type
+     * @return array Array of rule instance records
+     */
+    public function get_rule_instances_by_type(string $type) {
+        $instances = array_filter($this->ruleinstances, function ($instance) use ($type) {
+            return $instance->type === $type;
+        });
+        if (!$instances) {
+            throw new coding_exception('Invalid rule plugin type');
+        }
+
+        return $instances;
+    }
+
+    /**
      * Add a rule instance to the database using submitted data from rule_settings form.
      *
      * @param stdClass $formdata
-     * @return void
+     * @return rule_instances_controller
      */
-    public function add_instance(stdClass $formdata): void {
+    public function add_instance(stdClass $formdata): rule_instances_controller {
         // Extract the standard rule config from the form and create a new
         // instance record object.
         $instance = $this->extract_instancedata($formdata);
@@ -180,19 +222,19 @@ class rule_instances_controller implements renderable, \templatable {
         // Increment the new instance's sortorder by 1 so it is added to
         // the end of the list.
         $instance->sortorder = $highestsortorder + 1;
-        // Add the new object to the internal list of rule instances and
-        // commit the update to the database.
+        // Add the new object to the internal list of rule instances.
         $this->ruleinstancesinternal[] = $instance;
-        $this->commit();
+
+        return $this;
     }
 
     /**
      * Update a rule instance in the database using submitted rule_settings form's data.
      *
      * @param stdClass $formdata
-     * @return void
+     * @return rule_instances_controller
      */
-    public function update_instance(stdClass $formdata): void {
+    public function update_instance(stdClass $formdata): rule_instances_controller {
          $formdata->type = $this->ruleinstancesinternal[$formdata->id]->type;
         // Update default fields in record.
         foreach ($this->extract_instancedata($formdata) as $property => $value) {
@@ -202,20 +244,39 @@ class rule_instances_controller implements renderable, \templatable {
         }
         // Encode rule specific config data from the form and add to the instance record.
         $this->ruleinstancesinternal[$formdata->id]->other = $this->encode_instance_config($formdata);
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modification.
         $this->ruleinstancesinternal[$formdata->id]->modified = true;
-        $this->commit();
+
+        return $this;
     }
 
     /**
      * Delete a rule instance with the given id.
      *
      * @param int $instanceid
+     * @return rule_instances_controller
+     */
+    public function delete_instance(int $instanceid): rule_instances_controller {
+        // Set the internal version of this record as deleted.
+        $this->ruleinstancesinternal[$instanceid]->deleted = true;
+
+        return $this;
+    }
+
+    /**
+     * Delete all instances of a given rule plugin.
+     *
+     * @param string $plugintype
      * @return void
      */
-    public function delete_instance(int $instanceid): void {
-        // Set the internal version of this record as deleted commit the update to the database.
-        $this->ruleinstancesinternal[$instanceid]->deleted = true;
+    public function delete_all_instances_of_plugin(string $plugintype): void {
+        $ruleinstances = $this->get_rule_instances_by_type($plugintype);
+        // Delete all instances found but don't commit until after we've
+        // done all of them.
+        foreach ($ruleinstances as $instance) {
+            $this->delete_instance($instance->id, false);
+        }
+        // Finally we can commit all the changes in one go.
         $this->commit();
     }
 
@@ -225,43 +286,42 @@ class rule_instances_controller implements renderable, \templatable {
      * TODO: replace magic value with ENUM or constant!
      *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function enable_instance(int $instanceid): void {
+    public function enable_instance(int $instanceid): rule_instances_controller {
         $this->ruleinstancesinternal[$instanceid]->enabled = 1;
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modification.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        $this->commit();
+
+        return $this;
     }
 
     /**
      * Disable a single rule instance.
      *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function disable_instance(int $instanceid): void {
+    public function disable_instance(int $instanceid): rule_instances_controller {
         $this->ruleinstancesinternal[$instanceid]->enabled = 0;
-        // Signify we have made a modification and commit the update to the database.
+        // Signify we have made a modificatio.
         $this->ruleinstancesinternal[$instanceid]->modified = true;
-        $this->commit();
+
+        return $this;
     }
 
     /**
      * Move the given rule instance a single position up.
      *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function move_instance_up(int $instanceid): void {
+    public function move_instance_up(int $instanceid): rule_instances_controller {
         // If the instance is already at the top of the list then do nothing.
-        if ($instanceid === array_key_first($this->ruleinstancesinternal)) {
-            return;
-        }
-        // Find the array key of the previous instance in the list.
-        $previnstancekey = $this->find_previous_instance_id($instanceid);
-        // Swap the sortorder for the given rule instance and the previous instance.
-        if (isset($previnstancekey)) {
+        if ($instanceid !== array_key_first($this->ruleinstancesinternal)) {
+            // Find the array key of the previous instance in the list.
+            $previnstancekey = $this->find_previous_instance_id($instanceid);
+            // Swap the sortorder for the given rule instance and the previous instance.
             $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
             $previnstancesortorder = $this->ruleinstancesinternal[$previnstancekey]->sortorder;
             $this->ruleinstancesinternal[$instanceid]->sortorder = $previnstancesortorder;
@@ -269,25 +329,23 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$previnstancekey]->modified = true;
-            $this->commit();
         }
+
+        return $this;
     }
 
     /**
      * Move the given rule instance a single position down.
      *
      * @param int $instanceid
-     * @return void
+     * @return rule_instances_controller
      */
-    public function move_instance_down(int $instanceid): void {
+    public function move_instance_down(int $instanceid): rule_instances_controller {
         // If the instance is already at the bottom of the list then do nothing.
-        if ($instanceid === array_key_last($this->ruleinstances)) {
-            return;
-        }
-        // Find the array key of the next instance in the list.
-        $nextinstancekey = $this->find_next_instance_id($instanceid);
-        // Swap the sortorder for the given rule instance and the previous instance.
-        if (isset($nextinstancekey)) {
+        if ($instanceid !== array_key_last($this->ruleinstances)) {
+            // Find the array key of the next instance in the list.
+            $nextinstancekey = $this->find_next_instance_id($instanceid);
+            // Swap the sortorder for the given rule instance and the previous instance.
             $thisinstancesortorder = $this->ruleinstancesinternal[$instanceid]->sortorder;
             $nextinstancesortorder = $this->ruleinstancesinternal[$nextinstancekey]->sortorder;
             $this->ruleinstancesinternal[$instanceid]->sortorder = $nextinstancesortorder;
@@ -295,8 +353,9 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$nextinstancekey]->modified = true;
-            $this->commit();
         }
+
+        return $this;
     }
 
     /**
@@ -304,10 +363,6 @@ class rule_instances_controller implements renderable, \templatable {
      * mustache template. This means:
      * 1. No complex types - only stdClass, array, int, string, float, bool
      * 2. Any additional info required for the template is pre-calculated (e.g. capability checks).
-     *
-     * TODO: Need to use a sesskey for all actions!
-     * TODO: Only add up icon if not at top of the list.
-     * TODO: Only add down icon if not at bottom of the list.
      *
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return stdClass
@@ -320,39 +375,45 @@ class rule_instances_controller implements renderable, \templatable {
             'types' => $this->get_types_for_add_menu(),
         ];
 
-        foreach ($this->ruleinstances as $ruleinstance) {
-            $actions = new action_menu([
+        foreach ($this->ruleinstances as $key => $ruleinstance) {
+            $moveuplink = $movedownlink = null;
+
+            // Determine if we should add a link to move the instance up or down.
+            $index = array_search($key, array_column($this->ruleinstances, 'id'));
+            // If we are at the top then there should be no move up link.
+            if ($index != 0) {
+                $moveuplink = new \moodle_url(
+                    '/admin/tool/registrationrules/manageruleinstances.php',
+                    [
+                        'instanceid' => $ruleinstance->id,
+                        'action' => 'moveup',
+                        'sesskey' => sesskey(),
+                    ],
+                );
+            }
+            // If we are at the bottom then there should be no move down.
+            if ($index != count($this->ruleinstances) - 1) {
+                $movedownlink = new \moodle_url(
+                    '/admin/tool/registrationrules/manageruleinstances.php',
+                    [
+                        'instanceid' => $ruleinstance->id,
+                        'action' => 'movedown',
+                        'sesskey' => sesskey(),
+                    ],
+                );
+            }
+
+            // Get a list of action links to add to our action menu.
+            $actions = [
                 new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/editruleinstance.php',
-                        [
-                            'id' => $ruleinstance->id,
-                        ],
-                    ),
-                    icon: new pix_icon('t/edit', 'edit'),
-                    text: 'edit',
+                url: new \moodle_url(
+                    '/admin/tool/registrationrules/editruleinstance.php',
+                    [
+                        'id' => $ruleinstance->id,
+                    ],
                 ),
-                new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/manageruleinstances.php',
-                        [
-                            'instanceid' => $ruleinstance->id,
-                            'action' => 'moveup',
-                        ],
-                    ),
-                    icon: new pix_icon('t/up', 'up'),
-                    text: 'moveup',
-                ),
-                new \action_menu_link_primary(
-                    url: new \moodle_url(
-                        '/admin/tool/registrationrules/manageruleinstances.php',
-                        [
-                            'instanceid' => $ruleinstance->id,
-                            'action' => 'movedown',
-                        ],
-                    ),
-                    icon: new pix_icon('t/down', 'down'),
-                    text: 'movedown',
+                icon: new pix_icon('t/edit', get_string('edit')),
+                text: get_string('edit'),
                 ),
                 new action_menu_filler(),
                 new \action_menu_link_primary(
@@ -363,15 +424,16 @@ class rule_instances_controller implements renderable, \templatable {
                             'action' => 'delete',
                         ],
                     ),
-                    icon: new pix_icon('t/delete', 'delete'),
-                    text: 'delete',
+                    icon: new pix_icon('t/delete', get_string('delete')),
+                    text: get_string('delete'),
                 ),
-            ]);
+            ];
 
+            // Add the instance row details to our template context.
             $context->instances[] = (object)[
                 'id' => $ruleinstance->id,
                 'name' => $ruleinstance->name,
-                'type' => $ruleinstance->type,
+                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->type),
                 'points' => $ruleinstance->points,
                 'fallbackpoints' => $ruleinstance->fallbackpoints,
                 'enabled' => $output->render(
@@ -381,14 +443,19 @@ class rule_instances_controller implements renderable, \templatable {
                             [
                                 'instanceid' => $ruleinstance->id,
                                 'action' => $ruleinstance->enabled ? 'disable' : 'enable',
+                                'sesskey' => sesskey(),
                             ],
                         ),
-                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', 'hide') : new pix_icon('t/show', 'show'),
-                        text: $ruleinstance->enabled ? 'disable' : 'enable',
+                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable'))
+                                                     : new pix_icon('t/show', get_string('enable')),
+                        text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
                     ),
                 ),
+                'pluginenabled' => $ruleinstance->pluginenabled,
                 'sortorder' => $ruleinstance->sortorder,
-                'actions' => $actions->export_for_template($output),
+                'moveuplink' => $moveuplink,
+                'movedownlink' => $movedownlink,
+                'actions' => (new action_menu($actions))->export_for_template($output),
             ];
         }
 
@@ -447,22 +514,21 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Get available rule types to generate the add rule instance menu.
+     * Get enabled rule types to generate the add rule instance menu.
      *
      * @return array
      * @throws moodle_exception
      */
     public function get_types_for_add_menu(): array {
         $types = [];
-        $pluginmanager = \core_plugin_manager::instance();
-        $ruletypes = $pluginmanager->get_installed_plugins('registrationrule');
-        foreach (array_keys($ruletypes) as $ruleplugin) {
+        $ruletypes = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
+        foreach ($ruletypes as $ruleplugin) {
             $types[] = (object)[
                 'addurl' => new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',
                     ['addruletype' => $ruleplugin],
                 ),
-                'name' => $ruleplugin,
+                'name' => new \lang_string('pluginname', 'registrationrule_' . $ruleplugin),
             ];
         }
         return $types;

@@ -36,38 +36,57 @@
     }
 }}
 <div class="tool_registrationrules-managerules">
-    <table class="table">
+    <table class="table generaltable">
         <thead>
         <tr>
-            <th>sort order</th>
-            <th>enabled</th>
-            <th>type</th>
-            <th>name</th>
-            <th>points</th>
-            <th>fallback points</th>
-            <th>actions</th>
+            <th>{{#str}} ruleinstancestable:type, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:enabled, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:name, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:points, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:fallbackpoints, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:move, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:actions, tool_registrationrules {{/str}}</th>
         </tr>
         </thead>
         <tbody>{{#instances}}
-            <tr>
-                <td>{{sortorder}}</td>
-                <td>{{{enabled}}}</td>{{!TODO all of it!}}
-                <td>{{type}}</td>
+            <tr{{^pluginenabled}} class="dimmed_text"{{/pluginenabled}}>
+                <td>{{type}}{{^pluginenabled}} ({{#str}} disabled, admin {{/str}}){{/pluginenabled}}</td>
+                <td>{{{enabled}}}</td>
                 <td>{{name}}</td>
                 <td>{{points}}</td>
                 <td>{{fallbackpoints}}</td>
+                <td class="text-nowrap">
+                    {{#moveuplink}}
+                        <a href="{{{moveuplink}}}">
+                            {{#pix}}t/up, moodle, {{#str}} up, moodle {{/str}}{{/pix}}
+                        </a>
+                    {{/moveuplink}}
+                    {{^moveuplink}}
+                        {{#pix}}spacer, moodle{{/pix}}
+                    {{/moveuplink}}
+
+                    {{#movedownlink}}
+                        <a href="{{{movedownlink}}}">
+                            {{#pix}}t/down, moodle, {{#str}} down, moodle {{/str}}{{/pix}}
+                        </a>
+                    {{/movedownlink}}
+                    {{^movedownlink}}
+                        {{#pix}}spacer, moodle{{/pix}}
+                    {{/movedownlink}}
+                </td>
                 <td>{{#actions}}{{>core/action_menu}}{{/actions}}</td>
             </tr>
         {{/instances}}</tbody>
     </table>
     <div class="dropdown show">
-        <a class="btn btn-text dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            add rule
+        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
         </a>
 
-        <div class="dropdown-menu" aria-labelledby="addRule">{{#types}}
-            <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
-        {{/types}}
+        <div class="dropdown-menu" aria-labelledby="addRule">
+            {{#types}}
+                <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
+            {{/types}}
         </div>
     </div>
 </div>

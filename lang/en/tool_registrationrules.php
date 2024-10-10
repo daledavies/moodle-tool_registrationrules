@@ -30,7 +30,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['addnewruleinstance'] = 'Add new rule instance';
+$string['confirmdelete'] = 'Are you sure you want to delete the "{$a}" rule instance?';
 $string['description'] = 'Description';
+$string['editruleinstance'] = 'Edit rule instance';
+$string['editruleinstancename'] = 'Edit rule instance... {$a}';
 $string['enable'] = 'Enable';
 $string['generalaftermessage'] = 'General message for users rejected AFTER user input';
 $string['generalbeforemessage'] = 'General message for users rejected BEFORE user input';
@@ -50,5 +54,13 @@ $string['registrationrule:instance:points'] = 'Points';
 $string['registrationruleinstances'] = 'Registration rule instances';
 $string['registrationrulepluginname'] = 'Registration rule';
 $string['registrationrulessettings'] = 'Registration rules settings';
+$string['ruleinstancestable:actions'] = 'Actions';
+$string['ruleinstancestable:addrule'] = 'Add rule';
+$string['ruleinstancestable:enabled'] = 'Enabled';
+$string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
+$string['ruleinstancestable:move'] = 'Move';
+$string['ruleinstancestable:name'] = 'Name';
+$string['ruleinstancestable:points'] = 'Points';
+$string['ruleinstancestable:type'] = 'Type';
 $string['subplugintype_registrationrule'] = 'Registration rule';
 $string['subplugintype_registrationrule_plural'] = 'Registration rules';

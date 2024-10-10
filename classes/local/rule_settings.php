@@ -16,6 +16,7 @@
 
 namespace tool_registrationrules\local;
 
+use coding_exception;
 use dml_exception;
 
 defined('MOODLE_INTERNAL') || die;
@@ -45,9 +46,8 @@ class rule_settings extends \moodleform {
      * @throws dml_exception
      */
     public static function from_rule_instance(int $instanceid): static {
-        global $DB;
-
-        $instancerecord = $DB->get_record('tool_registrationrules', ['id' => $instanceid]);
+        $controller = new rule_instances_controller();
+        $instancerecord = $controller->get_rule_instance_by_id($instanceid);
 
         $extrafields = json_decode($instancerecord->other);
 
@@ -103,6 +103,12 @@ class rule_settings extends \moodleform {
         $editable = true,
         $ajaxformdata = null
     ) {
+        // Check if a rule plugin of this type is actually installed.
+        $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
+        if (!in_array($type, array_keys($plugins))) {
+            throw new coding_exception('Plugin type does not exist.');
+        }
+
         $this->type = $type;
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable, $ajaxformdata);
     }

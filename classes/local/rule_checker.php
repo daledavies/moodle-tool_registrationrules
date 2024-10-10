@@ -87,7 +87,8 @@ class rule_checker {
         $instances = (new \tool_registrationrules\local\rule_instances_controller())->get_rule_instance_records();
 
         foreach ($instances as $instance) {
-            if (get_config('registrationrule_' . $instance->type, 'disabled')) {
+            // Only process rules if the plugin and/or instance are not disabled.
+            if (!$instance->pluginenabled || !$instance->enabled) {
                 continue;
             }
 
