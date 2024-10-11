@@ -26,9 +26,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['failuremessage'] = 'The captcha was not solved.';
+$string['fallbackfailuremessage'] = 'The captcha cannot be verified at the moment, please try again later.';
 $string['plugindescription'] = 'Enable hCaptcha on registration form';
 $string['pluginname'] = 'hCaptcha rule';
 $string['registrationrule:instance:name'] = 'hCaptcha';
-$string['resultmessage'] = 'Sorry, the captcha was not solved.';
 $string['secret'] = 'Secret';
 $string['sitekey'] = 'Site Key';

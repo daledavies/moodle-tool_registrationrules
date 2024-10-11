@@ -18,7 +18,6 @@ namespace registrationrule_hcaptcha;
 
 use coding_exception;
 use MoodleQuickForm;
-use stdClass;
 use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
 
@@ -36,21 +35,8 @@ use tool_registrationrules\local\rule_check_result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    /** @var stdClass rule instance configuration */
-    private $config;
-
     /** Names of fields added to the rule's settings form */
     const SETTINGS_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
-
-    /**
-     * Constructor
-     *
-     * @param stdClass $config rule instance configuration
-     */
-    public function __construct(stdClass $config) {
-        $this->config = $config;
-        parent::__construct($config);
-    }
 
     /**
      * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
@@ -116,10 +102,24 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
         $error = curl_error($ch);
         curl_close($ch);
 
-        // If empty or false the captcha failed and the result is negative.
-        $result = !empty($response->success);
+        // Something went wrong when connecting to hCaptcha API.
+        if ($error) {
+            return $this->deny(
+                score: $this->config->fallbackpoints,
+                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
+            );
+        }
 
-        return new rule_check_result($result, get_string('resultmessage', 'registrationrule_hcaptcha'));
+        // If empty or false the captcha failed and the result is negative.
+        if (!empty($response->success)) {
+            return $this->deny(
+                score: $this->config->points,
+                validationmessages: ['email' => get_string('failuremessage', 'registrationrule_hcaptcha')],
+            );
+        }
+
+        // We got to this point so the captcha check passed.
+        return $this->allow();
     }
 
     /**
