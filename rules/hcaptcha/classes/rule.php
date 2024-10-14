@@ -19,7 +19,7 @@ namespace registrationrule_hcaptcha;
 use coding_exception;
 use curl;
 use MoodleQuickForm;
-use tool_registrationrules\local\rule\configurable;
+use tool_registrationrules\local\rule\plugin_configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -35,27 +35,7 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    /** Names of fields added to the rule's settings form */
-    const SETTINGS_FIELDS = ['hcaptcha_sitekey', 'hcaptcha_secret'];
-
-    /**
-     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
-     *
-     * @param MoodleQuickForm $mform
-     * @return void
-     * @throws coding_exception
-     */
-    public static function extend_settings_form(MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'hcaptcha_sitekey', get_string('sitekey', 'registrationrule_hcaptcha'));
-        $mform->addRule('hcaptcha_sitekey', get_string('required'), 'required');
-        $mform->setType('hcaptcha_sitekey', PARAM_ALPHANUMEXT);
-
-        $mform->addElement('text', 'hcaptcha_secret', get_string('secret', 'registrationrule_hcaptcha'));
-        $mform->addRule('hcaptcha_secret', get_string('required'), 'required');
-        $mform->setType('hcaptcha_secret', PARAM_ALPHANUMEXT);
-    }
-
+class rule extends \tool_registrationrules\local\rule\rule_base implements plugin_configurable {
     /**
      * Inject additional fields into the signup form for usage by the rule instance after submission.
      *
@@ -63,12 +43,17 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
      * @return void
      */
     public function extend_form(MoodleQuickForm $mform): void {
+        $hcaptchasitekey = get_config('registrationrule_hcaptcha', 'hcaptcha_sitekey');
+        // Return early if the config has not been set.
+        if (!$hcaptchasitekey) {
+            return;
+        }
 
         // This is the basic JS for hCaptcha.
         $html = '<script src="https://js.hcaptcha.com/1/api.js" async defer></script>';
 
         // But we also need to add the HTML for the result.
-        $sitekey = htmlspecialchars($this->config->hcaptcha_sitekey, ENT_COMPAT);
+        $sitekey = htmlspecialchars($hcaptchasitekey, ENT_COMPAT);
         $html .= '<div class="h-captcha" data-sitekey="' . $sitekey . '"></div>';
 
         $mform->addElement('hidden', 'h-captcha-response', '');
@@ -83,10 +68,15 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
      * @throws coding_exception
      */
     public function post_data_check(array $data): ?rule_check_result {
-        // Build the data used for validation.
+        $hcaptchasecret = get_config('registrationrule_hcaptcha', 'hcaptcha_secret');
+        $hcaptchasitekey = get_config('registrationrule_hcaptcha', 'hcaptcha_sitekey');
+        // Return early if the config has not been set.
+        if (!$hcaptchasecret || !$hcaptchasitekey) {
+            return null;
+        }
         $validationpost = [
-            'secret' => $this->config->hcaptcha_secret,
-            'sitekey' => $this->config->hcaptcha_sitekey,
+            'secret' => $hcaptchasecret,
+            'sitekey' => $hcaptchasitekey,
             'response' => $data['h-captcha-response'],
         ];
 
@@ -104,7 +94,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
         // Something went wrong when connecting to hCaptcha API.
         if ($curl->get_errno()) {
             return $this->deny(
-                score: $this->config->fallbackpoints,
+                score: $this->get_config()->fallbackpoints,
                 feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
             );
         }
@@ -112,7 +102,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
         // If empty or false the captcha failed and the result is negative.
         if (!empty($response->success)) {
             return $this->deny(
-                score: $this->config->points,
+                score: $this->get_config()->points,
                 validationmessages: ['email' => get_string('failuremessage', 'registrationrule_hcaptcha')],
             );
         }
@@ -128,5 +118,20 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
      */
     public function pre_data_check(): ?rule_check_result {
         return null;
+    }
+
+    /**
+     * Confirm if the rule plugin has been properly configured.
+     *
+     * @return boolean
+     */
+    public static function is_plugin_configured(): bool {
+        $hcaptchasecret = get_config('registrationrule_hcaptcha', 'hcaptcha_secret');
+        $hcaptchasitekey = get_config('registrationrule_hcaptcha', 'hcaptcha_sitekey');
+        if (!$hcaptchasecret || !$hcaptchasitekey) {
+            return false;
+        }
+
+        return true;
     }
 }

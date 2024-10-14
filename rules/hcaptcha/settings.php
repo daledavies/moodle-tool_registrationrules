@@ -15,22 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for registrationrule_hcaptcha registration rule subplugin.
+ * Admin settings for tool_registrationrules plugin.
  *
  * @package   registrationrule_hcaptcha
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2024 lern.link GmbH {@link https://lern.link/}
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
- * @author    Lukas MuLu Müller <info@mulu.at>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['failuremessage'] = 'The captcha was not solved.';
-$string['fallbackfailuremessage'] = 'The captcha cannot be verified at the moment, please try again later.';
-$string['plugindescription'] = 'Enable hCaptcha on registration form';
-$string['pluginname'] = 'hCaptcha rule';
-$string['registrationrule:instance:name'] = 'hCaptcha';
-$string['secret'] = 'Secret';
-$string['settingsrequired'] = 'The Site Key and Secret are both required for this plugin to work.';
-$string['sitekey'] = 'Site Key';
+defined('MOODLE_INTERNAL') || die();
+
+if (!\registrationrule_hcaptcha\rule::is_plugin_configured()) {
+    global $OUTPUT;
+    $setting = new admin_setting_description(
+        'registrationrule_hcaptcha/settingsrequired',
+        null,
+        $OUTPUT->notification(get_string('settingsrequired', 'registrationrule_hcaptcha'), 'error', false)
+    );
+    $settings->add($setting);
+}
+
+$settings->add(new admin_setting_configtext('registrationrule_hcaptcha/hcaptcha_sitekey',
+    get_string('sitekey', 'registrationrule_hcaptcha'),
+    null, null, PARAM_ALPHANUMEXT));
+
+$settings->add(new admin_setting_configtext('registrationrule_hcaptcha/hcaptcha_secret',
+get_string('secret', 'registrationrule_hcaptcha'),
+    null, null, PARAM_ALPHANUMEXT));
