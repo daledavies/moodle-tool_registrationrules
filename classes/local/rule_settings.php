@@ -21,6 +21,7 @@ use dml_exception;
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
 
 /**
@@ -34,6 +35,15 @@ require_once($CFG->libdir . '/formslib.php');
 class rule_settings extends \moodleform {
     /** @var string The registrationrule's type */
     protected string $type;
+
+    /** @var string|null Optional instance ID */
+    protected ?int $instanceid;
+
+    /** @var string The class name for this rule instance object */
+    protected string $ruleinstanceclass;
+
+    /** @var bool Has this instance's plugin been configured correctly */
+    protected bool $pluginconfigured;
 
     /** @var array $customfields the registrationrule type's added form fields' names */
     protected array $customfields = [];
@@ -104,6 +114,17 @@ class rule_settings extends \moodleform {
         }
 
         $this->type = $type;
+        $this->instanceid = $instanceid;
+        $this->ruleinstanceclass = 'registrationrule_' . $this->type . '\rule';
+
+        // Allow the rule instance to check if the plugin itself is properly configured.
+        $this->pluginconfigured = true;
+        if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\plugin_configurable')) {
+            $this->pluginconfigured = call_user_func(
+                ['registrationrule_' . $this->type . '\rule', 'is_plugin_configured']
+            );
+        }
+
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable, $ajaxformdata);
     }
 
@@ -111,6 +132,8 @@ class rule_settings extends \moodleform {
      * Form definition.
      */
     protected function definition(): void {
+        global $OUTPUT;
+
         $mform = $this->_form;
 
         // Quick and dirty hack to get our types/parameters...
@@ -123,6 +146,18 @@ class rule_settings extends \moodleform {
         $mform->addElement('hidden', 'id', optional_param('id', 0, PARAM_INT));
         $mform->setType('id', PARAM_INT);
 
+        // Add a notification to alert if the plugin has not been configured.
+        if (!$this->pluginconfigured) {
+            // Get an instance of plugininfo for the subplugin type. This allows us to get the
+            // settings URL for the subplugin, rather than the parent plugin.
+            $ruleplugin = \core_plugin_manager::instance()->get_plugins_of_type('registrationrule')[$this->type];
+            $settingsurl = (string) $ruleplugin->get_settings_url();
+            $notificationmessage = get_string('rulewillnotbeused', 'tool_registrationrules', $settingsurl);
+            $info = $OUTPUT->notification($notificationmessage, 'error', false);
+            $mform->addElement('html', $info);
+        }
+
+        // Begin adding normal form elements.
         $mform->addElement(
             'selectyesno',
             'enabled',
@@ -184,14 +219,37 @@ class rule_settings extends \moodleform {
         $mform->setDefault('fallbackpoints', 0);
 
         // If this is defined as a configurable instance then allow it to extend the settings form.
-        $ruleinstanceclass = 'registrationrule_' . $this->type . '\rule';
-        if (is_subclass_of($ruleinstanceclass, 'tool_registrationrules\local\rule\instance_configurable')) {
+        if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\instance_configurable')) {
             call_user_func(
-                [$ruleinstanceclass, 'extend_settings_form'],
+                [$this->ruleinstanceclass, 'extend_settings_form'],
                 $mform,
             );
         }
 
         $this->add_action_buttons();
+    }
+
+    /**
+     * Overrides formslib's add_action_buttons() method to allow changing
+     * submit button label and/or disabling it.
+     *
+     * @param bool $cancel
+     * @param string|null $submitlabel
+     *
+     * @return void
+     */
+    public function add_action_buttons($cancel = true, $submitlabel = null): void {
+        $mform =& $this->_form;
+        // Set submit button label based on if we are editing or adding a rule instance.
+        $submitlabel = get_string('addrule', 'tool_registrationrules');
+        if ($this->instanceid) {
+            $submitlabel = get_string('savechanges');
+        }
+        // Recreate the standard button array.
+        $buttonarray = [];
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
+        $buttonarray[] = &$mform->createElement('cancel');
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
+        $mform->closeHeaderBefore('buttonar');
     }
 }
