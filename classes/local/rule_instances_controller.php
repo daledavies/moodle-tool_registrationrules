@@ -559,8 +559,8 @@ class rule_instances_controller implements renderable, \templatable {
 
         // Extract only the rule specific settings fields from the form
         // data if the rule defines any.
-        if (defined("$class::SETTINGS_FIELDS")) {
-            foreach ($class::SETTINGS_FIELDS as $field) {
+        if (is_subclass_of($class, 'tool_registrationrules\local\rule\instance_configurable')) {
+            foreach ($class::get_instance_settings_fields() as $field) {
                 $extradata[$field] = $formdata->$field;
             }
         }
