@@ -31,6 +31,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['addnewruleinstance'] = 'Add new rule instance';
+$string['addrule'] = 'Add rule';
 $string['confirmdelete'] = 'Are you sure you want to delete the "{$a}" rule instance?';
 $string['description'] = 'Description';
 $string['editruleinstance'] = 'Edit rule instance';
@@ -63,5 +64,6 @@ $string['ruleinstancestable:move'] = 'Move';
 $string['ruleinstancestable:name'] = 'Name';
 $string['ruleinstancestable:points'] = 'Points';
 $string['ruleinstancestable:type'] = 'Type';
+$string['rulewillnotbeused'] = 'This rule will not be used yet as the plugin\'s <a href="{$a}">configuration options</a> have not been set.';
 $string['subplugintype_registrationrule'] = 'Registration rule';
 $string['subplugintype_registrationrule_plural'] = 'Registration rules';
