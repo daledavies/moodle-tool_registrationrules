@@ -34,14 +34,6 @@ use tool_registrationrules\local\rule_check_result;
  */
 interface rule_interface {
     /**
-     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
-     *
-     * @param MoodleQuickForm $mform
-     * @return void
-     */
-    public static function extend_settings_form(MoodleQuickForm $mform): void;
-
-    /**
      * Inject additional fields into the signup form for usage by the rule instance after submission.
      *
      * @param MoodleQuickForm $mform
