@@ -39,6 +39,12 @@ abstract class rule_base implements rule_interface {
     /** @var stdClass rule plugin instance config. */
     protected stdClass $config;
 
+    /** @var int rule instance id */
+    protected int $id;
+
+    /** @var string rule instance type */
+    protected string $type;
+
     /** @var rule_check_result object representing the result this rule will return. */
     protected rule_check_result $result;
 
@@ -51,7 +57,36 @@ abstract class rule_base implements rule_interface {
      */
     public function __construct(stdClass $config) {
         $this->config = $config;
+        $this->id = $this->config->id;
+        $this->type = $this->config->type;
         $this->result = new rule_check_result();
+    }
+
+    /**
+     * Get rule instance config object.
+     *
+     * @return stdClass
+     */
+    public function get_config(): stdClass {
+        return $this->config;
+    }
+
+    /**
+     * Get rule instance ID.
+     *
+     * @return int
+     */
+    public function get_id(): int {
+        return $this->id;
+    }
+
+    /**
+     * Get the type of rule instance plugin used for this instance.
+     *
+     * @return string the rule instance type.
+     */
+    public function get_type(): string {
+        return $this->type;
     }
 
     /**
