@@ -17,6 +17,7 @@
 namespace registrationrule_hcaptcha;
 
 use coding_exception;
+use curl;
 use MoodleQuickForm;
 use tool_registrationrules\local\rule\configurable;
 use tool_registrationrules\local\rule_check_result;
@@ -90,20 +91,18 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
         ];
 
         // Call the hCaptcha API for validation.
-        $ch = curl_init('https://api.hcaptcha.com/siteverify');
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-        curl_setopt($ch, CURLOPT_FAILONERROR, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $validationpost);
-
-        // Get and decode response.
-        $response = json_decode(curl_exec($ch));
-        $error = curl_error($ch);
-        curl_close($ch);
+        $curl = new curl();
+        $curl->setopt([
+            'CURLOPT_CONNECTTIMEOUT' => 2,
+            'CURLOPT_TIMEOUT' => 2,
+        ]);
+        $response = $curl->post(
+            'https://api.hcaptcha.com/siteverify',
+            $validationpost
+        );
 
         // Something went wrong when connecting to hCaptcha API.
-        if ($error) {
+        if ($curl->get_errno()) {
             return $this->deny(
                 score: $this->config->fallbackpoints,
                 feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
