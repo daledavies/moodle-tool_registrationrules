@@ -47,16 +47,10 @@ class rule_settings extends \moodleform {
      */
     public static function from_rule_instance(int $instanceid): static {
         $controller = new rule_instances_controller();
-        $instancerecord = $controller->get_rule_instance_by_id($instanceid);
+        $ruleinstance = $controller->get_rule_instance_by_id($instanceid);
 
-        $extrafields = json_decode($instancerecord->other);
-
-        foreach ($extrafields as $fieldname => $value) {
-            $instancerecord->$fieldname = $value;
-        }
-
-        $form = new static($instancerecord->type, $instanceid);
-        $form->set_data($instancerecord);
+        $form = new static($ruleinstance->get_type(), $instanceid);
+        $form->set_data($ruleinstance->get_config());
 
         return $form;
     }

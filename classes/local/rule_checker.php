@@ -83,28 +83,8 @@ class rule_checker {
     private function __construct() {
         $this->clear();
         $this->adminconfig = $this->get_admin_config();
-
-        $instances = (new \tool_registrationrules\local\rule_instances_controller())->get_rule_instance_records();
-
-        foreach ($instances as $instance) {
-            // Only process rules if the plugin and/or instance are not disabled.
-            if (!$instance->pluginenabled || !$instance->enabled) {
-                continue;
-            }
-
-            $pluginrule = 'registrationrule_' . $instance->type . '\rule';
-
-            // Parse additional config and add to instance.
-            foreach (json_decode($instance->other) as $configkey => $configvalue) {
-                $instance->$configkey = $configvalue;
-            }
-            $ruleinstance = new $pluginrule($instance);
-            if (!$ruleinstance instanceof rule\rule_base) {
-                debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
-                continue;
-            }
-            $this->rules[] = $ruleinstance;
-        }
+        // Only process active rules...
+        $this->rules = (new \tool_registrationrules\local\rule_instances_controller())->get_active_rule_instances();
     }
 
     /**

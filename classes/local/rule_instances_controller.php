@@ -159,7 +159,7 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return an up to date array of rule instances in teh correct order.
+     * Return an up to date array of rule instance DB records in the correct order.
      *
      * @return array Array of rule instance records.
      */
@@ -168,18 +168,72 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return the rule instance record matching the given instanceid.
+     * Return a list of hydrated rule instance objects.
+     *
+     * @return array
+     */
+    public function get_rule_instances(): array {
+        $instances = [];
+        foreach ($this->get_rule_instance_records() as $instance) {
+            $pluginrule = 'registrationrule_' . $instance->type . '\rule';
+
+            // Parse additional config and add to instance.
+            foreach (json_decode($instance->other) as $configkey => $configvalue) {
+                $instance->$configkey = $configvalue;
+            }
+            $ruleinstance = new $pluginrule($instance);
+            if (!$ruleinstance instanceof rule\rule_base) {
+                debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
+                continue;
+            }
+            $instances[$ruleinstance->get_id()] = $ruleinstance;
+        }
+
+        return $instances;
+    }
+
+    /**
+     * Return a rule instance object matching the given instanceid.
      *
      * @param int $instanceid
-     * @return \stdClass|null A single rule instance record.
+     * @return rule\rule_base|null A single rule instance record.
      */
-    public function get_rule_instance_by_id(int $instanceid) {
-        $instance = array_column($this->ruleinstances, null, 'id')[$instanceid];
-        if (!$instance) {
+    public function get_rule_instance_by_id(int $instanceid): rule\rule_base {
+        $instances = $this->get_rule_instances();
+        if (!isset($instances[$instanceid])) {
             throw new coding_exception('Invalid instance ID');
         }
 
-        return $instance;
+        return $instances[$instanceid];
+    }
+
+    /**
+     * Return a list of active rule instance objects, excluding those where either the
+     * rule plugin or instance are disabled, or the rule plugin has not been configured.
+     *
+     * @return array
+     */
+    public function get_active_rule_instances(): array {
+        $activeinstances = [];
+        foreach ($this->get_rule_instances() as $instance) {
+            $instanceconfig = $instance->get_config();
+            if (!$instanceconfig->pluginenabled || !$instanceconfig->enabled) {
+                continue;
+            }
+            // If this rule plugin class implements plugin_configurable then we can cheeck if the
+            // requierd configuration options have been satisfied.
+            if (is_subclass_of($instance, 'tool_registrationrules\local\rule\plugin_configurable')) {
+                $pluginconfigured = call_user_func(
+                    ['registrationrule_' . $instance->get_type() . '\rule', 'is_plugin_configured']
+                );
+                if (!$pluginconfigured) {
+                    continue;
+                }
+            }
+            $activeinstances[] = $instance;
+        }
+
+        return $activeinstances;
     }
 
     /**
