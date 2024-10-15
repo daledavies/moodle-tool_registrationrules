@@ -26,9 +26,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['failuremessage'] = 'Password found in HIBP database, please try a different one.';
+$string['fallbackfailuremessage'] = 'Cannot verify password, problem verifying with HIBP database.';
 $string['plugindescription'] = 'Check if user password is listed on Have I Been Pwnd';
 $string['pluginname'] = 'Have I been pwned?!';
 $string['privacy:forwarded:range'] = 'Sends the first 5 characters of the user\'s hashed password.';
 $string['privacy:forwarded:summary'] = 'Have I been pwned rule accesses Have I been pwned\'s API by submitting the first 5 characters of the hashed password provided by the user and does not store any user related data on its own.';
 $string['registrationrule:instance:name'] = 'Have I been pwned';
-$string['resultmessage'] = 'Sorry, your password was found in a data breach.';
