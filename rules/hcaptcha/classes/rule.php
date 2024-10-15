@@ -57,6 +57,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements plugi
         $html .= '<div class="h-captcha" data-sitekey="' . $sitekey . '"></div>';
 
         $mform->addElement('hidden', 'h-captcha-response', '');
+        $mform->setType('h-captcha-response', PARAM_ALPHANUMEXT);
         $mform->addElement('html', $html);
     }
 
@@ -91,19 +92,20 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements plugi
             $validationpost
         );
 
-        // Something went wrong when connecting to hCaptcha API.
-        if ($curl->get_errno()) {
+        // If either the API call was unseuccessful, the json could not be decoded
+        // or for some reason it does not contain the expected success field.
+        if ($curl->get_errno() || !($response = json_decode($response)) || !isset($response->success)) {
             return $this->deny(
                 score: $this->get_config()->fallbackpoints,
                 feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
             );
         }
 
-        // If empty or false the captcha failed and the result is negative.
-        if (!empty($response->success)) {
+        // The captcha failed so deny registration.
+        if (!$response->success) {
             return $this->deny(
                 score: $this->get_config()->points,
-                validationmessages: ['email' => get_string('failuremessage', 'registrationrule_hcaptcha')],
+                validationmessages: ['tool_registrationrules_errors' => get_string('failuremessage', 'registrationrule_hcaptcha')],
             );
         }
 
