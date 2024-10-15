@@ -18,8 +18,7 @@ namespace registrationrule_limitdatetime;
 
 use coding_exception;
 use MoodleQuickForm;
-use stdClass;
-use tool_registrationrules\local\rule\configurable;
+use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -34,21 +33,15 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    /** @var stdClass rule instance configuration */
-    private stdClass $config;
-
-    /** Names of fields added to the rule's settings form */
-    const SETTINGS_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
-
+class rule extends \tool_registrationrules\local\rule\rule_base implements instance_configurable {
     /**
-     * Constructor
+     * Return an array of settings fields names used to extend the instance
+     * settings form via extend_settings_form().
      *
-     * @param stdClass $config rule instance configuration
+     * @return array
      */
-    public function __construct($config) {
-        $this->config = $config;
-        parent::__construct($config);
+    public static function get_instance_settings_fields(): array {
+        return ['limitdatetime_from', 'limitdatetime_to'];
     }
 
     /**
@@ -78,13 +71,17 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
          * Just like users don't.
          * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
          */
-        $tooearly = $now < $this->config->limitdatetime_from;
-        $toolate = $now > $this->config->limitdatetime_to;
+        $tooearly = $now < $this->get_config()->limitdatetime_from;
+        $toolate = $now > $this->get_config()->limitdatetime_to;
 
-        return new rule_check_result(
-            ($tooearly || $toolate),
-            'Outside date',
-        );
+        if ($tooearly || $toolate) {
+            return $this->deny(
+                score: $this->get_config()->points,
+                feedbackmessage: get_string('failuremessage', 'registrationrule_limitdatetime'),
+            );
+        }
+
+        return $this->allow();
     }
 
     /**
