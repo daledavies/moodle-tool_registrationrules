@@ -429,7 +429,7 @@ class rule_instances_controller implements renderable, \templatable {
             'types' => $this->get_types_for_add_menu(),
         ];
 
-        foreach ($this->ruleinstances as $key => $ruleinstance) {
+        foreach ($this->get_rule_instances() as $key => $ruleinstance) {
             $moveuplink = $movedownlink = null;
 
             // Determine if we should add a link to move the instance up or down.
@@ -439,7 +439,7 @@ class rule_instances_controller implements renderable, \templatable {
                 $moveuplink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
                     [
-                        'instanceid' => $ruleinstance->id,
+                        'instanceid' => $ruleinstance->get_id(),
                         'action' => 'moveup',
                         'sesskey' => sesskey(),
                     ],
@@ -450,7 +450,7 @@ class rule_instances_controller implements renderable, \templatable {
                 $movedownlink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
                     [
-                        'instanceid' => $ruleinstance->id,
+                        'instanceid' => $ruleinstance->get_id(),
                         'action' => 'movedown',
                         'sesskey' => sesskey(),
                     ],
@@ -463,7 +463,7 @@ class rule_instances_controller implements renderable, \templatable {
                 url: new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',
                     [
-                        'id' => $ruleinstance->id,
+                        'id' => $ruleinstance->get_id(),
                     ],
                 ),
                 icon: new pix_icon('t/edit', get_string('edit')),
@@ -474,7 +474,7 @@ class rule_instances_controller implements renderable, \templatable {
                     url: new \moodle_url(
                         '/admin/tool/registrationrules/manageruleinstances.php',
                         [
-                            'instanceid' => $ruleinstance->id,
+                            'instanceid' => $ruleinstance->get_id(),
                             'action' => 'delete',
                         ],
                     ),
@@ -483,33 +483,47 @@ class rule_instances_controller implements renderable, \templatable {
                 ),
             ];
 
+            $dimmedreasons = [];
+            if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
+                $pluginconfigured = call_user_func(
+                    ['registrationrule_' . $ruleinstance->get_type() . '\rule', 'is_plugin_configured']
+                );
+                if (!$pluginconfigured) {
+                    $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
+                }
+            }
+            if (!$ruleinstance->get_config()->pluginenabled) {
+                $dimmedreasons[] = get_string('plugindisabled', 'tool_registrationrules');
+            }
+
             // Add the instance row details to our template context.
             $context->instances[] = (object)[
-                'id' => $ruleinstance->id,
-                'name' => $ruleinstance->name,
-                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->type),
-                'points' => $ruleinstance->points,
-                'fallbackpoints' => $ruleinstance->fallbackpoints,
+                'id' => $ruleinstance->get_id(),
+                'name' => $ruleinstance->get_config()->name,
+                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_config()->type),
+                'points' => $ruleinstance->get_config()->points,
+                'fallbackpoints' => $ruleinstance->get_config()->fallbackpoints,
                 'enabled' => $output->render(
                     new \action_menu_link_primary(
                         url: new \moodle_url(
                             '/admin/tool/registrationrules/manageruleinstances.php',
                             [
-                                'instanceid' => $ruleinstance->id,
-                                'action' => $ruleinstance->enabled ? 'disable' : 'enable',
+                                'instanceid' => $ruleinstance->get_id(),
+                                'action' => $ruleinstance->get_config()->enabled ? 'disable' : 'enable',
                                 'sesskey' => sesskey(),
                             ],
                         ),
-                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable'))
+                        icon: $ruleinstance->get_config()->enabled ? new pix_icon('t/hide', get_string('disable'))
                                                      : new pix_icon('t/show', get_string('enable')),
-                        text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
+                        text: $ruleinstance->get_config()->enabled ? get_string('disable') : get_string('enable'),
                     ),
                 ),
-                'pluginenabled' => $ruleinstance->pluginenabled,
-                'sortorder' => $ruleinstance->sortorder,
+                'sortorder' => $ruleinstance->get_config()->sortorder,
                 'moveuplink' => $moveuplink,
                 'movedownlink' => $movedownlink,
                 'actions' => (new action_menu($actions))->export_for_template($output),
+                'dimmedrow' => count($dimmedreasons),
+                'dimmedmessage' => implode(', ', $dimmedreasons),
             ];
         }
 
