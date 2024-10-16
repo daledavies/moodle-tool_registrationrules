@@ -159,7 +159,7 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return an up to date array of rule instances in teh correct order.
+     * Return an up to date array of rule instance DB records in the correct order.
      *
      * @return array Array of rule instance records.
      */
@@ -168,18 +168,61 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return the rule instance record matching the given instanceid.
+     * Return a list of hydrated rule instance objects.
+     *
+     * @return array
+     */
+    public function get_rule_instances(): array {
+        $instances = [];
+        foreach ($this->get_rule_instance_records() as $instance) {
+            $pluginrule = 'registrationrule_' . $instance->type . '\rule';
+
+            // Parse additional config and add to instance.
+            foreach (json_decode($instance->other) as $configkey => $configvalue) {
+                $instance->$configkey = $configvalue;
+            }
+            $ruleinstance = new $pluginrule($instance);
+            if (!$ruleinstance instanceof rule\rule_base) {
+                debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
+                continue;
+            }
+            $instances[$ruleinstance->get_id()] = $ruleinstance;
+        }
+
+        return $instances;
+    }
+
+    /**
+     * Return a rule instance object matching the given instanceid.
      *
      * @param int $instanceid
-     * @return \stdClass|null A single rule instance record.
+     * @return rule\rule_base|null A single rule instance record.
      */
-    public function get_rule_instance_by_id(int $instanceid) {
-        $instance = array_column($this->ruleinstances, null, 'id')[$instanceid];
-        if (!$instance) {
+    public function get_rule_instance_by_id(int $instanceid): rule\rule_base {
+        $instances = $this->get_rule_instances();
+        if (!isset($instances[$instanceid])) {
             throw new coding_exception('Invalid instance ID');
         }
 
-        return $instance;
+        return $instances[$instanceid];
+    }
+
+    /**
+     * Return a list of active rule instance objects, excluding those
+     * where either the rule plugin or instance are disabled.
+     *
+     * @return array
+     */
+    public function get_active_rule_instances(): array {
+        $activeinstances = [];
+        foreach ($this->get_rule_instance_records() as $instance) {
+            if (!$instance->pluginenabled || !$instance->enabled) {
+                continue;
+            }
+            $activeinstances[] = $instance;
+        }
+
+        return $activeinstances;
     }
 
     /**
@@ -189,12 +232,13 @@ class rule_instances_controller implements renderable, \templatable {
      * @return array Array of rule instance records
      */
     public function get_rule_instances_by_type(string $type) {
-        $instances = array_filter($this->ruleinstances, function ($instance) use ($type) {
-            return $instance->type === $type;
-        });
-        if (!$instances) {
+        $plugin = \core_plugin_manager::instance()->get_plugin_info('registrationrule_' . $type);
+        if ($plugin === null) {
             throw new coding_exception('Invalid rule plugin type');
         }
+        $instances = array_filter($this->get_rule_instances(), function ($instance) use ($type) {
+            return $instance->type === $type;
+        });
 
         return $instances;
     }
@@ -505,8 +549,8 @@ class rule_instances_controller implements renderable, \templatable {
 
         // Extract only the rule specific settings fields from the form
         // data if the rule defines any.
-        if (defined("$class::SETTINGS_FIELDS")) {
-            foreach ($class::SETTINGS_FIELDS as $field) {
+        if (is_subclass_of($class, 'tool_registrationrules\local\rule\instance_configurable')) {
+            foreach ($class::get_instance_settings_fields() as $field) {
                 $extradata[$field] = $formdata->$field;
             }
         }

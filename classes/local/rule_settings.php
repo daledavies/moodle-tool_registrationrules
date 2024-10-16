@@ -49,14 +49,8 @@ class rule_settings extends \moodleform {
         $controller = new rule_instances_controller();
         $instancerecord = $controller->get_rule_instance_by_id($instanceid);
 
-        $extrafields = json_decode($instancerecord->other);
-
-        foreach ($extrafields as $fieldname => $value) {
-            $instancerecord->$fieldname = $value;
-        }
-
-        $form = new static($instancerecord->type, $instanceid);
-        $form->set_data($instancerecord);
+        $form = new static($instancerecord->get_type(), $instanceid);
+        $form->set_data($instancerecord->get_config());
 
         return $form;
     }
@@ -189,11 +183,14 @@ class rule_settings extends \moodleform {
         $mform->setType('fallbackpoints', PARAM_INT);
         $mform->setDefault('fallbackpoints', 0);
 
-        // Give the registration_rule the option to extend our settings form.
-        call_user_func(
-            ['registrationrule_' . $this->type . '\rule', 'extend_settings_form'],
-            $mform,
-        );
+        // If this is defined as a configurable instance then allow it to extend the settings form.
+        $ruleinstanceclass = 'registrationrule_' . $this->type . '\rule';
+        if (is_subclass_of($ruleinstanceclass, 'tool_registrationrules\local\rule\instance_configurable')) {
+            call_user_func(
+                [$ruleinstanceclass, 'extend_settings_form'],
+                $mform,
+            );
+        }
 
         $this->add_action_buttons();
     }
