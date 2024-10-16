@@ -224,12 +224,13 @@ class rule_instances_controller implements renderable, \templatable {
      * @return array Array of rule instance records
      */
     public function get_rule_instances_by_type(string $type) {
-        $instances = array_filter($this->ruleinstances, function ($instance) use ($type) {
-            return $instance->type === $type;
-        });
-        if (!$instances) {
+        $plugin = \core_plugin_manager::instance()->get_plugin_info('registrationrule_' . $type);
+        if ($plugin === null) {
             throw new coding_exception('Invalid rule plugin type');
         }
+        $instances = array_filter($this->get_rule_instances(), function ($instance) use ($type) {
+            return $instance->get_type() === $type;
+        });
 
         return $instances;
     }
