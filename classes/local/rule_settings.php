@@ -171,7 +171,7 @@ class rule_settings extends \moodleform {
 
         $mform->addElement('text', 'points', get_string('registrationrule:instance:points', 'tool_registrationrules'));
         $mform->setType('points', PARAM_INT);
-        $mform->setDefault('points', 0);
+        $mform->setDefault('points', 100);
 
         $mform->addElement(
             'selectyesno',
