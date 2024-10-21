@@ -70,6 +70,16 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024090302, 'tool', 'registrationrules');
     }
 
+    if ($oldversion < 2024090304) {
+        // Change the default of points column on tool_registrationrules from 0 to 100.
+        $table = new xmldb_table('tool_registrationrules');
+        $field = new xmldb_field('points', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '100');
+        $dbman->change_field_default($table, $field);
+
+        // Registrationrules savepoint reached.
+        upgrade_plugin_savepoint(true, 2024090304, 'tool', 'registrationrules');
+    }
+
     // Apparently we must always return true here, or we get an "unkown error" dusing upgrade.
     // See https://moodledev.io/docs/guides/upgrade#dbupgradephp for info.
     return true;
