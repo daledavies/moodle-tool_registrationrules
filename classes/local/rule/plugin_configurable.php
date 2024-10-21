@@ -16,21 +16,23 @@
 
 namespace tool_registrationrules\local\rule;
 
-use MoodleQuickForm;
-
 /**
- * Configurable registration rules have to implement this interface.
+ * Configurable rule plugins have to implement this interface.
  *
- * @package tool_registrationrules
- * @copyright 2024 eDaktik GmbH {@link https://www.edaktik.at/}
- * @author    Philipp Hager <philipp.hager@edaktik.at>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later */
-interface configurable {
+ * @package    tool_registrationrules
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
+ * @author    Lukas MuLu Müller <info@mulu.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+interface plugin_configurable {
     /**
-     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
+     * Confirm if the rule plugin has been properly configured.
      *
-     * @param MoodleQuickForm $mform
-     * @return void
+     * @return boolean
      */
-    public static function extend_settings_form(MoodleQuickForm $mform): void;
+    public static function is_plugin_configured(): bool;
 }

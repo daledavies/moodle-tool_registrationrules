@@ -26,7 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- $string['plugindescription'] = 'Only allow registration between two dates';
+$string['failuremessage'] = 'Registration is not allowed at this time.';
+$string['plugindescription'] = 'Only allow registration between two dates';
 $string['pluginname'] = 'Limit by date';
-$string['registrationrule:instance:name'] = 'Limit by dat';
-$string['resultmessage'] = 'Sorry, the captcha was not solved.';
+$string['registrationrule:instance:name'] = 'Limit by date';
