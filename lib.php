@@ -32,27 +32,40 @@
 use tool_registrationrules\local\rule_checker;
 
 /**
- * Example of use in callback without passing data to rule_checker::check().
+ * Run the pre-registration checks from any instances that define them and
+ * output an error page if any checks deny registration.
  *
  * @return void
  * @throws coding_exception
  * @throws moodle_exception
  */
 function tool_registrationrules_pre_signup_requests() {
+    global $OUTPUT, $PAGE;
+    // Run the pre-registration checks from any instances that define them.
     $rulechecker = rule_checker::get_instance('signup_form');
-
     $rulechecker->run_pre_data_checks();
     if ($rulechecker->is_registration_allowed()) {
         return;
     }
-
-    \core\notification::warning($rulechecker->get_feedback_messages_string());
-    redirect(
-        new moodle_url(
-            '/admin/tool/registrationrules/error.php',
-            ['ver' => 'before'],
-        ),
-    );
+    // If we get here then registration is not allowed, so first
+    // set an appropriate status code.
+    header("HTTP/1.0 403 Forbidden");
+    // Build and output the page with appropriate messages.
+    $newaccount = get_string('newaccount');
+    $login      = get_string('login');
+    $PAGE->navbar->add($login);
+    $PAGE->navbar->add($newaccount);
+    $PAGE->set_pagelayout('login');
+    $PAGE->set_title($newaccount);
+    $PAGE->set_heading($newaccount);
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($newaccount);
+    if ($generalmessage = get_config('tool_registrationrules', 'generalbeforemessage')) {
+        echo $OUTPUT->notification($generalmessage, 'info', false);
+    }
+    echo $OUTPUT->notification($rulechecker->get_feedback_messages_string(), 'warning', false);
+    echo $OUTPUT->footer();
+    // Exit here to prevent the actual registration page from being generated.
     exit;
 }
 
