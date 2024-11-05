@@ -223,10 +223,7 @@ class rule_instances_controller implements renderable, \templatable {
             // If this rule plugin class implements plugin_configurable then we can cheeck if the
             // requierd configuration options have been satisfied.
             if (is_subclass_of($instance, 'tool_registrationrules\local\rule\plugin_configurable')) {
-                $pluginconfigured = call_user_func(
-                    ['registrationrule_' . $instance->get_type() . '\rule', 'is_plugin_configured']
-                );
-                if (!$pluginconfigured) {
+                if (!$instance::is_plugin_configured()) {
                     continue;
                 }
             }
@@ -485,10 +482,7 @@ class rule_instances_controller implements renderable, \templatable {
 
             $dimmedreasons = [];
             if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
-                $pluginconfigured = call_user_func(
-                    ['registrationrule_' . $ruleinstance->get_type() . '\rule', 'is_plugin_configured']
-                );
-                if (!$pluginconfigured) {
+                if (!$ruleinstance::is_plugin_configured()) {
                     $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
                 }
             }

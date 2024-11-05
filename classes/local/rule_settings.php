@@ -120,9 +120,7 @@ class rule_settings extends \moodleform {
         // Allow the rule instance to check if the plugin itself is properly configured.
         $this->pluginconfigured = true;
         if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\plugin_configurable')) {
-            $this->pluginconfigured = call_user_func(
-                ['registrationrule_' . $this->type . '\rule', 'is_plugin_configured']
-            );
+            $this->pluginconfigured = $this->ruleinstanceclass::is_plugin_configured();
         }
 
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable, $ajaxformdata);
@@ -220,10 +218,7 @@ class rule_settings extends \moodleform {
 
         // If this is defined as a configurable instance then allow it to extend the settings form.
         if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\instance_configurable')) {
-            call_user_func(
-                [$this->ruleinstanceclass, 'extend_settings_form'],
-                $mform,
-            );
+            $this->ruleinstanceclass::extend_settings_form($mform);
         }
 
         $this->add_action_buttons();
