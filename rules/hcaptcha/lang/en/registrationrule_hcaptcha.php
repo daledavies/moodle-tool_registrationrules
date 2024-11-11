@@ -28,6 +28,8 @@
 
 $string['plugindescription'] = 'Enable hCaptcha on registration form';
 $string['pluginname'] = 'hCaptcha rule';
+$string['privacy:forwarded:payload'] = 'Various information (e.g. IP address, how long the visitor has been on the website or app, or mouse movements made by the user) necessary for hCaptcha\'s function.';
+$string['privacy:forwarded:summary'] = 'hCaptcha evaluates various information (e.g. IP address, how long the visitor has been on the website or app, or mouse movements made by the user). The data collected during the analysis will be forwarded to IMI. hCaptcha analysis in the "invisible mode" may take place completely in the background.HCaptcha rule does not store any user related data, and only necessary data is sent Intuition Machines, Inc, a Delaware US Corporation ("IMI").';
 $string['registrationrule:instance:name'] = 'hCaptcha';
 $string['resultmessage'] = 'Sorry, the captcha was not solved.';
 $string['secret'] = 'Secret';
