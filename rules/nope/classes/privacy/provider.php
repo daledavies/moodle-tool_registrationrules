@@ -14,20 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace registrationrule_nope\privacy;
+
+use coding_exception;
+use core_privacy\local\metadata\null_provider;
+
 /**
- * Strings for registrationrule_nope registration rule psublugin.
+ * Privacy provider for registrationrule_nope sublugin—storing no data on its own.
  *
- * @package   registrationrule_nope
+ * @package registrationrule_nope
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2024 lern.link GmbH {@link https://lern.link/}
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
- * @author    Dale Davies <dale.davies@catalyst-eu.net>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Philipp Hager <philipp.hager@edaktik.at>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['plugindescription'] = 'Disallow registration entirely';
-$string['pluginname'] = 'Nope rule';
-$string['privacy:null_provider:reason'] = 'Nope rule simply denies registration constantly. There is no user related data involved, stored, or processed by the plugin.';
-$string['registrationrule:instance:name'] = 'nope';
-$string['resultmessage'] = 'Sorry, but nope!';
+class privacy implements null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     * @throws coding_exception
+     */
+    public static function get_reason(): string {
+        return get_string('privacy:null_provider:reason', 'registrationrule_nope');
+    }
+}
