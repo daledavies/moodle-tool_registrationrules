@@ -96,7 +96,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements plugi
         // or for some reason it does not contain the expected success field.
         if ($curl->get_errno() || !($response = json_decode($response)) || !isset($response->success)) {
             return $this->deny(
-                score: $this->get_config()->fallbackpoints,
+                score: $this->get_fallbackpoints(),
                 feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
             );
         }
@@ -104,7 +104,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements plugi
         // The captcha failed so deny registration.
         if (!$response->success) {
             return $this->deny(
-                score: $this->get_config()->points,
+                score: $this->get_points(),
                 validationmessages: ['tool_registrationrules_errors' => get_string('failuremessage', 'registrationrule_hcaptcha')],
             );
         }

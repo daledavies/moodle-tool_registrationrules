@@ -59,8 +59,23 @@ class rule_settings extends \moodleform {
         $controller = new rule_instances_controller();
         $ruleinstance = $controller->get_rule_instance_by_id($instanceid);
 
+        // Define data for standard form fields.
+        $data = [
+            'id' => $ruleinstance->get_id(),
+            'type' => $ruleinstance->get_type(),
+            'enabled' => $ruleinstance->get_enabled(),
+            'name' => $ruleinstance->get_name(),
+            'points' => $ruleinstance->get_points(),
+            'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
+            'sortorder' => $ruleinstance->get_sortorder(),
+        ];
+
+        // Merge in instance specific field data.
+        $data = array_merge($data, (array) $ruleinstance->get_instance_config());
+
+        // Create our form and set it's data.
         $form = new static($ruleinstance->get_type(), $instanceid);
-        $form->set_data($ruleinstance->get_config());
+        $form->set_data($data);
 
         return $form;
     }

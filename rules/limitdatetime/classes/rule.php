@@ -71,12 +71,12 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements insta
          * Just like users don't.
          * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
          */
-        $tooearly = $now < $this->get_config()->limitdatetime_from;
-        $toolate = $now > $this->get_config()->limitdatetime_to;
+        $tooearly = $now < $this->get_instance_config()->limitdatetime_from;
+        $toolate = $now > $this->get_instance_config()->limitdatetime_to;
 
         if ($tooearly || $toolate) {
             return $this->deny(
-                score: $this->get_config()->points,
+                score: $this->get_points(),
                 feedbackmessage: get_string('failuremessage', 'registrationrule_limitdatetime'),
             );
         }

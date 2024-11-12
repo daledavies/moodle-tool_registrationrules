@@ -72,7 +72,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
             // Who knows if we are pwned, something went wrong during the API call.
             if ($curl->get_errno()) {
                 return $this->deny(
-                    score: $this->get_config()->fallbackpoints,
+                    score: $this->get_fallbackpoints(),
                     feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hibp')
                 );
             }
@@ -92,7 +92,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
         // Looks like we might have been pwned.
         if ($matched) {
             return $this->deny(
-                score: $this->get_config()->points,
+                score: $this->get_points(),
                 validationmessages: ['password' => get_string('failuremessage', 'registrationrule_hibp')],
             );
         }

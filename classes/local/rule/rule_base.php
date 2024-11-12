@@ -37,13 +37,28 @@ use tool_registrationrules\local\rule_check_result;
 abstract class rule_base implements rule_interface {
 
     /** @var stdClass rule plugin instance config. */
-    protected stdClass $config;
+    protected stdClass $instanceconfig;
 
-    /** @var int rule instance id */
+    /** @var int rule plugin instance id. */
     protected int $id;
 
-    /** @var string rule instance type */
+    /** @var string rule plugin instance type. */
     protected string $type;
+
+    /** @var bool true if the rule instance is enabled. */
+    protected bool $enabled;
+
+    /** @var string rule plugin instance name. */
+    protected string $name;
+
+    /** @var int rule plugin instance points. */
+    protected int $points;
+
+    /** @var int rule plugin instance fallback points. */
+    protected int $fallbackpoints;
+
+    /** @var int rule plugin instance sort order. */
+    protected int $sortorder;
 
     /** @var rule_check_result object representing the result this rule will return. */
     protected rule_check_result $result;
@@ -51,24 +66,42 @@ abstract class rule_base implements rule_interface {
     /**
      * Constructor
      *
-     * TODO: should we move configuration processing to this base class?
-     *
-     * @param stdClass $config rule instance configuration
+     * @param int $id rule plugin instance id.
+     * @param string $type rule plugin instance type.
+     * @param bool $enabled true if the rule instance is enabled.
+     * @param string $name rule instance name.
+     * @param int $points rule plugin instance points.
+     * @param int $fallbackpoints rule plugin instance fallback points.
+     * @param int $sortorder rule plugin instance sort order.
+     * @param stdClass $instanceconfig rule plugin instance config.
      */
-    public function __construct(stdClass $config) {
-        $this->config = $config;
-        $this->id = $this->config->id;
-        $this->type = $this->config->type;
+    public function __construct(
+        int $id,
+        string $type,
+        bool $enabled,
+        string $name,
+        int $points,
+        int $fallbackpoints,
+        int $sortorder,
+        stdClass $instanceconfig,
+    ) {
+        $this->id = $id;
+        $this->type = $type;
+        $this->enabled = $enabled;
+        $this->name = $name;
+        $this->points = $points;
+        $this->fallbackpoints = $fallbackpoints;
+        $this->sortorder = $sortorder;
+        $this->instanceconfig = $instanceconfig;
         $this->result = new rule_check_result();
-    }
-
-    /**
-     * Get rule instance config object.
-     *
-     * @return stdClass
-     */
-    public function get_config(): stdClass {
-        return $this->config;
+        // If the subclass inherits the instance_configurable interface then validate that
+        // the supplied instance config contains the fields defined by get_instance_settings_fields().
+        if (
+            $this instanceof instance_configurable &&
+            array_diff(array_values(static::get_instance_settings_fields()), array_keys((array) $this->instanceconfig))
+        ) {
+            throw new coding_exception('Instance config must contain the fields defined by get_instance_settings_fields()');
+        }
     }
 
     /**
@@ -87,6 +120,60 @@ abstract class rule_base implements rule_interface {
      */
     public function get_type(): string {
         return $this->type;
+    }
+
+    /**
+     * Is the rule plugin instance enabled?
+     *
+     * @return bool true if enabled.
+     */
+    public function get_enabled(): bool {
+        return $this->enabled;
+    }
+
+    /**
+     * Get the rule instance's name.
+     *
+     * @return string the rule instance name.
+     */
+    public function get_name(): string {
+        return $this->name;
+    }
+
+    /**
+     * Get the points configured for thie rule instance.
+     *
+     * @return int the rule instance points.
+     */
+    public function get_points(): int {
+        return $this->points;
+    }
+
+    /**
+     * Get the fallback points configured for thie rule instance.
+     *
+     * @return int the rule instance fallback points.
+     */
+    public function get_fallbackpoints(): int {
+        return $this->fallbackpoints;
+    }
+
+    /**
+     * Get the rule instance's sort order.
+     *
+     * @return int the rule instance sort order.
+     */
+    public function get_sortorder(): int {
+        return $this->sortorder;
+    }
+
+    /**
+     * Get rule instance config object.
+     *
+     * @return stdClass
+     */
+    public function get_instance_config(): stdClass {
+        return $this->instanceconfig;
     }
 
     /**

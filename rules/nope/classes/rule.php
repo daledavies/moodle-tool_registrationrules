@@ -49,7 +49,7 @@ class rule extends \tool_registrationrules\local\rule\rule_base {
      */
     public function pre_data_check(): ?rule_check_result {
         return $this->deny(
-            score: $this->get_config()->points,
+            score: $this->get_points(),
             feedbackmessage: get_string('failuremessage', 'registrationrule_nope'),
         );
     }

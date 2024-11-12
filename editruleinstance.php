@@ -52,7 +52,7 @@ $controller = new \tool_registrationrules\local\rule_instances_controller();
 if (!empty($ruleinstanceid)) {
     $ruleinstance = $controller->get_rule_instance_by_id($ruleinstanceid);
     $PAGE->set_title(get_string('editruleinstance', 'tool_registrationrules'));
-    $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->get_config()->name));
+    $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->get_name()));
     $mform = rule_settings::from_rule_instance($ruleinstance->get_id());
 } else {
     $PAGE->set_title(get_string('addnewruleinstance', 'tool_registrationrules'));

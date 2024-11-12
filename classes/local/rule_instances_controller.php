@@ -34,6 +34,7 @@ use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
+use tool_registrationrules\plugininfo\registrationrule;
 
 /**
  * Class rule_instances_controller
@@ -62,15 +63,6 @@ class rule_instances_controller implements renderable, \templatable {
             table: 'tool_registrationrules',
             sort: 'sortorder ASC',
         );
-        // Get a list of enabled rule plugins and update each instance record
-        // to show if it refers to an enabled or disabled plugin.
-        $enabledplugins = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
-        foreach ($instancerecords as $key => $instance) {
-            $instancerecords[$key]->pluginenabled = false;
-            if (in_array($instance->type, $enabledplugins)) {
-                $instancerecords[$key]->pluginenabled = true;
-            }
-        }
         // Initialise the external and internal representation of instance records.
         $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
@@ -170,22 +162,35 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Return a list of hydrated rule instance objects.
      *
-     * @return array
+     * @return rule\rule_base[]|rule\plugin_configurable[]|rule\instance_configurable[]
      */
     public function get_rule_instances(): array {
         $instances = [];
         foreach ($this->get_rule_instance_records() as $instance) {
             $pluginrule = 'registrationrule_' . $instance->type . '\rule';
-
-            // Parse additional config and add to instance.
-            foreach (json_decode($instance->other) as $configkey => $configvalue) {
-                $instance->$configkey = $configvalue;
+            // Decode instance related config from DB record.
+            $instanceconfig = json_decode($instance->other);
+            if ($instanceconfig === null) {
+                throw new coding_exception('Instance config JSON could not be decoded');
             }
-            $ruleinstance = new $pluginrule($instance);
+            // Create a new instance of the rule plugin.
+            $ruleinstance = new $pluginrule(
+                id: $instance->id,
+                type: $instance->type,
+                enabled: $instance->enabled,
+                name: $instance->name,
+                points: $instance->points,
+                fallbackpoints: $instance->fallbackpoints,
+                sortorder: $instance->sortorder,
+                instanceconfig: (object) $instanceconfig,
+            );
+            // The rule plugin must at least implement rule_interface so we know
+            // expect later on.
             if (!$ruleinstance instanceof rule\rule_base) {
                 debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
                 continue;
             }
+            // Add the new rule instance object to the list of instances.
             $instances[$ruleinstance->get_id()] = $ruleinstance;
         }
 
@@ -216,8 +221,9 @@ class rule_instances_controller implements renderable, \templatable {
     public function get_active_rule_instances(): array {
         $activeinstances = [];
         foreach ($this->get_rule_instances() as $instance) {
-            $instanceconfig = $instance->get_config();
-            if (!$instanceconfig->pluginenabled || !$instanceconfig->enabled) {
+            // If either the plugin or instance is disabled then exclude it.
+            $pluginenabled = registrationrule::get_enabled_plugin($instance->get_type());
+            if (!$pluginenabled || !$instance->get_enabled()) {
                 continue;
             }
             // If this rule plugin class implements plugin_configurable then we can cheeck if the
@@ -480,39 +486,41 @@ class rule_instances_controller implements renderable, \templatable {
                 ),
             ];
 
+            // The rule instance be dimmed/ghosted if it is not configured or the plugin
+            // itself has been disabled.
             $dimmedreasons = [];
             if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
                 if (!$ruleinstance::is_plugin_configured()) {
                     $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
                 }
             }
-            if (!$ruleinstance->get_config()->pluginenabled) {
+            if (!registrationrule::get_enabled_plugin($ruleinstance->get_type())) {
                 $dimmedreasons[] = get_string('plugindisabled', 'tool_registrationrules');
             }
 
             // Add the instance row details to our template context.
             $context->instances[] = (object)[
                 'id' => $ruleinstance->get_id(),
-                'name' => $ruleinstance->get_config()->name,
-                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_config()->type),
-                'points' => $ruleinstance->get_config()->points,
-                'fallbackpoints' => $ruleinstance->get_config()->fallbackpoints,
+                'name' => $ruleinstance->get_name(),
+                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_type()),
+                'points' => $ruleinstance->get_points(),
+                'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
                 'enabled' => $output->render(
                     new \action_menu_link_primary(
                         url: new \moodle_url(
                             '/admin/tool/registrationrules/manageruleinstances.php',
                             [
                                 'instanceid' => $ruleinstance->get_id(),
-                                'action' => $ruleinstance->get_config()->enabled ? 'disable' : 'enable',
+                                'action' => $ruleinstance->get_enabled() ? 'disable' : 'enable',
                                 'sesskey' => sesskey(),
                             ],
                         ),
-                        icon: $ruleinstance->get_config()->enabled ? new pix_icon('t/hide', get_string('disable'))
+                        icon: $ruleinstance->get_enabled() ? new pix_icon('t/hide', get_string('disable'))
                                                      : new pix_icon('t/show', get_string('enable')),
-                        text: $ruleinstance->get_config()->enabled ? get_string('disable') : get_string('enable'),
+                        text: $ruleinstance->get_enabled() ? get_string('disable') : get_string('enable'),
                     ),
                 ),
-                'sortorder' => $ruleinstance->get_config()->sortorder,
+                'sortorder' => $ruleinstance->get_sortorder(),
                 'moveuplink' => $moveuplink,
                 'movedownlink' => $movedownlink,
                 'actions' => (new action_menu($actions))->export_for_template($output),
