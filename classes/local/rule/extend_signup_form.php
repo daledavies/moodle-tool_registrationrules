@@ -17,22 +17,19 @@
 namespace tool_registrationrules\local\rule;
 
 use MoodleQuickForm;
-use tool_registrationrules\local\rule_check_result;
 
 /**
- * Interface for registration rule subplugin classes.
+ * Rule plugins must implement this interface if they wish to extend the signup form.
  *
- * @package    tool_registrationrules
+ * @package   tool_registrationrules
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2024 lern.link GmbH {@link https://lern.link/}
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
- * @author    Michael Aherne <michael.aherne@strath.ac.uk>
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
- * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface rule_interface {
+interface extend_signup_form {
     /**
      * Inject additional fields into the signup form for usage by the rule instance after submission.
      *
@@ -40,19 +37,4 @@ interface rule_interface {
      * @return void
      */
     public function extend_form(MoodleQuickForm $mform): void;
-
-    /**
-     * Perform rule's checks applicable without any user input before the signup form is displayed.
-     *
-     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
-     */
-    public function pre_data_check(): ?rule_check_result;
-
-    /**
-     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
-     *
-     * @param array $data the data array from submitted form values.
-     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
-     */
-    public function post_data_check(array $data): ?rule_check_result;
 }

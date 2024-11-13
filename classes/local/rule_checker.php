@@ -20,6 +20,9 @@ use coding_exception;
 use dml_exception;
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\rule\extend_signup_form;
+use tool_registrationrules\local\rule\post_data_check;
+use tool_registrationrules\local\rule\pre_data_check;
 
 /**
  * Facilitate exicution of registration rule plugins and enumeration/reposrting
@@ -128,11 +131,8 @@ class rule_checker {
      */
     public function run_pre_data_checks(): void {
         foreach ($this->rules as $instance) {
-            $result = $instance->pre_data_check();
-
-            // Ignore rules without post data check.
-            if ($result !== null) {
-                $this->results[] = $result;
+            if ($instance instanceof pre_data_check) {
+                $this->results[] = $instance->pre_data_check();
             }
         }
         $this->checked = true;
@@ -146,11 +146,8 @@ class rule_checker {
      */
     public function run_post_data_checks(array $data): void {
         foreach ($this->rules as $instance) {
-            $result = $instance->post_data_check($data);
-
-            // Ignore rules without post data check.
-            if ($result !== null) {
-                $this->results[] = $result;
+            if ($instance instanceof post_data_check) {
+                $this->results[] = $instance->post_data_check($data);
             }
         }
 
@@ -165,7 +162,9 @@ class rule_checker {
      */
     public function extend_form(MoodleQuickForm $mform): void {
         foreach ($this->rules as $instance) {
-            $instance->extend_form($mform);
+            if ($instance instanceof extend_signup_form) {
+                $instance->extend_form($mform);
+            }
         }
     }
 

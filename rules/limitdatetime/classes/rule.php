@@ -18,6 +18,7 @@ namespace registrationrule_limitdatetime;
 
 use coding_exception;
 use MoodleQuickForm;
+use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule_check_result;
 
@@ -33,7 +34,8 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements instance_configurable {
+class rule extends \tool_registrationrules\local\rule\rule_base
+implements pre_data_check, instance_configurable {
     /**
      * Return an array of settings fields names used to extend the instance
      * settings form via extend_settings_form().
@@ -60,9 +62,9 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements insta
     /**
      * Perform rule's checks applicable without any user input before the signup form is displayed.
      *
-     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     * @return rule_check_result A rule_check_result object.
      */
-    public function pre_data_check(): ?rule_check_result {
+    public function pre_data_check(): rule_check_result {
         $now = time();
 
         /* A wizard is never late, nor is he early,
@@ -84,13 +86,4 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements insta
         return $this->allow();
     }
 
-    /**
-     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
-     *
-     * @param array $data the data array from submitted form values.
-     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
-     */
-    public function post_data_check(array $data): ?rule_check_result {
-        return null;
-    }
 }

@@ -14,34 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace registrationrule_nope;
+namespace tool_registrationrules\local\rule;
 
-use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule_check_result;
 
 /**
- * Temporarily disable user registration.
+ * Rule plugins must implement this interface if they wish to implement
+ * a post-data check.
  *
- * @package   registrationrule_nope
+ * @package   tool_registrationrules
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2024 lern.link GmbH {@link https://lern.link/}
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
- * @author    Philipp Hager <philipp.hager@edaktik.at>
- * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements pre_data_check {
+interface post_data_check {
     /**
-     * Perform rule's checks applicable without any user input before the signup form is displayed.
+     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
      *
-     * @return rule_check_result A rule_check_result object.
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result a rule_check_result object.
      */
-    public function pre_data_check(): rule_check_result {
-        return $this->deny(
-            score: $this->get_points(),
-            feedbackmessage: get_string('failuremessage', 'registrationrule_nope'),
-        );
-    }
+    public function post_data_check(array $data): rule_check_result;
 }
