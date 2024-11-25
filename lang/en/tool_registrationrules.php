@@ -42,6 +42,7 @@ $string['hideshow'] = 'Hide/Show';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['maxpoints'] = 'Max rejection points';
 $string['pluginname'] = 'Registration rules';
+$string['privacy:null_provider:reason'] = 'The Registration rules plugin does not store any user-related data. User related data stored by specific registration rule plugins get declared separately.';
 $string['registrationpagemessage'] = 'Message on top of the registration page';
 $string['registrationrule:instance:description'] = 'Description';
 $string['registrationrule:instance:displaymessage'] = 'Display message';

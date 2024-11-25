@@ -31,4 +31,5 @@ $string['failuremessage'] = 'Email domain is on a disposable email domain list.'
 $string['fallbackfailuremessage'] = 'Your email address cannot be veriefied at the moment';
 $string['plugindescription'] = 'Check if user email is on a list of disposable email domains';
 $string['pluginname'] = 'Disposable emails rule';
+$string['privacy:null_provider:reason'] = 'Disposable emails rule does not store any user related data. The domain part of user email addresses will be compared to a list of disposable email domains, this happens transiently during form processing and no data is transmitted.';
 $string['registrationrule:instance:name'] = 'Disposable emails';
