@@ -19,7 +19,8 @@ namespace registrationrule_disposableemails;
 use moodle_exception;
 use registrationrule_disposableemails\local\list_manager;
 use tool_registrationrules\local\rule\post_data_check;
-use tool_registrationrules\local\rule\rule_base;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -34,7 +35,9 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends rule_base implements post_data_check {
+class rule implements rule_interface, post_data_check {
+    use rule_trait;
+
     /**
      * Perform rule's checks based on form input and user behaviour after signup form is submitted.
      *
@@ -69,7 +72,7 @@ class rule extends rule_base implements post_data_check {
             $blockeddomains = $listmanager->get_blocked_domains();
         } catch (moodle_exception) {
             return $this->deny(
-                score: $this->config->fallbackpoints,
+                score: $this->get_fallbackpoints(),
                 feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_disposableemails')
             );
         }
@@ -79,7 +82,7 @@ class rule extends rule_base implements post_data_check {
         // on the list.
         if (in_array($domain, $blockeddomains)) {
             return $this->deny(
-                score: $this->config->points,
+                score: $this->get_points(),
                 validationmessages: ['email' => get_string('failuremessage', 'registrationrule_disposableemails')],
             );
         }

@@ -18,6 +18,8 @@ namespace registrationrule_nope;
 
 use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 
 /**
  * Temporarily disable user registration.
@@ -32,7 +34,9 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements pre_data_check {
+class rule implements rule_interface, pre_data_check {
+    use rule_trait;
+
     /**
      * Perform rule's checks applicable without any user input before the signup form is displayed.
      *

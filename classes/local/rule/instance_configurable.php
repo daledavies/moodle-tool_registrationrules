@@ -17,6 +17,7 @@
 namespace tool_registrationrules\local\rule;
 
 use MoodleQuickForm;
+use stdClass;
 
 /**
  * Configurable registration rules have to implement this interface.
@@ -29,6 +30,21 @@ use MoodleQuickForm;
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later */
 interface instance_configurable {
+    /**
+     * Get rule instance config object.
+     *
+     * @return stdClass
+     */
+    public function get_instance_config(): stdClass;
+
+    /**
+     * Set rule instance config object.
+     *
+     * @param stdClass $instanceconfig
+     * @return void
+     */
+    public function set_instance_config(stdClass $instanceconfig): void;
+
     /**
      * Return an array of settings fields names used to extend the instance
      * settings form via extend_settings_form().

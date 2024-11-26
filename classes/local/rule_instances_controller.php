@@ -162,35 +162,13 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Return a list of hydrated rule instance objects.
      *
-     * @return rule\rule_base[]|rule\plugin_configurable[]|rule\instance_configurable[]
+     * @return rule\rule_interface[]
      */
     public function get_rule_instances(): array {
         $instances = [];
-        foreach ($this->get_rule_instance_records() as $instance) {
-            $pluginrule = 'registrationrule_' . $instance->type . '\rule';
-            // Decode instance related config from DB record.
-            $instanceconfig = json_decode($instance->other);
-            if ($instanceconfig === null) {
-                throw new coding_exception('Instance config JSON could not be decoded');
-            }
-            // Create a new instance of the rule plugin.
-            $ruleinstance = new $pluginrule(
-                id: $instance->id,
-                type: $instance->type,
-                enabled: $instance->enabled,
-                name: $instance->name,
-                points: $instance->points,
-                fallbackpoints: $instance->fallbackpoints,
-                sortorder: $instance->sortorder,
-                instanceconfig: (object) $instanceconfig,
-            );
-            // The rule plugin must at least implement rule_interface so we know
-            // expect later on.
-            if (!$ruleinstance instanceof rule\rule_base) {
-                debugging("Rule $pluginrule does not extend rule_base", DEBUG_DEVELOPER);
-                continue;
-            }
-            // Add the new rule instance object to the list of instances.
+        foreach ($this->get_rule_instance_records() as $record) {
+            // Create a new rule instance object and add it to the list of instances.
+            $ruleinstance = rule\rule_factory::create_instance_from_record($record);
             $instances[$ruleinstance->get_id()] = $ruleinstance;
         }
 
@@ -201,9 +179,9 @@ class rule_instances_controller implements renderable, \templatable {
      * Return a rule instance object matching the given instanceid.
      *
      * @param int $instanceid
-     * @return rule\rule_base|null A single rule instance record.
+     * @return rule\rule_interface A single rule instance record.
      */
-    public function get_rule_instance_by_id(int $instanceid): rule\rule_base {
+    public function get_rule_instance_by_id(int $instanceid): rule\rule_interface {
         $instances = $this->get_rule_instances();
         if (!isset($instances[$instanceid])) {
             throw new coding_exception('Invalid instance ID');
@@ -216,7 +194,7 @@ class rule_instances_controller implements renderable, \templatable {
      * Return a list of active rule instance objects, excluding those where either the
      * rule plugin or instance are disabled, or the rule plugin has not been configured.
      *
-     * @return array
+     * @return rule\rule_interface[]
      */
     public function get_active_rule_instances(): array {
         $activeinstances = [];

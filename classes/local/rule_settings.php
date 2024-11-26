@@ -18,6 +18,7 @@ namespace tool_registrationrules\local;
 
 use coding_exception;
 use dml_exception;
+use tool_registrationrules\local\rule\instance_configurable;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -70,8 +71,10 @@ class rule_settings extends \moodleform {
             'sortorder' => $ruleinstance->get_sortorder(),
         ];
 
-        // Merge in instance specific field data.
-        $data = array_merge($data, (array) $ruleinstance->get_instance_config());
+        // Merge in instance specific field data if rule plugin class specifies it.
+        if ($ruleinstance instanceof instance_configurable) {
+            $data = array_merge($data, (array) $ruleinstance->get_instance_config());
+        }
 
         // Create our form and set it's data.
         $form = new static($ruleinstance->get_type(), $instanceid);

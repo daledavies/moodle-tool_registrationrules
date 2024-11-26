@@ -18,6 +18,9 @@ namespace registrationrule_limitdatetime;
 
 use coding_exception;
 use MoodleQuickForm;
+use stdClass;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule_check_result;
@@ -34,8 +37,33 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base
-implements pre_data_check, instance_configurable {
+class rule implements rule_interface, pre_data_check, instance_configurable {
+    use rule_trait;
+
+    /** @var stdClass rule plugin instance config. */
+    protected stdClass $instanceconfig;
+
+    /**
+     * Set rule instance config object.
+     *
+     * @param stdClass $instanceconfig
+     * @return void
+     */
+    public function set_instance_config(stdClass $instanceconfig): void {
+        $this->instanceconfig = $instanceconfig;
+    }
+
+    /**
+     * Get rule instance config object.
+     *
+     * @return stdClass
+     */
+    public function get_instance_config(): stdClass {
+        return $this->instanceconfig;
+    }
+
+
+
     /**
      * Return an array of settings fields names used to extend the instance
      * settings form via extend_settings_form().

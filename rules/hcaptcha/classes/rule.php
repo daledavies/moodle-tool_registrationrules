@@ -23,6 +23,8 @@ use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\plugin_configurable;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 
 /**
  * Registration rule restricting registrations based on hCaptcha detecting human and automated threats.
@@ -37,8 +39,9 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base
-implements extend_signup_form, plugin_configurable, post_data_check {
+class rule implements rule_interface, extend_signup_form, plugin_configurable, post_data_check {
+    use rule_trait;
+
     /**
      * Inject additional fields into the signup form for usage by the rule instance after submission.
      *

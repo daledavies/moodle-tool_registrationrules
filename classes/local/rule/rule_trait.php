@@ -17,27 +17,21 @@
 namespace tool_registrationrules\local\rule;
 
 use coding_exception;
-use stdClass;
 use tool_registrationrules\local\rule_check_result;
 
 /**
- * Base class for rule subplugin classes.
+ * Trait implementing the basics from rule_interface for convenience
+ * when developing rule plugins.
  *
- * @package    tool_registrationrules
+ * @package tool_registrationrules
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2024 lern.link GmbH {@link https://lern.link/}
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
- * @author    Michael Aherne <michael.aherne@strath.ac.uk>
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
- * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule_base {
-
-    /** @var stdClass rule plugin instance config. */
-    protected stdClass $instanceconfig;
-
+trait rule_trait {
     /** @var int rule plugin instance id. */
     protected int $id;
 
@@ -59,50 +53,6 @@ class rule_base {
     /** @var int rule plugin instance sort order. */
     protected int $sortorder;
 
-    /** @var rule_check_result object representing the result this rule will return. */
-    protected rule_check_result $result;
-
-    /**
-     * Constructor
-     *
-     * @param int $id rule plugin instance id.
-     * @param string $type rule plugin instance type.
-     * @param bool $enabled true if the rule instance is enabled.
-     * @param string $name rule instance name.
-     * @param int $points rule plugin instance points.
-     * @param int $fallbackpoints rule plugin instance fallback points.
-     * @param int $sortorder rule plugin instance sort order.
-     * @param stdClass $instanceconfig rule plugin instance config.
-     */
-    public function __construct(
-        int $id,
-        string $type,
-        bool $enabled,
-        string $name,
-        int $points,
-        int $fallbackpoints,
-        int $sortorder,
-        stdClass $instanceconfig,
-    ) {
-        $this->id = $id;
-        $this->type = $type;
-        $this->enabled = $enabled;
-        $this->name = $name;
-        $this->points = $points;
-        $this->fallbackpoints = $fallbackpoints;
-        $this->sortorder = $sortorder;
-        $this->instanceconfig = $instanceconfig;
-        $this->result = new rule_check_result();
-        // If the subclass inherits the instance_configurable interface then validate that
-        // the supplied instance config contains the fields defined by get_instance_settings_fields().
-        if (
-            $this instanceof instance_configurable &&
-            array_diff(array_values(static::get_instance_settings_fields()), array_keys((array) $this->instanceconfig))
-        ) {
-            throw new coding_exception('Instance config must contain the fields defined by get_instance_settings_fields()');
-        }
-    }
-
     /**
      * Get rule instance ID.
      *
@@ -110,6 +60,16 @@ class rule_base {
      */
     public function get_id(): int {
         return $this->id;
+    }
+
+    /**
+     * Set rule instance ID.
+     *
+     * @param int $id
+     * @return int
+     */
+    public function set_id(int $id): int {
+        return $this->id = $id;
     }
 
     /**
@@ -122,12 +82,32 @@ class rule_base {
     }
 
     /**
+     * Set the type of rule instance plugin used for this instance.
+     *
+     * @param string $type
+     * @return string
+     */
+    public function set_type(string $type): string {
+        return $this->type = $type;
+    }
+
+    /**
      * Is the rule plugin instance enabled?
      *
      * @return bool true if enabled.
      */
     public function get_enabled(): bool {
         return $this->enabled;
+    }
+
+    /**
+     * Enable the rule plugin instance.
+     *
+     * @param bool $enabled
+     * @return bool
+     */
+    public function set_enabled(bool $enabled): bool {
+        return $this->enabled = $enabled;
     }
 
     /**
@@ -140,12 +120,32 @@ class rule_base {
     }
 
     /**
+     * Set  the rule instance's name.
+     *
+     * @param string $name
+     * @return string
+     */
+    public function set_name(string $name): string {
+        return $this->name = $name;
+    }
+
+    /**
      * Get the points configured for thie rule instance.
      *
      * @return int the rule instance points.
      */
     public function get_points(): int {
         return $this->points;
+    }
+
+    /**
+     * Set the points configured for thie rule instance.
+     *
+     * @param int $points
+     * @return int
+     */
+    public function set_points(int $points): int {
+        return $this->points = $points;
     }
 
     /**
@@ -158,6 +158,16 @@ class rule_base {
     }
 
     /**
+     * Set the fallback points configured for thie rule instance.
+     *
+     * @param int $fallbackpoints
+     * @return int
+     */
+    public function set_fallbackpoints(int $fallbackpoints): int {
+        return $this->fallbackpoints = $fallbackpoints;
+    }
+
+    /**
      * Get the rule instance's sort order.
      *
      * @return int the rule instance sort order.
@@ -167,12 +177,13 @@ class rule_base {
     }
 
     /**
-     * Get rule instance config object.
+     * Set the rule instance's sort order.
      *
-     * @return stdClass
+     * @param int $sortorder
+     * @return int
      */
-    public function get_instance_config(): stdClass {
-        return $this->instanceconfig;
+    public function set_sortorder(int $sortorder): int {
+        return $this->sortorder = $sortorder;
     }
 
     /**
@@ -181,9 +192,10 @@ class rule_base {
      * @return rule_check_result
      */
     public function allow(): rule_check_result {
-        $this->result->set_allowed(true);
+        $result = new rule_check_result();
+        $result->set_allowed(true);
 
-        return $this->result;
+        return $result;
     }
 
     /**
@@ -205,11 +217,12 @@ class rule_base {
         if (!empty($feedbackmessage) && !empty($validationmessages)) {
             throw new coding_exception('One of feedbackmessage or validationmessages params must be set');
         }
-        $this->result->set_allowed(false);
-        $this->result->set_score($score);
-        $this->result->set_feedback_message($feedbackmessage);
-        $this->result->set_validation_messages($validationmessages);
+        $result = new rule_check_result();
+        $result->set_allowed(false);
+        $result->set_score($score);
+        $result->set_feedback_message($feedbackmessage);
+        $result->set_validation_messages($validationmessages);
 
-        return $this->result;
+        return $result;
     }
 }
