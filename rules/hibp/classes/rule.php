@@ -17,9 +17,11 @@
 namespace registrationrule_hibp;
 
 use coding_exception;
-use MoodleQuickForm;
-use tool_registrationrules\local\rule\configurable;
+use curl;
+use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 
 /**
  * Registration rule restricting registrations based on data from HaveIBeenPwnd.
@@ -32,16 +34,17 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
+class rule implements rule_interface, post_data_check {
+    use rule_trait;
+
     /**
      * Perform rule's checks based on form input and user behaviour after signup form is submitted.
      *
      * @param array $data the data array from submitted form values.
-     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
+     * @return rule_check_result a rule_check_result object.
      * @throws coding_exception
      */
-    public function post_data_check(array $data): ?rule_check_result {
-
+    public function post_data_check(array $data): rule_check_result {
         if (!isset($data['password'])) {
             return null;
         }
@@ -51,10 +54,12 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
 
         // Get cache.
         $cache = \cache::make('registrationrule_hibp', 'pwhashes');
-
         $cacheresult = $cache->get($hash);
 
-        if (false && $cacheresult !== false) {
+        // Default is "not matched".
+        $matched = false;
+
+        if ($cacheresult !== false) {
             $matched = (bool)$cacheresult;
             // Not found, do an API request.
         } else {
@@ -62,19 +67,20 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
             $hashprefix = substr($hash, 0, 5);
 
             // Call the HIBP-Api with the prefix.
-            $ch = curl_init('https://api.pwnedpasswords.com/range/' . $hashprefix);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-            curl_setopt($ch, CURLOPT_FAILONERROR, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $curl = new curl();
+            $curl->setopt([
+                'CURLOPT_CONNECTTIMEOUT' => 2,
+                'CURLOPT_TIMEOUT' => 2,
+            ]);
+            $response = $curl->get('https://api.pwnedpasswords.com/range/' . $hashprefix);
 
-            // Get Response.
-            $response = curl_exec($ch);
-            $error = curl_error($ch);
-            curl_close($ch);
-
-            // Default is "not matched".
-            $matched = false;
+            // Who knows if we are pwned, something went wrong during the API call.
+            if ($curl->get_errno()) {
+                return $this->deny(
+                    score: $this->get_fallbackpoints(),
+                    feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hibp')
+                );
+            }
 
             // Loop through the list of given hashes.
             foreach (explode("\n", $response) as $testhash) {
@@ -88,29 +94,15 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
             $cache->set($hash, (int)$matched);
         }
 
-        // Return our result.
-        return new rule_check_result(
-            !$matched,
-            '',
-            ['password' => get_string('resultmessage', 'registrationrule_hibp')],
-        );
-    }
+        // Looks like we might have been pwned.
+        if ($matched) {
+            return $this->deny(
+                score: $this->get_points(),
+                validationmessages: ['password' => get_string('failuremessage', 'registrationrule_hibp')],
+            );
+        }
 
-    /**
-     * Perform rule's checks applicable without any user input before the signup form is displayed.
-     *
-     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
-     */
-    public function pre_data_check(): ?rule_check_result {
-        return null;
-    }
-
-    /**
-     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
-     *
-     * @param MoodleQuickForm $mform
-     * @return void
-     */
-    public static function extend_settings_form($mform): void {
+        // We got to this point so looks like we have not been pwned after all.
+        return $this->allow();
     }
 }

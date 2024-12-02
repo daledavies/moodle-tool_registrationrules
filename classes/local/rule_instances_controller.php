@@ -34,6 +34,7 @@ use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
+use tool_registrationrules\plugininfo\registrationrule;
 
 /**
  * Class rule_instances_controller
@@ -62,15 +63,6 @@ class rule_instances_controller implements renderable, \templatable {
             table: 'tool_registrationrules',
             sort: 'sortorder ASC',
         );
-        // Get a list of enabled rule plugins and update each instance record
-        // to show if it refers to an enabled or disabled plugin.
-        $enabledplugins = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
-        foreach ($instancerecords as $key => $instance) {
-            $instancerecords[$key]->pluginenabled = false;
-            if (in_array($instance->type, $enabledplugins)) {
-                $instancerecords[$key]->pluginenabled = true;
-            }
-        }
         // Initialise the external and internal representation of instance records.
         $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
@@ -159,7 +151,7 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return an up to date array of rule instances in teh correct order.
+     * Return an up to date array of rule instance DB records in the correct order.
      *
      * @return array Array of rule instance records.
      */
@@ -168,18 +160,61 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
-     * Return the rule instance record matching the given instanceid.
+     * Return a list of hydrated rule instance objects.
+     *
+     * @return rule\rule_interface[]
+     */
+    public function get_rule_instances(): array {
+        $instances = [];
+        foreach ($this->get_rule_instance_records() as $record) {
+            // Create a new rule instance object and add it to the list of instances.
+            $ruleinstance = rule\rule_factory::create_instance_from_record($record);
+            $instances[$ruleinstance->get_id()] = $ruleinstance;
+        }
+
+        return $instances;
+    }
+
+    /**
+     * Return a rule instance object matching the given instanceid.
      *
      * @param int $instanceid
-     * @return \stdClass|null A single rule instance record.
+     * @return rule\rule_interface A single rule instance record.
      */
-    public function get_rule_instance_by_id(int $instanceid) {
-        $instance = array_column($this->ruleinstances, null, 'id')[$instanceid];
-        if (!$instance) {
+    public function get_rule_instance_by_id(int $instanceid): rule\rule_interface {
+        $instances = $this->get_rule_instances();
+        if (!isset($instances[$instanceid])) {
             throw new coding_exception('Invalid instance ID');
         }
 
-        return $instance;
+        return $instances[$instanceid];
+    }
+
+    /**
+     * Return a list of active rule instance objects, excluding those where either the
+     * rule plugin or instance are disabled, or the rule plugin has not been configured.
+     *
+     * @return rule\rule_interface[]
+     */
+    public function get_active_rule_instances(): array {
+        $activeinstances = [];
+        foreach ($this->get_rule_instances() as $instance) {
+            // If either the plugin or instance is disabled then exclude it.
+            $pluginenabled = registrationrule::get_enabled_plugin($instance->get_type());
+            if (!$pluginenabled || !$instance->get_enabled()) {
+                continue;
+            }
+            // If this rule plugin class implements plugin_configurable then we can cheeck if the
+            // requierd configuration options have been satisfied.
+            if (is_subclass_of($instance, 'tool_registrationrules\local\rule\plugin_configurable')) {
+                if (!$instance::is_plugin_configured()) {
+                    continue;
+                }
+            }
+            $activeinstances[] = $instance;
+        }
+
+        return $activeinstances;
     }
 
     /**
@@ -375,7 +410,7 @@ class rule_instances_controller implements renderable, \templatable {
             'types' => $this->get_types_for_add_menu(),
         ];
 
-        foreach ($this->ruleinstances as $key => $ruleinstance) {
+        foreach ($this->get_rule_instances() as $key => $ruleinstance) {
             $moveuplink = $movedownlink = null;
 
             // Determine if we should add a link to move the instance up or down.
@@ -385,7 +420,7 @@ class rule_instances_controller implements renderable, \templatable {
                 $moveuplink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
                     [
-                        'instanceid' => $ruleinstance->id,
+                        'instanceid' => $ruleinstance->get_id(),
                         'action' => 'moveup',
                         'sesskey' => sesskey(),
                     ],
@@ -396,7 +431,7 @@ class rule_instances_controller implements renderable, \templatable {
                 $movedownlink = new \moodle_url(
                     '/admin/tool/registrationrules/manageruleinstances.php',
                     [
-                        'instanceid' => $ruleinstance->id,
+                        'instanceid' => $ruleinstance->get_id(),
                         'action' => 'movedown',
                         'sesskey' => sesskey(),
                     ],
@@ -409,7 +444,7 @@ class rule_instances_controller implements renderable, \templatable {
                 url: new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',
                     [
-                        'id' => $ruleinstance->id,
+                        'id' => $ruleinstance->get_id(),
                     ],
                 ),
                 icon: new pix_icon('t/edit', get_string('edit')),
@@ -420,7 +455,7 @@ class rule_instances_controller implements renderable, \templatable {
                     url: new \moodle_url(
                         '/admin/tool/registrationrules/manageruleinstances.php',
                         [
-                            'instanceid' => $ruleinstance->id,
+                            'instanceid' => $ruleinstance->get_id(),
                             'action' => 'delete',
                         ],
                     ),
@@ -429,33 +464,46 @@ class rule_instances_controller implements renderable, \templatable {
                 ),
             ];
 
+            // The rule instance be dimmed/ghosted if it is not configured or the plugin
+            // itself has been disabled.
+            $dimmedreasons = [];
+            if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
+                if (!$ruleinstance::is_plugin_configured()) {
+                    $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
+                }
+            }
+            if (!registrationrule::get_enabled_plugin($ruleinstance->get_type())) {
+                $dimmedreasons[] = get_string('plugindisabled', 'tool_registrationrules');
+            }
+
             // Add the instance row details to our template context.
             $context->instances[] = (object)[
-                'id' => $ruleinstance->id,
-                'name' => $ruleinstance->name,
-                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->type),
-                'points' => $ruleinstance->points,
-                'fallbackpoints' => $ruleinstance->fallbackpoints,
+                'id' => $ruleinstance->get_id(),
+                'name' => $ruleinstance->get_name(),
+                'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_type()),
+                'points' => $ruleinstance->get_points(),
+                'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
                 'enabled' => $output->render(
                     new \action_menu_link_primary(
                         url: new \moodle_url(
                             '/admin/tool/registrationrules/manageruleinstances.php',
                             [
-                                'instanceid' => $ruleinstance->id,
-                                'action' => $ruleinstance->enabled ? 'disable' : 'enable',
+                                'instanceid' => $ruleinstance->get_id(),
+                                'action' => $ruleinstance->get_enabled() ? 'disable' : 'enable',
                                 'sesskey' => sesskey(),
                             ],
                         ),
-                        icon: $ruleinstance->enabled ? new pix_icon('t/hide', get_string('disable'))
+                        icon: $ruleinstance->get_enabled() ? new pix_icon('t/hide', get_string('disable'))
                                                      : new pix_icon('t/show', get_string('enable')),
-                        text: $ruleinstance->enabled ? get_string('disable') : get_string('enable'),
+                        text: $ruleinstance->get_enabled() ? get_string('disable') : get_string('enable'),
                     ),
                 ),
-                'pluginenabled' => $ruleinstance->pluginenabled,
-                'sortorder' => $ruleinstance->sortorder,
+                'sortorder' => $ruleinstance->get_sortorder(),
                 'moveuplink' => $moveuplink,
                 'movedownlink' => $movedownlink,
                 'actions' => (new action_menu($actions))->export_for_template($output),
+                'dimmedrow' => count($dimmedreasons),
+                'dimmedmessage' => implode(', ', $dimmedreasons),
             ];
         }
 
@@ -505,8 +553,8 @@ class rule_instances_controller implements renderable, \templatable {
 
         // Extract only the rule specific settings fields from the form
         // data if the rule defines any.
-        if (defined("$class::SETTINGS_FIELDS")) {
-            foreach ($class::SETTINGS_FIELDS as $field) {
+        if (is_subclass_of($class, 'tool_registrationrules\local\rule\instance_configurable')) {
+            foreach ($class::get_instance_settings_fields() as $field) {
                 $extradata[$field] = $formdata->$field;
             }
         }

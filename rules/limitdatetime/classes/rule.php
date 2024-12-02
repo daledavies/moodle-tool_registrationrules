@@ -19,7 +19,10 @@ namespace registrationrule_limitdatetime;
 use coding_exception;
 use MoodleQuickForm;
 use stdClass;
-use tool_registrationrules\local\rule\configurable;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
+use tool_registrationrules\local\rule\pre_data_check;
+use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule_check_result;
 
 /**
@@ -34,21 +37,41 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    /** @var stdClass rule instance configuration */
-    private stdClass $config;
+class rule implements rule_interface, pre_data_check, instance_configurable {
+    use rule_trait;
 
-    /** Names of fields added to the rule's settings form */
-    const SETTINGS_FIELDS = ['limitdatetime_from', 'limitdatetime_to'];
+    /** @var stdClass rule plugin instance config. */
+    protected stdClass $instanceconfig;
 
     /**
-     * Constructor
+     * Set rule instance config object.
      *
-     * @param stdClass $config rule instance configuration
+     * @param stdClass $instanceconfig
+     * @return void
      */
-    public function __construct($config) {
-        $this->config = $config;
-        parent::__construct($config);
+    public function set_instance_config(stdClass $instanceconfig): void {
+        $this->instanceconfig = $instanceconfig;
+    }
+
+    /**
+     * Get rule instance config object.
+     *
+     * @return stdClass
+     */
+    public function get_instance_config(): stdClass {
+        return $this->instanceconfig;
+    }
+
+
+
+    /**
+     * Return an array of settings fields names used to extend the instance
+     * settings form via extend_settings_form().
+     *
+     * @return array
+     */
+    public static function get_instance_settings_fields(): array {
+        return ['limitdatetime_from', 'limitdatetime_to'];
     }
 
     /**
@@ -67,9 +90,9 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
     /**
      * Perform rule's checks applicable without any user input before the signup form is displayed.
      *
-     * @return rule_check_result|null A rule_check_result object or null if check not applicable for this type.
+     * @return rule_check_result A rule_check_result object.
      */
-    public function pre_data_check(): ?rule_check_result {
+    public function pre_data_check(): rule_check_result {
         $now = time();
 
         /* A wizard is never late, nor is he early,
@@ -78,22 +101,17 @@ class rule extends \tool_registrationrules\local\rule\rule_base implements confi
          * Just like users don't.
          * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
          */
-        $tooearly = $now < $this->config->limitdatetime_from;
-        $toolate = $now > $this->config->limitdatetime_to;
+        $tooearly = $now < $this->get_instance_config()->limitdatetime_from;
+        $toolate = $now > $this->get_instance_config()->limitdatetime_to;
 
-        return new rule_check_result(
-            ($tooearly || $toolate),
-            'Outside date',
-        );
+        if ($tooearly || $toolate) {
+            return $this->deny(
+                score: $this->get_points(),
+                feedbackmessage: get_string('failuremessage', 'registrationrule_limitdatetime'),
+            );
+        }
+
+        return $this->allow();
     }
 
-    /**
-     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
-     *
-     * @param array $data the data array from submitted form values.
-     * @return rule_check_result|null a rule_check_result object or null if check not applicable for this type.
-     */
-    public function post_data_check(array $data): ?rule_check_result {
-        return null;
-    }
 }

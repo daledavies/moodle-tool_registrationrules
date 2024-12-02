@@ -26,8 +26,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['failuremessage'] = 'User registration has been temporarily disabled.';
 $string['plugindescription'] = 'Disallow registration entirely';
 $string['pluginname'] = 'Nope rule';
 $string['privacy:null_provider:reason'] = 'Nope rule simply denies registration constantly. There is no user related data involved, stored, or processed by the plugin.';
-$string['registrationrule:instance:name'] = 'nope';
+$string['registrationrule:instance:name'] = 'Nope';
 $string['resultmessage'] = 'Sorry, but nope!';

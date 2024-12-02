@@ -16,13 +16,13 @@
 
 namespace registrationrule_nope;
 
-use MoodleQuickForm;
-use stdClass;
-use tool_registrationrules\local\rule\configurable;
+use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule\rule_interface;
+use tool_registrationrules\local\rule\rule_trait;
 
 /**
- * Reference implementation of a registration rule subplugin.
+ * Temporarily disable user registration.
  *
  * @package   registrationrule_nope
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
@@ -34,60 +34,18 @@ use tool_registrationrules\local\rule_check_result;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule extends \tool_registrationrules\local\rule\rule_base implements configurable {
-    /** @var stdClass rule instance configuration */
-    private stdClass $config;
-
-    /**
-     * Constructor
-     *
-     * @param stdClass $config
-     */
-    public function __construct(stdClass $config) {
-        $this->config = $config;
-        parent::__construct($config);
-    }
-
-    /**
-     * Perform rule's checks based on form input and user behaviour after signup form is submitted.
-     *
-     * @param array $data the data array from submitted form values.
-     * @return rule_check_result a rule_check_result object or null if check not applicable for this type.
-     */
-    public function post_data_check(array $data): rule_check_result {
-        return new rule_check_result(false, 'Nope');
-    }
+class rule implements rule_interface, pre_data_check {
+    use rule_trait;
 
     /**
      * Perform rule's checks applicable without any user input before the signup form is displayed.
      *
-     * @return rule_check_result A rule_check_result object or null if check not applicable for this type.
+     * @return rule_check_result A rule_check_result object.
      */
     public function pre_data_check(): rule_check_result {
-        return new rule_check_result(true);
-    }
-
-    /**
-     * Inject additional fields into the signup form for usage by the rule instance after submission.
-     *
-     * @param MoodleQuickForm $mform
-     * @return void
-     */
-    public function extend_form(MoodleQuickForm $mform): void {
-    }
-
-    /**
-     * Inject rule type specific settings into basic rule settings form if the type needs additional configuration.
-     *
-     * @param MoodleQuickForm $mform
-     * @return void
-     */
-    public static function extend_settings_form(MoodleQuickForm $mform): void {
-        $mform->addElement(
-            'static',
-            'test',
-            'Additional Settings',
-            'This rule type does not provide additional settings.',
+        return $this->deny(
+            score: $this->get_points(),
+            feedbackmessage: get_string('failuremessage', 'registrationrule_nope'),
         );
     }
 }
