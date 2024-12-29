@@ -197,23 +197,6 @@ class rule_settings extends \moodleform {
         $mform->setType('description', PARAM_RAW);
         $mform->setDefault('description', '');
 
-        // TODO: replace with WYSIWYG editor!
-        $mform->addElement(
-            'textarea',
-            'message',
-            get_string('registrationrule:instance:message', 'tool_registrationrules'),
-        );
-        $mform->setType('message', PARAM_RAW);
-        $mform->setDefault('message', '');
-        $mform->addElement(
-            'checkbox',
-            'displaymessage',
-            '',
-            get_string('registrationrule:instance:displaymessage', 'tool_registrationrules'),
-        );
-        $mform->setType('displaymessage', PARAM_BOOL);
-        $mform->setDefault('displaymessage', 0);
-
         $mform->addElement('text', 'points', get_string('registrationrule:instance:points', 'tool_registrationrules'));
         $mform->setType('points', PARAM_INT);
         $mform->setDefault('points', 100);
