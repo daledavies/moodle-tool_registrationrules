@@ -94,6 +94,21 @@ interface rule_interface {
     public function set_name(string $name): string;
 
     /**
+     * Get the rule instance's description.
+     *
+     * @return string the rule instance description.
+     */
+    public function get_description(): string;
+
+    /**
+     * Set  the rule instance's description.
+     *
+     * @param string $description
+     * @return string
+     */
+    public function set_description(string $description): string;
+
+    /**
      * Get the points configured for thie rule instance.
      *
      * @return int the rule instance points.

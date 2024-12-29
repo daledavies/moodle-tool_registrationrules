@@ -63,6 +63,7 @@ $string['registrationrulepluginname'] = 'Registration rule';
 $string['registrationrulessettings'] = 'Registration rules settings';
 $string['ruleinstancestable:actions'] = 'Actions';
 $string['ruleinstancestable:addrule'] = 'Add rule';
+$string['ruleinstancestable:description'] = 'Description';
 $string['ruleinstancestable:enabled'] = 'Enabled';
 $string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
 $string['ruleinstancestable:move'] = 'Move';

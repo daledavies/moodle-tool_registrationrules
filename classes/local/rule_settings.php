@@ -66,6 +66,7 @@ class rule_settings extends \moodleform {
             'type' => $ruleinstance->get_type(),
             'enabled' => $ruleinstance->get_enabled(),
             'name' => $ruleinstance->get_name(),
+            'description' => $ruleinstance->get_description(),
             'points' => $ruleinstance->get_points(),
             'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
             'sortorder' => $ruleinstance->get_sortorder(),

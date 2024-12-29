@@ -45,6 +45,9 @@ trait rule_trait {
     /** @var string rule plugin instance name. */
     protected string $name;
 
+    /** @var string rule plugin instance description. */
+    protected string $description;
+
     /** @var int rule plugin instance points. */
     protected int $points;
 
@@ -128,6 +131,25 @@ trait rule_trait {
      */
     public function set_name(string $name): string {
         return $this->name = $name;
+    }
+
+    /**
+     * Get the rule instance's description.
+     *
+     * @return string the rule instance description.
+     */
+    public function get_description(): string {
+        return $this->description;
+    }
+
+    /**
+     * Set  the rule instance's description.
+     *
+     * @param string $description
+     * @return string
+     */
+    public function set_description(string $description): string {
+        return $this->description = $description;
     }
 
     /**

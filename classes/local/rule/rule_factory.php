@@ -55,6 +55,7 @@ class rule_factory {
         $ruleinstance->set_type($dbrecord->type);
         $ruleinstance->set_enabled($dbrecord->enabled);
         $ruleinstance->set_name($dbrecord->name);
+        $ruleinstance->set_description($dbrecord->description);
         $ruleinstance->set_points($dbrecord->points);
         $ruleinstance->set_fallbackpoints($dbrecord->fallbackpoints);
         $ruleinstance->set_sortorder($dbrecord->sortorder);
