@@ -18,6 +18,7 @@ namespace registrationrule_disposableemails;
 
 use moodle_exception;
 use registrationrule_disposableemails\local\list_manager;
+use tool_registrationrules\local\logger\log_info;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule\rule_trait;
@@ -73,7 +74,8 @@ class rule implements rule_interface, post_data_check {
         } catch (moodle_exception) {
             return $this->deny(
                 score: $this->get_fallbackpoints(),
-                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_disposableemails')
+                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_disposableemails'),
+                loginfo: new log_info($this, get_string('logmessage', 'registrationrule_disposableemails'))
             );
         }
 

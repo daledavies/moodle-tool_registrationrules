@@ -20,6 +20,7 @@ use coding_exception;
 use dml_exception;
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\logger\logger;
 use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule\pre_data_check;
@@ -44,6 +45,11 @@ class rule_checker {
      * @var static[] rule checker singleton instances for each rule checker type instantiated
      */
     private static array $instances = [];
+
+    /**
+     * @var logger $logger a logger instance for storing aggregated logs returned from results.
+     */
+    private logger $logger;
 
     /**
      * @var array<rule\rule_interface>
@@ -86,6 +92,7 @@ class rule_checker {
     private function __construct() {
         $this->clear();
         $this->adminconfig = $this->get_admin_config();
+        $this->logger = new logger();
         // Only process active rules...
         $this->rules = (new \tool_registrationrules\local\rule_instances_controller())->get_active_rule_instances();
     }
@@ -113,6 +120,15 @@ class rule_checker {
         }
         $this->adminconfig = get_config('tool_registrationrules');
         return $this->adminconfig;
+    }
+
+    /**
+     * Get the logger instance used to store log information from the rule checks.
+     *
+     * @return logger
+     */
+    public function get_logger(): logger {
+        return $this->logger;
     }
 
     /**
@@ -192,6 +208,7 @@ class rule_checker {
             if ($result->get_allowed()) {
                 continue;
             }
+            $this->logger->log($result->get_log_info());
             $totalpoints += $result->get_score();
         }
         // If the total of all points returned from rule checks is greater

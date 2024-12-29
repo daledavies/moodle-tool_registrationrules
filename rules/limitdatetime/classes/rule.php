@@ -19,6 +19,7 @@ namespace registrationrule_limitdatetime;
 use coding_exception;
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\logger\log_info;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule\rule_trait;
 use tool_registrationrules\local\rule\pre_data_check;
@@ -105,9 +106,17 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
         $toolate = $now > $this->get_instance_config()->limitdatetime_to;
 
         if ($tooearly || $toolate) {
+            $stringparams = [
+                'from' => userdate($this->get_instance_config()->limitdatetime_from),
+                'to' => userdate($this->get_instance_config()->limitdatetime_to),
+            ];
             return $this->deny(
                 score: $this->get_points(),
                 feedbackmessage: get_string('failuremessage', 'registrationrule_limitdatetime'),
+                loginfo: new log_info(
+                    $this,
+                    get_string('logmessage', 'registrationrule_limitdatetime', $stringparams)
+                )
             );
         }
 

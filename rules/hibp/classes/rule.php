@@ -18,6 +18,7 @@ namespace registrationrule_hibp;
 
 use coding_exception;
 use curl;
+use tool_registrationrules\local\logger\log_info;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule_check_result;
 use tool_registrationrules\local\rule\rule_interface;
@@ -78,7 +79,8 @@ class rule implements rule_interface, post_data_check {
             if ($curl->get_errno()) {
                 return $this->deny(
                     score: $this->get_fallbackpoints(),
-                    feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hibp')
+                    feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hibp'),
+                    loginfo: new log_info($this, get_string('logmessage', 'registrationrule_hibp'))
                 );
             }
 

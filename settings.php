@@ -87,6 +87,16 @@ if ($ADMIN->fulltree) {
         '',
     );
     $settings->add($setting);
+    // Only log information, do not actually deny registration.
+    $name = new lang_string('loggingonly', 'tool_registrationrules');
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'tool_registrationrules/loggingonly',
+            $name,
+            '',
+            0,
+        ),
+    );
 }
 $ADMIN->add('toolregistrationrules', $settings);
 

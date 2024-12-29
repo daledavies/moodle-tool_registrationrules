@@ -18,6 +18,7 @@ namespace tool_registrationrules\local\rule;
 
 use coding_exception;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\logger\log_info;
 
 /**
  * Trait implementing the basics from rule_interface for convenience
@@ -189,11 +190,16 @@ trait rule_trait {
     /**
      * Return a result indicating this check will allow user registration.
      *
+     * @param ?log_info $loginfo Info to log.
      * @return rule_check_result
      */
-    public function allow(): rule_check_result {
+    public function allow(?log_info $loginfo = null): rule_check_result {
         $result = new rule_check_result();
         $result->set_allowed(true);
+        if (is_null($loginfo)) {
+            $loginfo = new log_info($this);
+        }
+        $result->set_log_info($loginfo);
 
         return $result;
     }
@@ -204,6 +210,7 @@ trait rule_trait {
      * @param int $score
      * @param string $feedbackmessage
      * @param array $validationmessages
+     * @param ?log_info $loginfo Info to log.
      * @throws coding_exception
      *
      * @return rule_check_result
@@ -211,7 +218,8 @@ trait rule_trait {
     public function deny(
         int $score,
         string $feedbackmessage = '',
-        array $validationmessages = []
+        array $validationmessages = [],
+        ?log_info $loginfo = null,
     ): rule_check_result {
         // At least one of $feedbackmessage or $validationmessages must be set...
         if (!empty($feedbackmessage) && !empty($validationmessages)) {
@@ -222,6 +230,10 @@ trait rule_trait {
         $result->set_score($score);
         $result->set_feedback_message($feedbackmessage);
         $result->set_validation_messages($validationmessages);
+        if (is_null($loginfo)) {
+            $loginfo = new log_info($this);
+        }
+        $result->set_log_info($loginfo);
 
         return $result;
     }

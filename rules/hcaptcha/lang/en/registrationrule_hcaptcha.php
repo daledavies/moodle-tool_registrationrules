@@ -28,6 +28,7 @@
 
 $string['failuremessage'] = 'The captcha was not solved.';
 $string['fallbackfailuremessage'] = 'The captcha cannot be verified at the moment, please try again later.';
+$string['logmessage'] = 'Error verifying captcha';
 $string['plugindescription'] = 'Enable hCaptcha on registration form';
 $string['pluginname'] = 'hCaptcha rule';
 $string['privacy:forwarded:payload'] = 'Various information (e.g. IP address, how long the visitor has been on the website or app, or mouse movements made by the user) necessary for hCaptcha\'s function.';

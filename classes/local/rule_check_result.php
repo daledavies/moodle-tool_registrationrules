@@ -16,6 +16,8 @@
 
 namespace tool_registrationrules\local;
 
+use tool_registrationrules\local\logger\log_info;
+
 /**
  * Object to represent the result of a registration rule check.
  *
@@ -35,6 +37,9 @@ class rule_check_result {
 
     /** @var string|null feedback message to be returned based on check's outcome */
     private ?string $feedbackmessage = null;
+
+    /** @var log_info $loginfo for storing logging information */
+    private ?log_info $loginfo = null;
 
     /** @var int score given to this result */
     private int $score = 0;
@@ -60,6 +65,16 @@ class rule_check_result {
      */
     public function set_feedback_message(string $message): void {
         $this->feedbackmessage = $message;
+    }
+
+    /**
+     * Add logging information to the result.
+     *
+     * @param log_info $loginfo Info to log.
+     * @return void
+     */
+    public function set_log_info(log_info $loginfo): void {
+        $this->loginfo = $loginfo;
     }
 
     /**
@@ -98,6 +113,15 @@ class rule_check_result {
      */
     public function get_feedback_message(): ?string {
         return $this->feedbackmessage;
+    }
+
+    /**
+     * Get the reult's log info.
+     *
+     * @return log_info|null
+     */
+    public function get_log_info(): ?log_info {
+        return $this->loginfo;
     }
 
     /**

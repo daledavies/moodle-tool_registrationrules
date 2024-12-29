@@ -28,6 +28,7 @@
 
 $string['failuremessage'] = 'Password found in HIBP database, please try a different one.';
 $string['fallbackfailuremessage'] = 'Cannot verify password, problem verifying with HIBP database.';
+$string['logmessage'] = 'Error connecting to HIBP API';
 $string['plugindescription'] = 'Check if user password is listed on Have I Been Pwnd';
 $string['pluginname'] = 'Have I been pwned?!';
 $string['privacy:forwarded:range'] = 'Sends the first 5 characters of the user\'s hashed password.';

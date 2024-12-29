@@ -29,6 +29,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_registrationrules\event\registration_denied;
+use tool_registrationrules\event\registration_denied_logging_only;
 use tool_registrationrules\local\rule_checker;
 
 /**
@@ -47,8 +49,16 @@ function tool_registrationrules_pre_signup_requests() {
     if ($rulechecker->is_registration_allowed()) {
         return;
     }
-    // If we get here then registration is not allowed, so first
-    // set an appropriate status code.
+    // The loggingonly setting has been enabled so create an event but do not
+    // deny registration.
+    if (get_config('tool_registrationrules', 'loggingonly')) {
+        registration_denied_logging_only::log_event($rulechecker->get_logger());
+        return;
+    }
+    // If we get here then registration is not allowed. So first create an event to
+    // store log information from rules that denied registration.
+    registration_denied::log_event($rulechecker->get_logger());
+    // Set an appropriate status code.
     header("HTTP/1.0 403 Forbidden");
     // Build and output the page with appropriate messages.
     $newaccount = get_string('newaccount');
@@ -107,5 +117,17 @@ function tool_registrationrules_validate_extend_signup_form($data): array {
         return [];
     }
 
+    // The loggingonly setting has been enabled so create an event but do not
+    // deny registration.
+    if (get_config('tool_registrationrules', 'loggingonly')) {
+        registration_denied_logging_only::log_event($rulechecker->get_logger());
+        return [];
+    }
+    // If we get here then registration is not allowed. So first create an event to
+    // store log information from rules that denied registration.
+    registration_denied::log_event($rulechecker->get_logger());
+
+    // Then return an array of messages to trigger a validation failure on the
+    // registration form.
     return $rulechecker->get_all_messages();
 }

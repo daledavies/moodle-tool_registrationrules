@@ -19,6 +19,7 @@ namespace registrationrule_hcaptcha;
 use coding_exception;
 use curl;
 use MoodleQuickForm;
+use tool_registrationrules\local\logger\log_info;
 use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\plugin_configurable;
 use tool_registrationrules\local\rule\post_data_check;
@@ -103,7 +104,8 @@ class rule implements rule_interface, extend_signup_form, plugin_configurable, p
         if ($curl->get_errno() || !($response = json_decode($response)) || !isset($response->success)) {
             return $this->deny(
                 score: $this->get_fallbackpoints(),
-                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha')
+                feedbackmessage: get_string('fallbackfailuremessage', 'registrationrule_hcaptcha'),
+                loginfo: new log_info($this, get_string('logmessage', 'registrationrule_hcaptcha'))
             );
         }
 
