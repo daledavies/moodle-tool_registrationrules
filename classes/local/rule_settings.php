@@ -219,14 +219,6 @@ class rule_settings extends \moodleform {
         $mform->setDefault('points', 100);
 
         $mform->addElement(
-            'selectyesno',
-            'invert_rule',
-            get_string('registrationrule:instance:invert_rule', 'tool_registrationrules'),
-        );
-        $mform->setDefault('invert_rule', 0);
-        $mform->setAdvanced('invert_rule');
-
-        $mform->addElement(
             'text',
             'fallbackpoints',
             get_string('registrationrule:instance:fallbackpoints', 'tool_registrationrules'),
