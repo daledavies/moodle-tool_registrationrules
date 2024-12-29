@@ -78,15 +78,6 @@ if ($ADMIN->fulltree) {
         '',
     );
     $settings->add($setting);
-    // General message to show on the error page after any rule specific messages.
-    $name = new lang_string('generalaftermessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea(
-        'tool_registrationrules/generalaftermessage',
-        $name,
-        '',
-        '',
-    );
-    $settings->add($setting);
     // Only log information, do not actually deny registration.
     $name = new lang_string('loggingonly', 'tool_registrationrules');
     $settings->add(
