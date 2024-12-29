@@ -71,7 +71,7 @@ function tool_registrationrules_pre_signup_requests() {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($newaccount);
     if ($generalmessage = get_config('tool_registrationrules', 'generalbeforemessage')) {
-        echo $OUTPUT->notification($generalmessage, 'info', false);
+        echo $OUTPUT->notification(format_text($generalmessage, FORMAT_HTML), 'info', false);
     }
     echo $OUTPUT->notification($rulechecker->get_feedback_messages_string(), 'warning', false);
     echo $OUTPUT->footer();
@@ -88,15 +88,16 @@ function tool_registrationrules_pre_signup_requests() {
  * @throws dml_exception
  */
 function tool_registrationrules_extend_signup_form($mform): void {
-    $mform->insertElementBefore(
-        $mform->createElement(
-            'static',
-            'registrationrules_information',
-            get_string('pluginname', 'tool_registrationrules'),
-            get_config('tool_registrationrules', 'registrationpagemessage'),
-        ),
-        'username',
-    );
+    $registrationpagemessage = get_config('tool_registrationrules', 'registrationpagemessage');
+    if ($registrationpagemessage) {
+        $mform->insertElementBefore(
+            $mform->createElement(
+                'static', 'registrationrules_information', '',
+                format_text($registrationpagemessage, FORMAT_HTML),
+            ),
+            'username',
+        );
+    }
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->add_error_field($mform);
     $rulechecker->extend_form($mform);

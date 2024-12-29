@@ -62,7 +62,7 @@ if ($ADMIN->fulltree) {
     $settings->add($setting);
     // Generic message for registration page.
     $name = new lang_string('registrationpagemessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea(
+    $setting = new admin_setting_confightmleditor(
         'tool_registrationrules/registrationpagemessage',
         $name,
         '',
@@ -71,7 +71,7 @@ if ($ADMIN->fulltree) {
     $settings->add($setting);
     // General message to show on the error page before any rule specific messages.
     $name = new lang_string('generalbeforemessage', 'tool_registrationrules');
-    $setting = new admin_setting_configtextarea(
+    $setting = new admin_setting_confightmleditor(
         'tool_registrationrules/generalbeforemessage',
         $name,
         '',
