@@ -30,7 +30,7 @@ use core_privacy\local\metadata\null_provider;
  * @author Philipp Hager <philipp.hager@edaktik.at>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy implements null_provider {
+class provider implements null_provider {
     /**
      * Get the language string identifier with the component's language
      * file to explain why this plugin stores no data.
@@ -39,6 +39,6 @@ class privacy implements null_provider {
      * @throws coding_exception
      */
     public static function get_reason(): string {
-        return get_string('privacy:null_provider:reason', 'registrationrule_nope');
+        return 'privacy:null_provider:reason';
     }
 }

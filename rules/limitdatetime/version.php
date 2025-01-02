@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2024090400; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version      = 2024090401; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires     = 2022112813; // Support Moodle 4.0 and higher.
 $plugin->component    = 'registrationrule_limitdatetime';
 $plugin->release      = 'v0.1';
