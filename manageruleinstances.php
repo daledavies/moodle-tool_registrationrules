@@ -41,7 +41,7 @@ admin_externalpage_setup('toolregistrationrules_instances');
 $PAGE->set_context(context_system::instance());
 
 // Create the class for this controller.
-$controller = new rule_instances_controller();
+$controller = rule_instances_controller::get_instance();
 
 // Perform any required actions if we have the correct sesskey.
 if ($action !== null && $sesskey) {

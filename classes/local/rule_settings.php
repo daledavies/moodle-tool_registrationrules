@@ -57,7 +57,7 @@ class rule_settings extends \moodleform {
      * @throws dml_exception
      */
     public static function from_rule_instance(int $instanceid): static {
-        $controller = new rule_instances_controller();
+        $controller = rule_instances_controller::get_instance();
         $ruleinstance = $controller->get_rule_instance_by_id($instanceid);
 
         // Define data for standard form fields.

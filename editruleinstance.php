@@ -27,6 +27,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_registrationrules\local\rule_instances_controller;
 use tool_registrationrules\local\rule_settings;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -45,7 +46,7 @@ if (empty($ruleinstanceid) && empty($addruletype)) {
 
 $managementurl = new moodle_url('/admin/tool/registrationrules/manageruleinstances.php');
 
-$controller = new \tool_registrationrules\local\rule_instances_controller();
+$controller = rule_instances_controller::get_instance();
 
 // If we have a rule instance ID supplied then we are editing, otherwise
 // we are adding a new rule instance.

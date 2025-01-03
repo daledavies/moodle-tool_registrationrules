@@ -132,7 +132,7 @@ class registrationrule extends \core\plugininfo\base {
      * @return void
      */
     public function uninstall_cleanup(): void {
-        $controller = new rule_instances_controller();
+        $controller = rule_instances_controller::get_instance();
         $controller->delete_all_instances_of_plugin($this->name);
         parent::uninstall_cleanup();
     }
