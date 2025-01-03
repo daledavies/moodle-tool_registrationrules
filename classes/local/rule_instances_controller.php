@@ -45,11 +45,27 @@ use tool_registrationrules\plugininfo\registrationrule;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_instances_controller implements renderable, \templatable {
+    /** @var rule_instances_controller $instance singleton instance of rule_instances_controller */
+    private static rule_instances_controller $instance;
+
     /** @var stdClass[] external representation of rule instance records, sorted by "sortorder" */
     protected $ruleinstances = [];
 
     /** @var stdClass[] internal representation of $ruleinstances (used for tracking changes) */
     protected $ruleinstancesinternal = [];
+
+    /**
+     * Get a singleton instance of rule_instances_controller.
+     *
+     * @return rule_instances_controller
+     */
+    public static function get_instance(): rule_instances_controller {
+        if (!isset(self::$instance)) {
+            self::$instance = new self;
+        }
+
+        return self::$instance;
+    }
 
     /**
      * Constructor

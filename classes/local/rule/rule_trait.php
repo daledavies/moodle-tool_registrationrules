@@ -16,8 +16,10 @@
 
 namespace tool_registrationrules\local\rule;
 
+use Closure;
 use coding_exception;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result_deferred;
 use tool_registrationrules\local\logger\log_info;
 
 /**
@@ -252,6 +254,49 @@ trait rule_trait {
         $result->set_score($score);
         $result->set_feedback_message($feedbackmessage);
         $result->set_validation_messages($validationmessages);
+        if (is_null($loginfo)) {
+            $loginfo = new log_info($this);
+        }
+        $result->set_log_info($loginfo);
+
+        return $result;
+    }
+
+    /**
+     * Return a result indicating this check will deny user registration, deferred
+     * until all rules have been evaluated and the rule instance that issued this result has
+     * validated that the deferred result.
+     *
+     * A closure must be provided for the resolvecallback parameter that allows rule_checker to
+     * determine if the result is valid once all other rule instances have been checked. This should
+     * return a boolean indicating if the result is still valid.
+     *
+     * @param Closure $resolvecallback
+     * @param int $score
+     * @param string $feedbackmessage
+     * @param array $validationmessages
+     * @param ?log_info $loginfo Info to log.
+     * @throws coding_exception
+     *
+     * @return rule_check_result
+     */
+    public function deferred_deny(
+        Closure $resolvecallback,
+        int $score,
+        string $feedbackmessage = '',
+        array $validationmessages = [],
+        ?log_info $loginfo = null
+    ): rule_check_result_deferred {
+        // At least one of $feedbackmessage or $validationmessages must be set...
+        if (!empty($feedbackmessage) && !empty($validationmessages)) {
+            throw new coding_exception('One of feedbackmessage or validationmessages params must be set');
+        }
+        $result = new rule_check_result_deferred();
+        $result->set_allowed(false);
+        $result->set_score($score);
+        $result->set_feedback_message($feedbackmessage);
+        $result->set_validation_messages($validationmessages);
+        $result->set_resolvecallback($resolvecallback);
         if (is_null($loginfo)) {
             $loginfo = new log_info($this);
         }

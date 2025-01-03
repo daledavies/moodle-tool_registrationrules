@@ -75,6 +75,15 @@ class log_info {
     }
 
     /**
+     * Get the rule instance ID for this log info.
+     *
+     * @return int rule instance ID
+     */
+    public function get_rule_instance_id(): int {
+        return $this->ruleinstance->get_id();
+    }
+
+    /**
      * Get the additional information added by the rule.
      *
      * @return string

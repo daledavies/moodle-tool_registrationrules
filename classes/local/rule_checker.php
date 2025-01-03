@@ -94,7 +94,7 @@ class rule_checker {
         $this->adminconfig = $this->get_admin_config();
         $this->logger = new logger();
         // Only process active rules...
-        $this->rules = (new \tool_registrationrules\local\rule_instances_controller())->get_active_rule_instances();
+        $this->rules = (rule_instances_controller::get_instance())->get_active_rule_instances();
     }
 
     /**
@@ -171,6 +171,15 @@ class rule_checker {
     }
 
     /**
+     * Return any results from the pre/post data checks.
+     *
+     * @return array an array of result objects.
+     */
+    public function get_results(): array {
+        return $this->results;
+    }
+
+    /**
      * Let configured rule instances extend the user signup form.
      *
      * @param MoodleQuickForm $mform
@@ -186,8 +195,6 @@ class rule_checker {
 
     /**
      * Return if registration is allowed.
-     *
-     * TODO: Implement the "invert score feature".
      *
      * @return bool true if registration is allowed, false if registration should be blocked
      * @throws coding_exception
@@ -205,10 +212,19 @@ class rule_checker {
         // Get a total of all points returned from rule checks.
         $totalpoints = 0;
         foreach ($this->results as $result) {
+            $loginfo = $result->get_log_info();
+            // If the result is a rule_check_result_deferred and the deferrred result is not
+            // validated then continue.
+            if ($result instanceof rule_check_result_deferred) {
+                if (!$result->resolve()) {
+                    continue;
+                }
+            }
+            // Otherwise see if this result allows registration.
             if ($result->get_allowed()) {
                 continue;
             }
-            $this->logger->log($result->get_log_info());
+            $this->logger->log($loginfo);
             $totalpoints += $result->get_score();
         }
         // If the total of all points returned from rule checks is greater

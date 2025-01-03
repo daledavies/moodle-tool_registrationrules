@@ -25,9 +25,11 @@ use tool_registrationrules\local\rule\rule_trait;
 use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_checker;
+use tool_registrationrules\local\rule_instances_controller;
 
 /**
- * Reference implementation of a registration rule subplugin.
+ * Restrict user registration around date/time windows.
  *
  * @package   registrationrule_limitdatetime
  * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
@@ -36,6 +38,7 @@ use tool_registrationrules\local\rule_check_result;
  *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @author    Lukas MuLu Müller <info@mulu.at>
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule implements rule_interface, pre_data_check, instance_configurable {
@@ -43,6 +46,12 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
 
     /** @var stdClass rule plugin instance config. */
     protected stdClass $instanceconfig;
+
+    /** @var string Only allow registration inside the time window */
+    protected const OPTION_ALLOW_BETWEEN_DATES = 'allowbetween';
+
+    /** @var string Only allow registration outside the time window */
+    protected const OPTION_DENY_BETWEEN_DATES = 'denybetween';
 
     /**
      * Set rule instance config object.
@@ -63,8 +72,6 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
         return $this->instanceconfig;
     }
 
-
-
     /**
      * Return an array of settings fields names used to extend the instance
      * settings form via extend_settings_form().
@@ -72,7 +79,7 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
      * @return array
      */
     public static function get_instance_settings_fields(): array {
-        return ['limitdatetime_from', 'limitdatetime_to'];
+        return ['limitdatetime_from', 'limitdatetime_to', 'restrictionmode'];
     }
 
     /**
@@ -84,8 +91,11 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
      */
     public static function extend_settings_form(MoodleQuickForm $mform): void {
         $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
-
         $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
+        $mform->addElement('select', 'restrictionmode', 'Restriction mode', [
+            static::OPTION_ALLOW_BETWEEN_DATES => 'ALLOW between dates',
+            static::OPTION_DENY_BETWEEN_DATES => 'DENY between dates',
+        ]);
     }
 
     /**
@@ -95,6 +105,13 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
      */
     public function pre_data_check(): rule_check_result {
         $now = time();
+        $startdate = $this->get_instance_config()->limitdatetime_from;
+        $enddate = $this->get_instance_config()->limitdatetime_to;
+        $restrictionmode = $this->get_instance_config()->restrictionmode;
+        $stringparams = [
+            'from' => userdate($startdate),
+            'to' => userdate($enddate),
+        ];
 
         /* A wizard is never late, nor is he early,
          * he arrives precisely when he means to.
@@ -102,22 +119,67 @@ class rule implements rule_interface, pre_data_check, instance_configurable {
          * Just like users don't.
          * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
          */
-        $tooearly = $now < $this->get_instance_config()->limitdatetime_from;
-        $toolate = $now > $this->get_instance_config()->limitdatetime_to;
 
-        if ($tooearly || $toolate) {
-            $stringparams = [
-                'from' => userdate($this->get_instance_config()->limitdatetime_from),
-                'to' => userdate($this->get_instance_config()->limitdatetime_to),
-            ];
-            return $this->deny(
-                score: $this->get_points(),
-                feedbackmessage: get_string('failuremessage', 'registrationrule_limitdatetime'),
-                loginfo: new log_info(
-                    $this,
-                    get_string('logmessage', 'registrationrule_limitdatetime', $stringparams)
-                )
-            );
+        // Is the current date/time in the window between the configured start and end dates?
+        $nowisinsidewindow = (($now >= $startdate) && ($now <= $enddate));
+
+        // For cases where a rule instance is configured to allow registration between two dates we need to first
+        // check that we are not inside the window, then return a deferred result by calling deferred_deny() with a
+        // closure that allows rule_checker to determine if the result is valid at a later time.
+        //
+        // In this case the result would not be considered valid if another instance (configured with OPTION_ALLOW_BETWEEN_DATES)
+        // returns a result that is set to allow. We need to do this to allow an administrator to configure multiple instances
+        // using this case, otherwise the first instance to deny registration would allow points to accumilate.
+        if ($restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
+            if (!$nowisinsidewindow) {
+                return $this->deferred_deny(
+                    score: $this->get_points(),
+                    feedbackmessage: get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime', $stringparams),
+                    loginfo: new log_info(
+                        $this,
+                        get_string('logmessage.allowbetween', 'registrationrule_limitdatetime', $stringparams)
+                    ),
+                    resolvecallback: function() {
+                        // Get a static instance of rule_checker so we know what has been processed.
+                        $rulechecker = rule_checker::get_instance('signup_form');
+                        $controller = rule_instances_controller::get_instance();
+                        foreach ($rulechecker->get_results() as $result) {
+                            // The results log_info object holds the information we need about
+                            // the rule instance that returned this result.
+                            $loginfo = $result->get_log_info();
+                            // Skip any results from rule types other that limitdatetime.
+                            if (!$loginfo->get_rule_type() == 'limitdatetime') {
+                                continue;
+                            }
+                            // Get an instance of the rule from it's ID and check how it is configured, we are only
+                            // returning a deferred result in the case of OPTION_ALLOW_BETWEEN_DATES.
+                            $id = $loginfo->get_rule_instance_id();
+                            $resultinstance = $controller->get_rule_instance_by_id($id);
+                            if ($resultinstance->get_instance_config()->restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
+                                if ($result->get_allowed()) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                );
+            }
+        }
+
+        // This is the simple case where the rule instance is configured to deny registration between dates, here we do not
+        // need to return a deferred result.
+        if ($restrictionmode === static::OPTION_DENY_BETWEEN_DATES) {
+            if ($nowisinsidewindow) {
+                return $this->deny(
+                    score: $this->get_points(),
+                    feedbackmessage: get_string('failuremessage.denybetween', 'registrationrule_limitdatetime', $stringparams),
+                    loginfo: new log_info(
+                        $this,
+                        get_string('logmessage.denybetween', 'registrationrule_limitdatetime', $stringparams)
+                    )
+                );
+            }
         }
 
         return $this->allow();

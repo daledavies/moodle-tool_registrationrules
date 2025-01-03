@@ -16,7 +16,10 @@
 
 namespace tool_registrationrules\local\rule;
 
+use Closure;
 use tool_registrationrules\local\rule_check_result;
+use tool_registrationrules\local\rule_check_result_deferred;
+use tool_registrationrules\local\logger\log_info;
 
 /**
  * Main interface for registration rule subplugin classes, all rule classes
@@ -166,6 +169,7 @@ interface rule_interface {
      * @param int $score
      * @param string $feedbackmessage
      * @param array $validationmessages
+     * @param ?log_info $loginfo Info to log.
      * @throws coding_exception
      *
      * @return rule_check_result
@@ -173,6 +177,33 @@ interface rule_interface {
     public function deny(
         int $score,
         string $feedbackmessage = '',
-        array $validationmessages = []
+        array $validationmessages = [],
+        ?log_info $loginfo = null,
     ): rule_check_result;
+
+    /**
+     * Return a result indicating this check will deny user registration, deferred
+     * until all rules have been evaluated and the rule instance that issued this result has
+     * validated that the deferred result.
+     *
+     * A closure must be provided for the resolvecallback parameter that allows rule_checker to
+     * determine if the result is valid once all other rule instances have been checked. This should
+     * return a boolean indicating if the result is still valid.
+     *
+     * @param Closure $resolvecallback
+     * @param int $score
+     * @param string $feedbackmessage
+     * @param array $validationmessages
+     * @param ?log_info $loginfo Info to log.
+     * @throws coding_exception
+     *
+     * @return rule_check_result_deferred
+     */
+    public function deferred_deny(
+        Closure $resolvecallback,
+        int $score,
+        string $feedbackmessage = '',
+        array $validationmessages = [],
+        ?log_info $loginfo = null,
+    ): rule_check_result_deferred;
 }
