@@ -56,6 +56,13 @@ if (!empty($ruleinstanceid)) {
     $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->get_name()));
     $mform = rule_settings::from_rule_instance($ruleinstance->get_id());
 } else {
+    if (!$controller->new_instance_of_type_allowed($addruletype)) {
+        redirect(
+            $managementurl,
+            get_string('onlyoneinstanceallowed', 'tool_registrationrules'),
+            null, \core\output\notification::NOTIFY_ERROR
+        );
+    }
     $PAGE->set_title(get_string('addnewruleinstance', 'tool_registrationrules'));
     $PAGE->set_heading(get_string('addnewruleinstance', 'tool_registrationrules'));
     $mform = new rule_settings($addruletype);

@@ -24,6 +24,7 @@ use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule\rule_trait;
 use tool_registrationrules\local\rule\pre_data_check;
 use tool_registrationrules\local\rule\instance_configurable;
+use tool_registrationrules\local\rule\multiple_instances;
 use tool_registrationrules\local\rule_check_result;
 use tool_registrationrules\local\rule_checker;
 use tool_registrationrules\local\rule_instances_controller;
@@ -41,7 +42,7 @@ use tool_registrationrules\local\rule_instances_controller;
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, pre_data_check, instance_configurable {
+class rule implements rule_interface, pre_data_check, instance_configurable, multiple_instances {
     use rule_trait;
 
     /** @var stdClass rule plugin instance config. */

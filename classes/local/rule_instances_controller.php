@@ -411,6 +411,23 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Are we allowed to add new instances of this plugin?
+     *
+     * @param string $type
+     * @return boolean
+     */
+    public function new_instance_of_type_allowed(string $type): bool {
+        $numinstances = count($this->get_rule_instances_by_type($type));
+        $class = 'registrationrule_' . $type . '\rule';
+        $requiredinterface = 'tool_registrationrules\local\rule\multiple_instances';
+        if ($numinstances > 0 && !is_subclass_of($class, $requiredinterface)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
      * 1. No complex types - only stdClass, array, int, string, float, bool
@@ -589,6 +606,9 @@ class rule_instances_controller implements renderable, \templatable {
         $types = [];
         $ruletypes = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
         foreach ($ruletypes as $ruleplugin) {
+            if (!$this->new_instance_of_type_allowed($ruleplugin)) {
+                continue;
+            }
             $types[] = (object)[
                 'addurl' => new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',

@@ -46,6 +46,7 @@ $string['loggingonly'] = 'Logging only';
 $string['manageregistrationruleplugins'] = 'Manage rule plugins';
 $string['maxpoints'] = 'Max rejection points';
 $string['notconfigured'] = 'Not configured';
+$string['onlyoneinstanceallowed'] = 'Only one instance of this rule is allowed!';
 $string['plugindisabled'] = 'Plugin disabled';
 $string['pluginname'] = 'Registration rules';
 $string['privacy:null_provider:reason'] = 'The Registration rules plugin does not store any user-related data. User related data stored by specific registration rule plugins get declared separately.';
