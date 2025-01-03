@@ -54,6 +54,32 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
     /** @var string Only allow registration outside the time window */
     protected const OPTION_DENY_BETWEEN_DATES = 'denybetween';
 
+    /** @var int $startdate Unix timestamp representing configured startdate value */
+    private int $startdate;
+
+    /** @var int $enddate Unix timestamp representing configured enddate value */
+    private int $enddate;
+
+    /** @var string $restrictionmode Configured restriction mode */
+    private string $restrictionmode;
+
+    /** @var array $stringparams The "from" and "to" params representing localised dates for use in strings */
+    private array $stringparams;
+
+    /**
+     * Get the rule instance's description.
+     *
+     * @return string the rule instance description.
+     */
+    public function get_display_description(): string {
+        if ($this->restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
+            $desc = get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime', $this->stringparams);
+        } else {
+            $desc = get_string('failuremessage.denybetween', 'registrationrule_limitdatetime', $this->stringparams);
+        }
+        return !$this->description ? $desc : $this->description;
+    }
+
     /**
      * Set rule instance config object.
      *
@@ -62,6 +88,13 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      */
     public function set_instance_config(stdClass $instanceconfig): void {
         $this->instanceconfig = $instanceconfig;
+        $this->startdate = $instanceconfig->limitdatetime_from;
+        $this->enddate = $instanceconfig->limitdatetime_to;
+        $this->restrictionmode = $instanceconfig->restrictionmode;
+        $this->stringparams = [
+            'from' => userdate($this->startdate),
+            'to' => userdate($this->enddate),
+        ];
     }
 
     /**
@@ -106,14 +139,6 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      */
     public function pre_data_check(): rule_check_result {
         $now = time();
-        $startdate = $this->get_instance_config()->limitdatetime_from;
-        $enddate = $this->get_instance_config()->limitdatetime_to;
-        $restrictionmode = $this->get_instance_config()->restrictionmode;
-        $stringparams = [
-            'from' => userdate($startdate),
-            'to' => userdate($enddate),
-        ];
-
         /* A wizard is never late, nor is he early,
          * he arrives precisely when he means to.
          *
@@ -122,7 +147,7 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
          */
 
         // Is the current date/time in the window between the configured start and end dates?
-        $nowisinsidewindow = (($now >= $startdate) && ($now <= $enddate));
+        $nowisinsidewindow = (($now >= $this->startdate) && ($now <= $this->enddate));
 
         // For cases where a rule instance is configured to allow registration between two dates we need to first
         // check that we are not inside the window, then return a deferred result by calling deferred_deny() with a
@@ -131,14 +156,16 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
         // In this case the result would not be considered valid if another instance (configured with OPTION_ALLOW_BETWEEN_DATES)
         // returns a result that is set to allow. We need to do this to allow an administrator to configure multiple instances
         // using this case, otherwise the first instance to deny registration would allow points to accumilate.
-        if ($restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
+        if ($this->restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
             if (!$nowisinsidewindow) {
                 return $this->deferred_deny(
                     score: $this->get_points(),
-                    feedbackmessage: get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime', $stringparams),
+                    feedbackmessage: get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime',
+                        $this->stringparams
+                    ),
                     loginfo: new log_info(
                         $this,
-                        get_string('logmessage.allowbetween', 'registrationrule_limitdatetime', $stringparams)
+                        get_string('logmessage.allowbetween', 'registrationrule_limitdatetime', $this->stringparams)
                     ),
                     resolvecallback: function() {
                         // Get a static instance of rule_checker so we know what has been processed.
@@ -170,14 +197,16 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
 
         // This is the simple case where the rule instance is configured to deny registration between dates, here we do not
         // need to return a deferred result.
-        if ($restrictionmode === static::OPTION_DENY_BETWEEN_DATES) {
+        if ($this->restrictionmode === static::OPTION_DENY_BETWEEN_DATES) {
             if ($nowisinsidewindow) {
                 return $this->deny(
                     score: $this->get_points(),
-                    feedbackmessage: get_string('failuremessage.denybetween', 'registrationrule_limitdatetime', $stringparams),
+                    feedbackmessage: get_string('failuremessage.denybetween', 'registrationrule_limitdatetime',
+                        $this->stringparams
+                    ),
                     loginfo: new log_info(
                         $this,
-                        get_string('logmessage.denybetween', 'registrationrule_limitdatetime', $stringparams)
+                        get_string('logmessage.denybetween', 'registrationrule_limitdatetime', $this->stringparams)
                     )
                 );
             }

@@ -136,7 +136,7 @@ trait rule_trait {
     }
 
     /**
-     * Get the rule instance's description.
+     * Get the rule instance's description as configured in it's settings.
      *
      * @return string the rule instance description.
      */
@@ -145,7 +145,18 @@ trait rule_trait {
     }
 
     /**
-     * Set  the rule instance's description.
+     * Get description to display, allows plugins to set a default description for
+     * display if the description setting is not configured.
+     *
+     * @return string
+     */
+    public function get_display_description(): string {
+        $desc = $this->description;
+        return !$desc ? get_string('plugindescription', 'registrationrule_' . $this->type) : $desc;
+    }
+
+    /**
+     * Set the rule instance's description.
      *
      * @param string $description
      * @return string

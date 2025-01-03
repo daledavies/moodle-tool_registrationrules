@@ -514,7 +514,7 @@ class rule_instances_controller implements renderable, \templatable {
             $context->instances[] = (object)[
                 'id' => $ruleinstance->get_id(),
                 'name' => $ruleinstance->get_name(),
-                'description' => $ruleinstance->get_description(),
+                'description' => $ruleinstance->get_display_description(),
                 'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_type()),
                 'points' => $ruleinstance->get_points(),
                 'fallbackpoints' => $ruleinstance->get_fallbackpoints(),

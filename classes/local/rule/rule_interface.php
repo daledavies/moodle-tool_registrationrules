@@ -97,14 +97,22 @@ interface rule_interface {
     public function set_name(string $name): string;
 
     /**
-     * Get the rule instance's description.
+     * Get the rule instance's description as configured in it's settings.
      *
      * @return string the rule instance description.
      */
     public function get_description(): string;
 
     /**
-     * Set  the rule instance's description.
+     * Get description to display, allows plugins to set a default description for
+     * display if the description setting is not configured.
+     *
+     * @return string
+     */
+    public function get_display_description(): string;
+
+    /**
+     * Set the rule instance's description.
      *
      * @param string $description
      * @return string
