@@ -1,0 +1,5 @@
+/* Hide the honeypot field from view */
+#rr-hhf {
+    position: absolute !important;
+    left: -99999px !important;
+}
