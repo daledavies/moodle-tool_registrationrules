@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>rules/altcha/vendor/altcha-org/altcha/</location>
+        <name>ALTCHA PHP Library</name>
+        <version>0.1.3</version>
+        <license>MIT</license>
+    </library>
+    <library>
+        <location>rules/altcha/vendor/composer</location>
+        <name>Composer auto loading and plugins</name>
+        <license>MIT</license>
+    </library>
+    <library>
+        <location>rules/altcha/vendor/autoload.php</location>
+        <name>Composer autoload file</name>
+        <license>MIT</license>
+    </library>
+</libraries>

@@ -1,0 +1,12 @@
+{
+    "name": "daledavies/registrationrule_altcha",
+    "authors": [
+        {
+            "name": "Dale Davies",
+            "email": "dale.davies@catalyst-eu.net"
+        }
+    ],
+    "require": {
+        "altcha-org/altcha": "^0.1.3"
+    }
+}
