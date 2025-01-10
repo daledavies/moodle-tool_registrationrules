@@ -120,10 +120,6 @@ class rule implements rule_interface, post_data_check, instance_configurable, ex
             $SESSION->registrationrule_mintime_encdata['key'], 0, $SESSION->registrationrule_mintime_encdata['iv']
         );
 
-        // Unset the previously used key and IV, forcing them to be refreshed next time the signup
-        // form is loaded for this session.
-        unset($SESSION->registrationrule_mintime_encdata);
-
         // If decrypted time is false then perhaps someone messed with the submitted timestamp.
         if (!$decryptedtime) {
             return $this->deny(
