@@ -53,13 +53,6 @@ class rule implements rule_interface, post_data_check {
 
         $email = $data['email'];
 
-        // Proper validation for email addresses should be handled by the
-        // form instance, but we'll check here anyway and return null if this
-        // isn't actually an email address.
-        if (validate_email($email) === false) {
-            return null;
-        }
-
         // Get just the domain part of the user's email address.
         $domain = $this->extract_email_domain($email);
 
