@@ -106,8 +106,9 @@ class rule implements rule_interface, post_data_check, instance_configurable {
             return $this->deny_with_fallback();
         }
 
+        $ipresponseok = isset($response->ip) && isset($response->ip->frequency);
         // If the IP appears in the database with a confidence equal to or greater than the threshold.
-        if ($this->instanceconfig->ipenabled && isset($response->ip) && $response->ip->frequency > 0) {
+        if ($this->instanceconfig->ipenabled && $ipresponseok && $response->ip->frequency > 0) {
             if ($response->ip->confidence >= $this->instanceconfig->ipconfidence) {
                 return $this->deny(
                     score: $this->get_points(),
@@ -115,8 +116,10 @@ class rule implements rule_interface, post_data_check, instance_configurable {
                 );
             }
         }
+
+        $usernameresponseok = isset($response->username) && isset($response->username->frequency);
         // If the username appears in the database with a confidence equal to or greater than the threshold.
-        if ($this->instanceconfig->usernameenabled && isset($response->username) && $response->username->frequency > 0) {
+        if ($this->instanceconfig->usernameenabled && $usernameresponseok && $response->username->frequency > 0) {
             if ($response->username->confidence >= $this->instanceconfig->usernameconfidence) {
                 return $this->deny(
                     score: $this->get_points(),
@@ -124,8 +127,10 @@ class rule implements rule_interface, post_data_check, instance_configurable {
                 );
             }
         }
+
+        $emailresponseok = isset($response->email) && isset($response->email->frequency);
         // If the email address appears in the database with a confidence equal to or greater than the threshold.
-        if ($this->instanceconfig->emailenabled && isset($response->email) && $response->email->frequency > 0) {
+        if ($this->instanceconfig->emailenabled && $emailresponseok && $response->email->frequency > 0) {
             if ($response->email->confidence >= $this->instanceconfig->emailconfidence) {
                 return $this->deny(
                     score: $this->get_points(),
