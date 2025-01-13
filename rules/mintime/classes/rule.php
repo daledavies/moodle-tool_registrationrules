@@ -172,7 +172,8 @@ class rule implements rule_interface, post_data_check, instance_configurable, ex
         for ($x = 2; $x <= 15; $x++) {
             $options[$x] = get_string('numseconds', 'core', $x);
         }
-        $mform->addElement('select', 'mintime', 'Minimum completion time', $options);
+        $mform->addElement('select', 'mintime', get_string('minimumcompletiontime', 'registrationrule_mintime'), $options);
         $mform->setDefault('mintime', 3);
+        $mform->addHelpButton('mintime', 'minimumcompletiontime', 'registrationrule_mintime');
     }
 }

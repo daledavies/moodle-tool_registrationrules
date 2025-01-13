@@ -39,9 +39,9 @@ if (!\registrationrule_hcaptcha\rule::is_plugin_configured()) {
 }
 
 $settings->add(new admin_setting_configtext('registrationrule_hcaptcha/hcaptcha_sitekey',
-    get_string('sitekey', 'registrationrule_hcaptcha'),
+    new lang_string('sitekey', 'registrationrule_hcaptcha'),
     null, null, PARAM_ALPHANUMEXT));
 
 $settings->add(new admin_setting_configpasswordunmask('registrationrule_hcaptcha/hcaptcha_secret',
-get_string('secret', 'registrationrule_hcaptcha'),
+    new lang_string('secret', 'registrationrule_hcaptcha'),
     null, null, PARAM_ALPHANUMEXT));

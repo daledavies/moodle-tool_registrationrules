@@ -35,6 +35,7 @@ $string['altcha:string:verified'] = 'Verified';
 $string['altcha:string:verifying'] = 'Verifying...';
 $string['altcha:string:waitalert'] = 'Verifying... please wait.';
 $string['challengecomplexity'] = 'Challenge complexity';
+$string['challengecomplexity_help'] = 'Altcha works by creating a challenge that must be solved by a user\'s web browser when they tick the "I\'m not a robot" box. The complexity refers to the level of computational effort required to solve this challenge. Higher complexity relates to extra security but requires a longer wait while the challenge is solved.';
 $string['failuremessage'] = 'Please tick the box to confirm you are not a bot.';
 $string['fallbackfailuremessage'] = 'Problem varifying anti-spam challenge';
 $string['logmessage'] = 'Error verifying Altcha challenge';

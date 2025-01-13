@@ -114,6 +114,7 @@ class rule implements rule_interface, extend_signup_form, post_data_check, insta
         $mform->addElement('complexity_range_slider', 'complexity', get_string('challengecomplexity', 'registrationrule_altcha'),
             static::COMPLEXITY_MIN, static::COMPLEXITY_MAX, static::COMPLEXITY_STEP);
         $mform->setDefault('complexity', 300000);
+        $mform->addHelpButton('complexity', 'challengecomplexity', 'registrationrule_altcha');
     }
 
     /**

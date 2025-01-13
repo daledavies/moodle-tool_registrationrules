@@ -18,7 +18,10 @@
  * List of rule instances an actions.
  *
  * @package tool_registrationrules
- * @copyright 2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2024 lern.link GmbH {@link https://lern.link/}
+ *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
