@@ -124,8 +124,8 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      * @throws coding_exception
      */
     public static function extend_settings_form(MoodleQuickForm $mform): void {
-        $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
-        $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
+        $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from', 'registrationrule_limitdatetime'));
+        $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to', 'registrationrule_limitdatetime'));
         $mform->addElement('select', 'restrictionmode', get_string('restrictionmode', 'registrationrule_limitdatetime'), [
             static::OPTION_ALLOW_BETWEEN_DATES => get_string('allowbetweendates', 'registrationrule_limitdatetime'),
             static::OPTION_DENY_BETWEEN_DATES => get_string('denybetweendates', 'registrationrule_limitdatetime'),
