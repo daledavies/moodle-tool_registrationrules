@@ -26,12 +26,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['failuremessage.allowbetween'] = 'Registration is allowed between {$a->from} and {$a->to}';
-$string['failuremessage.denybetween'] = 'Registration is not allowed between {$a->from} and {$a->to}';
-$string['logmessage.allowbetween'] = 'Registration was not between {$a->from} and {$a->to}';
-$string['logmessage.denybetween'] = 'Registration was between {$a->from} and {$a->to}';
+$string['allowbetweendates'] = 'ALLOW between dates';
+$string['denybetweendates'] = 'DENY between dates';
+$string['failuremessage:allowbetween'] = 'Registration is allowed between {$a->from} and {$a->to}';
+$string['failuremessage:denybetween'] = 'Registration is not allowed between {$a->from} and {$a->to}';
+$string['logmessage:allowbetween'] = 'Registration was not between {$a->from} and {$a->to}';
+$string['logmessage:denybetween'] = 'Registration was between {$a->from} and {$a->to}';
 $string['plugindescription'] = 'Restrict user registration around date/time windows.';
 $string['pluginname'] = 'Limit by date';
 $string['privacy:null_provider:reason'] = 'There is no user related data stored or processed by the plugin.';
 $string['registrationrule:instance:name'] = 'Limit by date';
+$string['restrictionmode'] = 'Restriction mode';
 $string['resultmessage'] = 'Sorry, the captcha was not solved.';

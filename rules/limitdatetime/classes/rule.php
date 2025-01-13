@@ -73,9 +73,9 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      */
     public function get_display_description(): string {
         if ($this->restrictionmode === static::OPTION_ALLOW_BETWEEN_DATES) {
-            $desc = get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime', $this->stringparams);
+            $desc = get_string('failuremessage:allowbetween', 'registrationrule_limitdatetime', $this->stringparams);
         } else {
-            $desc = get_string('failuremessage.denybetween', 'registrationrule_limitdatetime', $this->stringparams);
+            $desc = get_string('failuremessage:denybetween', 'registrationrule_limitdatetime', $this->stringparams);
         }
         return !$this->description ? $desc : $this->description;
     }
@@ -126,9 +126,9 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
     public static function extend_settings_form(MoodleQuickForm $mform): void {
         $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from'));
         $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to'));
-        $mform->addElement('select', 'restrictionmode', 'Restriction mode', [
-            static::OPTION_ALLOW_BETWEEN_DATES => 'ALLOW between dates',
-            static::OPTION_DENY_BETWEEN_DATES => 'DENY between dates',
+        $mform->addElement('select', 'restrictionmode', get_string('restrictionmode', 'registrationrule_limitdatetime'), [
+            static::OPTION_ALLOW_BETWEEN_DATES => get_string('allowbetweendates', 'registrationrule_limitdatetime'),
+            static::OPTION_DENY_BETWEEN_DATES => get_string('denybetweendates', 'registrationrule_limitdatetime'),
         ]);
     }
 
@@ -160,12 +160,12 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
             if (!$nowisinsidewindow) {
                 return $this->deferred_deny(
                     score: $this->get_points(),
-                    feedbackmessage: get_string('failuremessage.allowbetween', 'registrationrule_limitdatetime',
+                    feedbackmessage: get_string('failuremessage:allowbetween', 'registrationrule_limitdatetime',
                         $this->stringparams
                     ),
                     loginfo: new log_info(
                         $this,
-                        get_string('logmessage.allowbetween', 'registrationrule_limitdatetime', $this->stringparams)
+                        get_string('logmessage:allowbetween', 'registrationrule_limitdatetime', $this->stringparams)
                     ),
                     resolvecallback: function() {
                         // Get a static instance of rule_checker so we know what has been processed.
@@ -201,12 +201,12 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
             if ($nowisinsidewindow) {
                 return $this->deny(
                     score: $this->get_points(),
-                    feedbackmessage: get_string('failuremessage.denybetween', 'registrationrule_limitdatetime',
+                    feedbackmessage: get_string('failuremessage:denybetween', 'registrationrule_limitdatetime',
                         $this->stringparams
                     ),
                     loginfo: new log_info(
                         $this,
-                        get_string('logmessage.denybetween', 'registrationrule_limitdatetime', $this->stringparams)
+                        get_string('logmessage:denybetween', 'registrationrule_limitdatetime', $this->stringparams)
                     )
                 );
             }
