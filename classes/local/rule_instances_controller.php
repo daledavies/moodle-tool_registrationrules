@@ -266,9 +266,9 @@ class rule_instances_controller implements renderable, \templatable {
      * Return all rule instance records matching the given type.
      *
      * @param string $type
-     * @return array Array of rule instance records
+     * @return rule\rule_interface[] Array of rule instance records
      */
-    public function get_rule_instances_by_type(string $type) {
+    public function get_rule_instances_by_type(string $type): array {
         $plugin = \core_plugin_manager::instance()->get_plugin_info('registrationrule_' . $type);
         if ($plugin === null) {
             throw new coding_exception('Invalid rule plugin type');
@@ -355,7 +355,7 @@ class rule_instances_controller implements renderable, \templatable {
         // Delete all instances found but don't commit until after we've
         // done all of them.
         foreach ($ruleinstances as $instance) {
-            $this->delete_instance($instance->id, false);
+            $this->delete_instance($instance->get_id());
         }
         // Finally we can commit all the changes in one go.
         $this->commit();
