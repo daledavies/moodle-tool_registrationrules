@@ -37,6 +37,7 @@ use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
+use tool_registrationrules\local\rule\instance_json;
 use tool_registrationrules\plugininfo\registrationrule;
 
 /**
@@ -50,6 +51,9 @@ use tool_registrationrules\plugininfo\registrationrule;
 class rule_instances_controller implements renderable, \templatable {
     /** @var rule_instances_controller $instance singleton instance of rule_instances_controller */
     private static rule_instances_controller $instance;
+
+    /** @var bool has the list of rule instances been loaded from forcedinstances  config param */
+    private bool $forcedinstances = false;
 
     /** @var stdClass[] external representation of rule instance records, sorted by "sortorder" */
     protected $ruleinstances = [];
@@ -76,12 +80,29 @@ class rule_instances_controller implements renderable, \templatable {
      * @throws dml_exception
      */
     public function __construct() {
-        global $DB;
-        // Get a sorted list of rule instance records from the database.
-        $instancerecords = $DB->get_records(
-            table: 'tool_registrationrules',
-            sort: 'sortorder ASC',
-        );
+        global $CFG, $DB;
+        // Load raw instance records from somewhere.
+        if (isset($CFG->tool_registrationrules_forcedinstances)) {
+            // Forced instances have been set via config.php as json.
+            $instancerecords = json_decode($CFG->tool_registrationrules_forcedinstances);
+            foreach ($instancerecords as $key => &$record) {
+                // Fake a DB record! First set the ID and sortorder based on the order
+                // we parse the records.
+                $record->id = $record->sortorder = $key;
+                // The rule_factory expects an "other" field rather than instanceconfig.
+                if (isset($record->instanceconfig)) {
+                    $record->other = json_encode($record->instanceconfig);
+                }
+                unset($record->instanceconfig);
+            }
+            $this->forcedinstances = true;
+        } else {
+            // Get a sorted list of rule instance records from the database.
+            $instancerecords = $DB->get_records(
+                table: 'tool_registrationrules',
+                sort: 'sortorder ASC',
+            );
+        }
         // Initialise the external and internal representation of instance records.
         $this->ruleinstances = $this->ruleinstancesinternal = $instancerecords;
     }
@@ -94,6 +115,11 @@ class rule_instances_controller implements renderable, \templatable {
      */
     public function commit(): void {
         global $DB;
+        // If we have forced instances then return here to avoid any possible way something
+        // could try to write to the database.
+        if ($this->forcedinstances) {
+            return;
+        }
         // We'll possibly be committing a number of new records and updates
         // to the databse so best to create a new transaction.
         $transaction = $DB->start_delegated_transaction();
@@ -431,6 +457,21 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Return an array of instances serialised as a JSON string, intended to be used
+     * as the value for $CFG->tool_registarionrules_forcedinstances.
+     *
+     * @return string JSON encoded array of instances
+     */
+    public function export_instances_as_json(): string {
+        $instances = [];
+        foreach ($this->get_active_rule_instances() as $instance) {
+            $instances[] = new instance_json($instance);
+        }
+
+        return json_encode($instances);
+    }
+
+    /**
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
      * 1. No complex types - only stdClass, array, int, string, float, bool
@@ -445,6 +486,9 @@ class rule_instances_controller implements renderable, \templatable {
         $context = (object)[
             'instances' => [],
             'types' => $this->get_types_for_add_menu(),
+            'forcedinstances' => $this->forcedinstances,
+            // Base64 encode the json string so it is easier to include in the template.
+            'forcedinstancesjson' => base64_encode($this->export_instances_as_json()),
         ];
 
         foreach ($this->get_rule_instances() as $key => $ruleinstance) {

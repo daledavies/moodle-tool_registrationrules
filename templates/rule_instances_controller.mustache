@@ -36,61 +36,83 @@
     }
 }}
 <div class="tool_registrationrules-managerules">
+    {{#forcedinstances}}
+        <div class="alert alert-warning alert-block fade in" role="alert" data-aria-autofocus="true">
+            {{#str}} ruleinstancestable:forcednotification, tool_registrationrules {{/str}}
+        </div>
+    {{/forcedinstances}}
     <table class="table generaltable">
         <thead>
         <tr>
             <th>{{#str}} ruleinstancestable:type, tool_registrationrules {{/str}}</th>
-            <th>{{#str}} ruleinstancestable:enabled, tool_registrationrules {{/str}}</th>
+            {{^forcedinstances}}
+                <th>{{#str}} ruleinstancestable:enabled, tool_registrationrules {{/str}}</th>
+            {{/forcedinstances}}
             <th>{{#str}} ruleinstancestable:name, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:description, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:points, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:fallbackpoints, tool_registrationrules {{/str}}</th>
-            <th>{{#str}} ruleinstancestable:move, tool_registrationrules {{/str}}</th>
-            <th>{{#str}} ruleinstancestable:actions, tool_registrationrules {{/str}}</th>
+            {{^forcedinstances}}
+                <th>{{#str}} ruleinstancestable:move, tool_registrationrules {{/str}}</th>
+                <th>{{#str}} ruleinstancestable:actions, tool_registrationrules {{/str}}</th>
+            {{/forcedinstances}}
         </tr>
         </thead>
         <tbody>{{#instances}}
             <tr{{#dimmedrow}} class="dimmed_text"{{/dimmedrow}}>
                 <td>{{type}}{{#dimmedrow}} ({{dimmedmessage}}){{/dimmedrow}}</td>
-                <td>{{{enabled}}}</td>
+                {{^forcedinstances}}
+                    <td>{{{enabled}}}</td>
+                {{/forcedinstances}}
                 <td>{{name}}</td>
                 <td>{{description}}</td>
                 <td>{{points}}</td>
                 <td>{{fallbackpoints}}</td>
-                <td class="text-nowrap">
-                    {{#moveuplink}}
-                        <a href="{{{moveuplink}}}">
-                            {{#pix}}t/up, moodle, {{#str}} up, moodle {{/str}}{{/pix}}
-                        </a>
-                    {{/moveuplink}}
-                    {{^moveuplink}}
-                        {{#pix}}spacer, moodle{{/pix}}
-                    {{/moveuplink}}
+                {{^forcedinstances}}
+                    <td class="text-nowrap">
+                        {{#moveuplink}}
+                            <a href="{{{moveuplink}}}">
+                                {{#pix}}t/up, moodle, {{#str}} up, moodle {{/str}}{{/pix}}
+                            </a>
+                        {{/moveuplink}}
+                        {{^moveuplink}}
+                            {{#pix}}spacer, moodle{{/pix}}
+                        {{/moveuplink}}
 
-                    {{#movedownlink}}
-                        <a href="{{{movedownlink}}}">
-                            {{#pix}}t/down, moodle, {{#str}} down, moodle {{/str}}{{/pix}}
-                        </a>
-                    {{/movedownlink}}
-                    {{^movedownlink}}
-                        {{#pix}}spacer, moodle{{/pix}}
-                    {{/movedownlink}}
-                </td>
-                <td>{{#actions}}{{>core/action_menu}}{{/actions}}</td>
+                        {{#movedownlink}}
+                            <a href="{{{movedownlink}}}">
+                                {{#pix}}t/down, moodle, {{#str}} down, moodle {{/str}}{{/pix}}
+                            </a>
+                        {{/movedownlink}}
+                        {{^movedownlink}}
+                            {{#pix}}spacer, moodle{{/pix}}
+                        {{/movedownlink}}
+                    </td>
+                    <td>{{#actions}}{{>core/action_menu}}{{/actions}}</td>
+                {{/forcedinstances}}
             </tr>
         {{/instances}}</tbody>
     </table>
-    <div class="dropdown show">
-        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
-        </a>
-
-        <div class="dropdown-menu" aria-labelledby="addRule">
-            {{#types}}
-                <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
-            {{/types}}
+    {{^forcedinstances}}
+        <div class="row justify-content-between">
+            <div class="col-4">
+                <div class="dropdown show">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="addRule">
+                        {{#types}}
+                            <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
+                        {{/types}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 text-end">
+                <button id="getinstancejson" type="button" class="btn btn-secondary" data-forcedinstancesjson="{{forcedinstancesjson}}"><i class="fa fa-code"></i>
+                {{#str}} ruleinstancestable:instancesjson:getinstancesjson, tool_registrationrules {{/str}}</button>
+            </div>
         </div>
-    </div>
+    {{/forcedinstances}}
 </div>
 {{#js}}
 {{! here comes the JS }}

@@ -1,0 +1,8 @@
+#page-admin-tool-registrationrules-manageruleinstances .forcedinstances-modal pre {
+    background-color: #eee;
+    border-radius: 0.5em;
+    margin-top: 2.5em;
+    overflow-wrap: break-word;
+    padding: 2em;
+    white-space: pre-wrap;
+}

@@ -96,6 +96,7 @@ if ($action === 'delete' && $confirm === null) {
         ['continuestr' => get_string('delete')]
     );
 } else {
+    $PAGE->requires->js_call_amd('tool_registrationrules/forcedinstances_modal', 'init');
     echo $OUTPUT->render($controller);
 }
 
