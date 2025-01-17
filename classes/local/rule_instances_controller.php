@@ -77,15 +77,31 @@ class rule_instances_controller implements renderable, \templatable {
     /**
      * Constructor
      *
+     * @throws coding_exception
      * @throws dml_exception
      */
     public function __construct() {
         global $CFG, $DB;
         // Load raw instance records from somewhere.
         if (isset($CFG->tool_registrationrules_forcedinstances)) {
-            // Forced instances have been set via config.php as json.
+            // Forced instances has been set via config.php, first validate this is actually
+            // json and can be decoded to an array.
             $instancerecords = json_decode($CFG->tool_registrationrules_forcedinstances);
+            if ($instancerecords === null || !is_array($instancerecords)) {
+                throw new coding_exception('
+                    Unable to decode an array from JSON string found in $CFG->tool_registrationrules_forcedinstances'
+                );
+            }
+            // Validate each array item to ensure it is an object and contains the expected properties,
+            // then transform it into something we can use to hydrate an actual instance of a rule.
             foreach ($instancerecords as $key => &$record) {
+                $fielddiff = array_diff(
+                    instance_json::EXPECTED_PROPERTIES,
+                    array_keys((array) $record)
+                );
+                if (!($record instanceof stdClass) || count($fielddiff)) {
+                    throw new coding_exception('Invalid instance object found in $CFG->tool_registrationrules_forcedinstances');
+                }
                 // Fake a DB record! First set the ID and sortorder based on the order
                 // we parse the records.
                 $record->id = $record->sortorder = $key;

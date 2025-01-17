@@ -31,6 +31,16 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance_json implements JsonSerializable {
+    /** @var array Properties all serialised json instance objects will definitely have. */
+    public const EXPECTED_PROPERTIES = [
+        'type',
+        'enabled',
+        'name',
+        'description',
+        'points',
+        'fallbackpoints',
+    ];
+
     /** @var stdClass $instancedata the instance data object to be serialised as json. */
     public stdClass $instancedata;
 
