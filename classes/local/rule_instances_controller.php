@@ -577,13 +577,18 @@ class rule_instances_controller implements renderable, \templatable {
             // The rule instance be dimmed/ghosted if it is not configured or the plugin
             // itself has been disabled.
             $dimmedreasons = [];
+
+            if (!$ruleinstance->get_enabled()) {
+                $dimmedreasons[] = get_string('ruleinstancestable:rulenotenabled', 'tool_registrationrules');
+            }
+
             if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
                 if (!$ruleinstance::is_plugin_configured()) {
-                    $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
+                    $dimmedreasons[] = get_string('ruleinstancestable:notconfigured', 'tool_registrationrules');
                 }
             }
             if (!registrationrule::get_enabled_plugin($ruleinstance->get_type())) {
-                $dimmedreasons[] = get_string('plugindisabled', 'tool_registrationrules');
+                $dimmedreasons[] = get_string('ruleinstancestable:plugindisabled', 'tool_registrationrules');
             }
 
             // Add the instance row details to our template context.
