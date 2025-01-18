@@ -518,6 +518,7 @@ class rule_instances_controller implements renderable, \templatable {
             'forcedinstances' => $this->forcedinstances,
             // Base64 encode the json string so it is easier to include in the template.
             'forcedinstancesjson' => base64_encode($this->export_instances_as_json()),
+            'disabledcount' => count(registrationrule::get_disabled_plugins()),
         ];
 
         foreach ($this->get_rule_instances() as $key => $ruleinstance) {

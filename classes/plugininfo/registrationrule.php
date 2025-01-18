@@ -35,6 +35,20 @@ use tool_registrationrules\local\rule_instances_controller;
  */
 class registrationrule extends \core\plugininfo\base {
     /**
+     * Finds all disabled plugins.
+     *
+     * @return array of disabled rule plugin names
+     */
+    public static function get_disabled_plugins(): array {
+        $pluginssortorder = get_config('tool_registrationrules', 'plugins_sortorder');
+        $enabled = $pluginssortorder ? explode(',', $pluginssortorder) : [];
+        $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
+        $disabled = array_diff(array_keys($plugins), $enabled);
+
+        return $disabled;
+    }
+
+    /**
      * Finds all enabled plugins, the result may include missing plugins.
      *
      * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown

@@ -93,6 +93,7 @@
             </tr>
         {{/instances}}</tbody>
     </table>
+    {{#disabledcount}}<p><i>{{#str}} ruleinstancestable:disabledpluginsmessage, tool_registrationrules, {{disabledcount}} {{/str}}</i></p>{{/disabledcount}}
     {{^forcedinstances}}
         <div class="row justify-content-between">
             <div class="col-4">

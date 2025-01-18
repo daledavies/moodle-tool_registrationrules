@@ -54,6 +54,7 @@ $string['registrationrulepluginname'] = 'Registration rule';
 $string['ruleinstancestable:actions'] = 'Actions';
 $string['ruleinstancestable:addrule'] = 'Add rule';
 $string['ruleinstancestable:description'] = 'Description';
+$string['ruleinstancestable:disabledpluginsmessage'] = 'There are <a href="/admin/settings.php?section=manageregistrationrules">{$a} disabled rule plugins</a>, new rules using these plugins cannot be created until they are enabled.';
 $string['ruleinstancestable:enabled'] = 'Enabled';
 $string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
 $string['ruleinstancestable:forcednotification'] = 'Editing is disabled as rule instances are currently managed via <b>config.php</b>.';
