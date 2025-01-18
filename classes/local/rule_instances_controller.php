@@ -49,6 +49,19 @@ use tool_registrationrules\plugininfo\registrationrule;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_instances_controller implements renderable, \templatable {
+    /** @var array List of rule plugins bundled with tool_registrationrules */
+    public const BUNDLED_RULE_PLUGINS = [
+        'altcha',
+        'disposableemails',
+        'hcaptcha',
+        'hibp',
+        'hiddenfield',
+        'limitdatetime',
+        'mintime',
+        'nope',
+        'stopforumspam',
+    ];
+
     /** @var rule_instances_controller $instance singleton instance of rule_instances_controller */
     private static rule_instances_controller $instance;
 
