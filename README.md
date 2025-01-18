@@ -22,11 +22,11 @@ When configuring a rule, a score can be assigned that will be added if the condi
 
 - [Install the plugin](https://docs.moodle.org/en/Installing_plugins#Installing_a_plugin) in Moodle.
 
-- Browse to "Site administration / Admin tools / Registration rules / Registration rule instances".
+- Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rule instances".
 
 - Select and configure the rules you want to use via the "Add rule" dropdown.
 
-- Browse to "Site administration / Admin tools / Registration rules / Registration rules settings" and tick "Enable".
+- Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rules settings" and tick "Enable".
 
 - While on the "Registration rules settings" page you may wish to consider ticking the "Logging only" option initially, the plugin will then evaluate rules as normal but will only log the results instead of denying user registration. 
 
