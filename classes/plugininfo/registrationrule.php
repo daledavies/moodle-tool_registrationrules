@@ -40,9 +40,8 @@ class registrationrule extends \core\plugininfo\base {
      * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
      */
     public static function get_enabled_plugins() {
-        global $CFG;
-
-        $order = (!empty($CFG->registrationrule_plugins_sortorder)) ? explode(',', $CFG->registrationrule_plugins_sortorder) : [];
+        $pluginssortorder = get_config('tool_registrationrules', 'plugins_sortorder');
+        $order = $pluginssortorder ? explode(',', $pluginssortorder) : [];
         if ($order) {
             $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
             $order = array_intersect($order, array_keys($plugins));
@@ -61,12 +60,11 @@ class registrationrule extends \core\plugininfo\base {
      * @return bool Whether $pluginname has been updated or not.
      */
     public static function enable_plugin(string $pluginname, int $enabled): bool {
-        global $CFG;
-
         $haschanged = false;
         $plugins = [];
-        if (!empty($CFG->registrationrule_plugins_sortorder)) {
-            $plugins = array_flip(explode(',', $CFG->registrationrule_plugins_sortorder));
+        $pluginssortorder = get_config('tool_registrationrules', 'plugins_sortorder');
+        if ($pluginssortorder) {
+            $plugins = array_flip(explode(',', $pluginssortorder));
         }
         // Only set visibility if it's different from the current value.
         if ($enabled && !array_key_exists($pluginname, $plugins)) {
@@ -78,7 +76,7 @@ class registrationrule extends \core\plugininfo\base {
         }
 
         if ($haschanged) {
-            add_to_config_log('registrationrule_plugins_sortorder', !$enabled, $enabled, $pluginname);
+            add_to_config_log('plugins_sortorder', !$enabled, $enabled, $pluginname);
             self::set_enabled_plugins(array_flip($plugins));
         }
 
@@ -111,7 +109,7 @@ class registrationrule extends \core\plugininfo\base {
             $plugins = \core_plugin_manager::instance()->get_installed_plugins('registrationrule');
             $list = array_intersect($list, array_keys($plugins));
         }
-        set_config('registrationrule_plugins_sortorder', join(',', $list));
+        set_config('plugins_sortorder', join(',', $list), 'tool_registrationrules');
         \core_plugin_manager::reset_caches();
     }
 
