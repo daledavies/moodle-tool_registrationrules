@@ -49,6 +49,19 @@ use tool_registrationrules\plugininfo\registrationrule;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_instances_controller implements renderable, \templatable {
+    /** @var array List of rule plugins bundled with tool_registrationrules */
+    public const BUNDLED_RULE_PLUGINS = [
+        'altcha',
+        'disposableemails',
+        'hcaptcha',
+        'hibp',
+        'hiddenfield',
+        'limitdatetime',
+        'mintime',
+        'nope',
+        'stopforumspam',
+    ];
+
     /** @var rule_instances_controller $instance singleton instance of rule_instances_controller */
     private static rule_instances_controller $instance;
 
@@ -505,6 +518,7 @@ class rule_instances_controller implements renderable, \templatable {
             'forcedinstances' => $this->forcedinstances,
             // Base64 encode the json string so it is easier to include in the template.
             'forcedinstancesjson' => base64_encode($this->export_instances_as_json()),
+            'disabledcount' => count(registrationrule::get_disabled_plugins()),
         ];
 
         foreach ($this->get_rule_instances() as $key => $ruleinstance) {
@@ -564,13 +578,18 @@ class rule_instances_controller implements renderable, \templatable {
             // The rule instance be dimmed/ghosted if it is not configured or the plugin
             // itself has been disabled.
             $dimmedreasons = [];
+
+            if (!$ruleinstance->get_enabled()) {
+                $dimmedreasons[] = get_string('ruleinstancestable:rulenotenabled', 'tool_registrationrules');
+            }
+
             if (is_subclass_of($ruleinstance, 'tool_registrationrules\local\rule\plugin_configurable')) {
                 if (!$ruleinstance::is_plugin_configured()) {
-                    $dimmedreasons[] = get_string('notconfigured', 'tool_registrationrules');
+                    $dimmedreasons[] = get_string('ruleinstancestable:notconfigured', 'tool_registrationrules');
                 }
             }
             if (!registrationrule::get_enabled_plugin($ruleinstance->get_type())) {
-                $dimmedreasons[] = get_string('plugindisabled', 'tool_registrationrules');
+                $dimmedreasons[] = get_string('ruleinstancestable:plugindisabled', 'tool_registrationrules');
             }
 
             // Add the instance row details to our template context.

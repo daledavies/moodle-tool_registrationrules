@@ -15,23 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version definitions for tool_registrationrules.
+ * Post install tasks.
  *
  * @package   tool_registrationrules
- * @copyright 2024 Catalyst IT Europe {@link https://www.catalyst-eu.net}
- *            2024 eDaktik GmbH {@link https://www.edaktik.at/}
- *            2024 lern.link GmbH {@link https://lern.link/}
- *            2024 University of Strathclyde {@link https://www.strath.ac.uk}
+ * @copyright 2025 Catalyst IT Europe {@link https://www.catalyst-eu.net}
+ *            2025 eDaktik GmbH {@link https://www.edaktik.at/}
+ *            2025 lern.link GmbH {@link https://lern.link/}
+ *            2025 University of Strathclyde {@link https://www.strath.ac.uk}
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
- * @author    Philipp Hager <philipp.hager@edaktik.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use tool_registrationrules\local\rule_instances_controller;
 
-$plugin->version   = 2025011800; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->release   = 2025011800;
-$plugin->requires  = 2022112813; // Requires this Moodle version.
-$plugin->supported = [401, 405];
-$plugin->component = 'tool_registrationrules'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
+/**
+ * Enable bundled rule plugins after install.
+ *
+ * @return void
+ */
+function xmldb_tool_registrationrules_install(): void {
+    set_config('plugins_sortorder', implode(',', rule_instances_controller::BUNDLED_RULE_PLUGINS), 'tool_registrationrules');
+}

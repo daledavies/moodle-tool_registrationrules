@@ -32,7 +32,8 @@ use tool_registrationrules\local\rule_settings;
 
 require_once(__DIR__ . '/../../../config.php');
 
-require_login();
+// Must be logged in and have moodle/site:config capability.
+require_admin();
 
 $ruleinstanceid = optional_param('id', 0, PARAM_INT);
 $addruletype = optional_param('addruletype', null, PARAM_ALPHANUM);
