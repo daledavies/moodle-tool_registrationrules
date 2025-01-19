@@ -28,19 +28,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$description = get_string('settingsrequired', 'registrationrule_hcaptcha');
 if (!\registrationrule_hcaptcha\rule::is_plugin_configured()) {
     global $OUTPUT;
-    $setting = new admin_setting_description(
-        'registrationrule_hcaptcha/settingsrequired',
-        null,
-        $OUTPUT->notification(get_string('settingsrequired', 'registrationrule_hcaptcha'), 'error', false)
-    );
-    $settings->add($setting);
+    $description = $OUTPUT->notification(get_string('settingsrequired', 'registrationrule_hcaptcha'), 'error', false);
 }
 
 $settings->add(new admin_setting_configtext('registrationrule_hcaptcha/hcaptcha_sitekey',
     new lang_string('sitekey', 'registrationrule_hcaptcha'),
-    null, null, PARAM_ALPHANUMEXT));
+    $description,
+    null, PARAM_ALPHANUMEXT));
 
 $settings->add(new admin_setting_configpasswordunmask('registrationrule_hcaptcha/hcaptcha_secret',
     new lang_string('secret', 'registrationrule_hcaptcha'),
