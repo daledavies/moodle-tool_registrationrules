@@ -32,6 +32,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['addnewruleinstance'] = 'Add new rule instance';
 $string['addrule'] = 'Add rule';
+$string['checkruleenabled'] = 'To add rules, first ensure that the rule is enabled in <a href="{$a}/admin/settings.php?section=manageregistrationrules" target="_blank">Manage rule plugins</a>.';
+$string['checkrules'] = 'Make sure to review the active rules by visiting the <a href="https://moodle.aulaemvideo.com.br/admin/settings.php?section=manageregistrationrules">Manage Rules</a> section and then evaluate the <a href="https://moodle.aulaemvideo.com.br/admin/tool/registrationrules/manageruleinstances.php">Rule Instances</a> to ensure proper functionality.';
 $string['confirmdelete'] = 'Are you sure you want to delete the "{$a}" rule instance?';
 $string['description'] = 'Description';
 $string['editruleinstance'] = 'Edit rule instance';

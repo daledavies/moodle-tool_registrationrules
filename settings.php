@@ -32,15 +32,21 @@ defined('MOODLE_INTERNAL') || die;
 $ADMIN->add(
     'tools',
     new admin_category('toolregistrationrules', new lang_string('pluginname', 'tool_registrationrules')),
-);
+    );
 
 // The main registrationrules plugin settings.
 $settings = new admin_settingpage(
     'generalsettings',
     new lang_string('settings:registrationrulessettings', 'tool_registrationrules'),
     'moodle/site:config',
-);
+    );
 if ($ADMIN->fulltree) {
+
+    $setting = new admin_setting_heading('tool_registrationrules/instruction',
+        "",
+        $OUTPUT->notification(get_string("checkrules", "tool_registrationrules"), 'info', false));
+    $settings->add($setting);
+
     // Enable/disable.
     $settings->add(
         new admin_setting_configcheckbox(
@@ -48,8 +54,9 @@ if ($ADMIN->fulltree) {
             new lang_string('enable', 'core'),
             new lang_string('settings:enable:description', 'tool_registrationrules'),
             0,
-        ),
-    );
+            ),
+        );
+
     // Max points.
     $setting = new admin_setting_configtext(
         'tool_registrationrules/maxpoints',
@@ -57,24 +64,27 @@ if ($ADMIN->fulltree) {
         new lang_string('settings:maxpoints:description', 'tool_registrationrules'),
         100,
         PARAM_INT,
-    );
+        );
     $settings->add($setting);
+
     // Generic message for registration page.
     $setting = new admin_setting_confightmleditor(
         'tool_registrationrules/registrationpagemessage',
         new lang_string('settings:registrationpagemessage', 'tool_registrationrules'),
         new lang_string('settings:registrationpagemessage:description', 'tool_registrationrules'),
         '',
-    );
+        );
     $settings->add($setting);
+
     // General message to show on the error page before any rule specific messages.
     $setting = new admin_setting_confightmleditor(
         'tool_registrationrules/generalbeforemessage',
         new lang_string('settings:generalbeforemessage', 'tool_registrationrules'),
         new lang_string('settings:generalbeforemessage:description', 'tool_registrationrules'),
         '',
-    );
+        );
     $settings->add($setting);
+
     // Only log information, do not actually deny registration.
     $settings->add(
         new admin_setting_configcheckbox(
@@ -82,15 +92,16 @@ if ($ADMIN->fulltree) {
             new lang_string('settings:loggingonly', 'tool_registrationrules'),
             new lang_string('settings:loggingonly:description', 'tool_registrationrules'),
             0,
-        ),
-    );
+            ),
+        );
 }
 $ADMIN->add('toolregistrationrules', $settings);
 
 // Link to registration rule subplugin management page.
-$temp = new admin_settingpage('manageregistrationrules', get_string('manageregistrationruleplugins', 'tool_registrationrules'));
-$temp->add(new tool_registrationrules\admin\manage_rule_plugins());
-$ADMIN->add('toolregistrationrules', $temp);
+$manageregistrationrules = new admin_settingpage('manageregistrationrules',
+    get_string('manageregistrationruleplugins', 'tool_registrationrules'));
+$manageregistrationrules->add(new tool_registrationrules\admin\manage_rule_plugins());
+$ADMIN->add('toolregistrationrules', $manageregistrationrules);
 
 // Link to rule instances management page.
 $manageinstancespage = new admin_externalpage(
@@ -98,7 +109,7 @@ $manageinstancespage = new admin_externalpage(
     new lang_string('settings:registrationruleinstances', 'tool_registrationrules'),
     new moodle_url('/admin/tool/registrationrules/manageruleinstances.php'),
     'moodle/site:config',
-);
+    );
 $ADMIN->add('toolregistrationrules', $manageinstancespage);
 
 // Load the settings from registration rule subplugins and add a link to them.

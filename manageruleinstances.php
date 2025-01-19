@@ -76,6 +76,8 @@ if ($action !== null && $sesskey) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('settings:registrationruleinstances', 'tool_registrationrules'));
 
+echo $OUTPUT->notification(get_string('checkruleenabled', 'tool_registrationrules', $CFG->wwwroot), 'info', false);
+
 // If we have been asked to delete an instance but the user has not confirmed then
 // display a confirmation step.
 if ($action === 'delete' && $confirm === null) {
