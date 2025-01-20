@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2025012000
+
+### Added
+
+- Migrate away from using $CFG->tool_registrationrules_forcedinstances setting in config.php, now using $CFG->forced_plugin_settings properly.
+- Add more detail to readme.
+
+### Fixed
+
+- Address some stylelint warnings.
+
 ## Version 2025011800
 
 ### Added
