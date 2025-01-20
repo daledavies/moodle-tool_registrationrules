@@ -94,15 +94,16 @@ class rule_instances_controller implements renderable, \templatable {
      * @throws dml_exception
      */
     public function __construct() {
-        global $CFG, $DB;
+        global $DB;
+        $forcedinstancesconfig = get_config('tool_registrationrules', 'forcedinstances');
         // Load raw instance records from somewhere.
-        if (isset($CFG->tool_registrationrules_forcedinstances)) {
+        if ($forcedinstancesconfig !== false) {
             // Forced instances has been set via config.php, first validate this is actually
             // json and can be decoded to an array.
-            $instancerecords = json_decode($CFG->tool_registrationrules_forcedinstances);
+            $instancerecords = json_decode($forcedinstancesconfig);
             if ($instancerecords === null || !is_array($instancerecords)) {
-                throw new coding_exception('
-                    Unable to decode an array from JSON string found in $CFG->tool_registrationrules_forcedinstances'
+                throw new coding_exception(
+                    'Unable to decode an array from JSON string found in $CFG->tool_registrationrules_forcedinstances'
                 );
             }
             // Validate each array item to ensure it is an object and contains the expected properties,
