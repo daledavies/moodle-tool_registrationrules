@@ -1,3 +1,8 @@
+/**
+ * File style.css.
+ * Contains styles for tool_registration rules plugin.
+ */
+
 #page-admin-tool-registrationrules-manageruleinstances .forcedinstances-modal pre {
     background-color: #eee;
     border-radius: 0.5em;

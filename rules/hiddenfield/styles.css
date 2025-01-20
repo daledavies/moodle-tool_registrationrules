@@ -1,5 +1,15 @@
-/* Hide the honeypot field from view */
+/**
+ * File style.css.
+ * Hide the honeypot field from view.
+ *
+ * Disabling the stylelint no-important declaration as the intention is to deliberately
+ * make it more difficult for themes to expose the honeypot field, as we do not want real
+ * humans to fill it out.
+ */
+
+/* stylelint-disable declaration-no-important  */
 #rr-hhf {
     position: absolute !important;
     left: -99999px !important;
 }
+/* stylelint-enable */

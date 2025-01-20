@@ -1,6 +1,11 @@
+/**
+ * File style.css.
+ * Contains styles for the complexity range slider.
+ */
+
 .form-complexity-range {
     margin-right: 10px;
 }
 .form-complexity-range-value {
-    margin-top:5px;
+    margin-top: 5px;
 }
