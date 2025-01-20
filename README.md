@@ -5,7 +5,7 @@ The **Registration Rules** plugin enhances user account registration control in 
 ## :rocket: List of features
 
 - Flexible rules to allow or deny account registration around date/time windows.
-- Extend signup form to include [hCaptcha](https://www.hcaptcha.com/) or [Altcha](https://github.com/altcha-org).
+- Extend signup form to include [hCaptcha](https://www.hcaptcha.com/) or [ALTCHA](https://github.com/altcha-org).
 - Prevent accounts from being created with [disposable email addresses](https://en.wikipedia.org/wiki/Disposable_email_address).
 - Check, warn and/or deny signup if password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database.
 - Check and deny signup if IP address, email address or username are listed in the [Stop Forum Spam](https://www.stopforumspam.com/) database.
@@ -20,6 +20,8 @@ When configuring a rule, a score can be assigned that will be added if the condi
 
 ## :pencil: How to use
 
+### Basic usage
+
 - [Install the plugin](https://docs.moodle.org/en/Installing_plugins#Installing_a_plugin) in Moodle.
 
 - Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rule instances".
@@ -29,6 +31,58 @@ When configuring a rule, a score can be assigned that will be added if the condi
 - Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rules settings" and tick "Enable".
 
 - While on the "Registration rules settings" page you may wish to consider ticking the "Logging only" option initially, the plugin will then evaluate rules as normal but will only log the results instead of denying user registration. 
+
+### Forced instances
+
+When you have found your perfect configuration it is possible to enforce this via `config.php` so that it cannot be changed via the admin interface, this is particularly useful for deploying sites with a preset configuration.
+
+For more information, click the "View instances JSON" button on the "Registration rule instances"" page.
+
+### Bundled rule plugins
+
+#### ALTCHA challenge
+
+ALTCHA is a free, open-source reCAPTCHA alternative designed to protect your website from spam and abuse. It respects user privacy by avoiding the use of cookies, fingerprinting, or tracking, and is fully compliant with GDPR regulations.
+
+ALTCHA functions by generating a challenge that the user's web browser must solve when they check the "I'm not a robot" box on a signup form. This rule includes a complexity setting, which determines the level of computational effort required to complete the challenge. Higher complexity enhances security but results in a longer wait time for the challenge to be solved.
+
+#### Disposable emails
+
+This rule ensures that accounts cannot be created using [disposable email addresses](https://en.wikipedia.org/wiki/Disposable_email_address). This means that users must provide a valid, permanent email address to register.
+
+Disposable email addresses are temporary and intended for short-term use. They allow people to quickly obtain an email address without sharing their primary one. However, these anonymous addresses can also be misused by bad actors on the Internet, such as spammers.
+
+#### hCaptcha
+
+hCaptcha is a reCAPTCHA alternative. Unlike some other CAPTCHA solutions, hCaptcha focuses on compliance with privacy laws like GDPR and does not sell user data. It works by presenting users with a visual challenge, such as identifying specific objects in images, to verify they are human.
+
+#### Have I Been Pwned?!
+
+Check, warn and/or deny signup if password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database, a free online service that aggregates details of data breaches.
+
+#### Hidden honeypot field
+
+A **honeypot field** is a hidden field in a web form designed to trap and identify bots. It is a simple, effective technique for reducing spam and automated submissions on websites.
+
+#### Limit by date/time
+
+Control exactly when your users are allowed to register for new accounts by defining flexible rules to allow or deny account registration around date/time windows.
+
+#### Minimum completion time
+
+A minimum completion time check is a technique used to help prevent form spam by measuring how quickly a form is filled out and submitted. Since bots can typically complete forms almost instantly, this check helps distinguish between human users and automated account registration.
+
+#### Nope
+
+Completely disable account registration with one click, displaying a message to users in place of the signup form.
+
+#### Stop Forum Spam
+
+The Stop Forum Spam check helps reduce spam account registrations by comparing user-submitted information (such as email addresses, usernames, or IP addresses) against a global database of known spammers. This prevents spam bots from repeatedly creating accounts, providing an effective layer of protection against automated and malicious account creation.
+
+
+
+---
 
 ## Proudly developed in MoodleMoot DACH 2024
 
