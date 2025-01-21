@@ -43,6 +43,10 @@ use tool_registrationrules\local\rule_checker;
  */
 function tool_registrationrules_pre_signup_requests() {
     global $OUTPUT, $PAGE;
+    // Exit if the plugin is not enabled.
+    if (!get_config('tool_registrationrules', 'enable')) {
+        return;
+    }
     // Run the pre-registration checks from any instances that define them.
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_pre_data_checks();
@@ -88,6 +92,10 @@ function tool_registrationrules_pre_signup_requests() {
  * @throws dml_exception
  */
 function tool_registrationrules_extend_signup_form($mform): void {
+    // Exit if the plugin is not enabled.
+    if (!get_config('tool_registrationrules', 'enable')) {
+        return;
+    }
     $registrationpagemessage = get_config('tool_registrationrules', 'registrationpagemessage');
     if ($registrationpagemessage) {
         $mform->insertElementBefore(
@@ -111,6 +119,11 @@ function tool_registrationrules_extend_signup_form($mform): void {
  * @throws coding_exception
  */
 function tool_registrationrules_validate_extend_signup_form($data): array {
+    // Plugin not enabled.
+    if (!get_config('tool_registrationrules', 'enable')) {
+        return [];
+    }
+
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_post_data_checks($data);
 
