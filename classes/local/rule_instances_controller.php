@@ -52,6 +52,7 @@ class rule_instances_controller implements renderable, \templatable {
     /** @var array List of rule plugins bundled with tool_registrationrules */
     public const BUNDLED_RULE_PLUGINS = [
         'altcha',
+        'cloudflareturnstile',
         'disposableemails',
         'hcaptcha',
         'hibp',
