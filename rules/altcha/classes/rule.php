@@ -30,6 +30,7 @@ use registrationrule_altcha\form\altcha_widget;
 use registrationrule_altcha\form\complexity_range_slider;
 use stdClass;
 use tool_registrationrules\local\logger\log_info;
+use tool_registrationrules\local\rule\captcha_rule;
 use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule\post_data_check;
@@ -48,7 +49,7 @@ use tool_registrationrules\local\rule\rule_trait;
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, extend_signup_form, post_data_check, instance_configurable {
+class rule implements rule_interface, extend_signup_form, post_data_check, instance_configurable, captcha_rule {
     use rule_trait;
 
     /** @var int Maximum complexity allowed for challenge */

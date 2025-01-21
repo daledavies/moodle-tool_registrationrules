@@ -63,11 +63,13 @@ $string['ruleinstancestable:instancesjson:modalbodytext'] = '<p>The following ca
 $string['ruleinstancestable:instancesjson:ruleinstancesjson'] = 'Rule instances JSON';
 $string['ruleinstancestable:move'] = 'Move';
 $string['ruleinstancestable:name'] = 'Name';
+$string['ruleinstancestable:nomorecaptchasmessage'] = 'Only one CAPTCHA type rule can be added at a time. New rules using these plugin types cannot be created until the current CAPTCHA instance is removed.';
 $string['ruleinstancestable:notconfigured'] = 'Not configured';
 $string['ruleinstancestable:plugindisabled'] = 'Plugin disabled';
 $string['ruleinstancestable:points'] = 'Points';
 $string['ruleinstancestable:points:decription'] = 'Number of points issued when registration is denied.';
 $string['ruleinstancestable:rulenotenabled'] = 'Rule not enabled';
+$string['ruleinstancestable:siterecaptchaenabled'] = 'reCAPTCHA is enabled in site settings, new CAPTCHA type rules cannot be added.';
 $string['ruleinstancestable:type'] = 'Type';
 $string['rulewillnotbeused'] = 'This rule will not be used yet as the plugin\'s <a href="{$a}">configuration options</a> have not been set.';
 $string['settings:enable:description'] = 'Enable rule checking.';

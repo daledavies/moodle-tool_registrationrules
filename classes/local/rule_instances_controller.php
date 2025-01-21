@@ -311,6 +311,20 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Return all rule instances matching that implement the given interface.
+     *
+     * @param string $interface Interface name
+     * @return rule\rule_interface[] Array of rule instance records
+     */
+    public function get_rule_instances_by_interface(string $interface): array {
+        $instances = array_filter($this->get_rule_instances(), function ($instance) use ($interface) {
+            return is_subclass_of($instance, $interface);
+        });
+
+        return $instances;
+    }
+
+    /**
      * Add a rule instance to the database using submitted data from rule_settings form.
      *
      * @param stdClass $formdata
@@ -476,10 +490,19 @@ class rule_instances_controller implements renderable, \templatable {
      * @return boolean
      */
     public function new_instance_of_type_allowed(string $type): bool {
-        $numinstances = count($this->get_rule_instances_by_type($type));
+        global $CFG;
+        require_once($CFG->libdir . '/authlib.php');
         $class = 'registrationrule_' . $type . '\rule';
-        $requiredinterface = 'tool_registrationrules\local\rule\multiple_instances';
-        if ($numinstances > 0 && !is_subclass_of($class, $requiredinterface)) {
+        // Are multiple instances of this plugin allowed?
+        $numinstancesoftype = count($this->get_rule_instances_by_type($type));
+        if ($numinstancesoftype > 0 && !is_subclass_of($class, 'tool_registrationrules\local\rule\multiple_instances')) {
+            return false;
+        }
+        // If this is a CAPTCHA rule AND reCAPTCHA is already enabled for the site, or we already have one CAPTCHA rule
+        // instance then don't allow it.
+        $numcaptchainstances = count($this->get_rule_instances_by_interface('tool_registrationrules\local\rule\captcha_rule'));
+        $iscaptcharule = is_subclass_of($class, 'tool_registrationrules\local\rule\captcha_rule');
+        if ($iscaptcharule && (login_captcha_enabled() || $numcaptchainstances)) {
             return false;
         }
 
@@ -519,7 +542,14 @@ class rule_instances_controller implements renderable, \templatable {
             'forcedinstances' => $this->forcedinstances,
             // Base64 encode the json string so it is easier to include in the template.
             'forcedinstancesjson' => base64_encode($this->export_instances_as_json()),
-            'disabledcount' => count(registrationrule::get_disabled_plugins()),
+            // If we don't have forced instances then pass the number of disabled rule plugins and
+            // rule plugins that implement captcha alternatives. So that we can display notices on the
+            // instances page alerting the user that rules relating to these can no longer be added.
+            'disabledcount' => $this->forcedinstances ? 0 : count(registrationrule::get_disabled_plugins()),
+            'captchascount' => $this->forcedinstances ? 0 : (bool) count($this->get_rule_instances_by_interface(
+                'tool_registrationrules\local\rule\captcha_rule'
+            )),
+            'siterecaptchaenabled' => login_captcha_enabled(),
         ];
 
         foreach ($this->get_rule_instances() as $key => $ruleinstance) {

@@ -20,6 +20,7 @@ use coding_exception;
 use curl;
 use MoodleQuickForm;
 use tool_registrationrules\local\logger\log_info;
+use tool_registrationrules\local\rule\captcha_rule;
 use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\plugin_configurable;
 use tool_registrationrules\local\rule\post_data_check;
@@ -40,7 +41,7 @@ use tool_registrationrules\local\rule\rule_trait;
  * @author    Lukas MuLu Müller <info@mulu.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, extend_signup_form, plugin_configurable, post_data_check {
+class rule implements rule_interface, extend_signup_form, plugin_configurable, post_data_check, captcha_rule {
     use rule_trait;
 
     /**

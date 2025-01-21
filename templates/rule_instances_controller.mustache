@@ -93,7 +93,15 @@
             </tr>
         {{/instances}}</tbody>
     </table>
-    {{#disabledcount}}<p><i>{{#str}} ruleinstancestable:disabledpluginsmessage, tool_registrationrules, {{disabledcount}} {{/str}}</i></p>{{/disabledcount}}
+    {{#disabledcount}}<div class="alert alert-warning alert-block" role="alert">
+        {{#str}} ruleinstancestable:disabledpluginsmessage, tool_registrationrules, {{disabledcount}} {{/str}}
+    </div>{{/disabledcount}}
+    {{#siterecaptchaenabled}}<div class="alert alert-warning alert-block" role="alert">
+        {{#str}} ruleinstancestable:siterecaptchaenabled, tool_registrationrules {{/str}}
+    </div>{{/siterecaptchaenabled}}
+    {{#captchascount}}<div class="alert alert-warning alert-block" role="alert">
+        {{#str}} ruleinstancestable:nomorecaptchasmessage, tool_registrationrules {{/str}}
+    </div>{{/captchascount}}
     {{^forcedinstances}}
         <div class="row justify-content-between">
             <div class="col-4">
