@@ -60,7 +60,7 @@
         </thead>
         <tbody>{{#instances}}
             <tr{{#dimmedrow}} class="dimmed_text"{{/dimmedrow}}>
-                <td>{{type}}{{#dimmedrow}} ({{dimmedmessage}}){{/dimmedrow}}</td>
+                <td>{{type}}{{#dimmedrow}} ({{dimmedmessage}}){{/dimmedrow}} {{#label}}<span class="label">{{label}}</span>{{/label}}</td>
                 {{^forcedinstances}}
                     <td>{{{enabled}}}</td>
                 {{/forcedinstances}}
@@ -105,16 +105,32 @@
     {{^forcedinstances}}
         <div class="row justify-content-between">
             <div class="col-4">
-                <div class="dropdown show">
-                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="addRule">
-                        {{#types}}
-                            <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
-                        {{/types}}
+                <div class="btn-group">
+                    <div class="dropdown show">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addRule" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{#str}} ruleinstancestable:addrule, tool_registrationrules {{/str}}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="addRule">
+                            {{#types.rules}}
+                                <a class="dropdown-item" href="{{addurl}}">{{name}} {{#label}}<span class="label">{{label}}</span>{{/label}}</a>
+                            {{/types.rules}}
+                        </div>
                     </div>
                 </div>
+                {{^captchascount}}
+                    <div class="btn-group">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addCaptcha" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{#str}} ruleinstancestable:addcaptcha, tool_registrationrules {{/str}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="addCaptcha">
+                                {{#types.captchas}}
+                                    <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
+                                {{/types.captchas}}
+                            </div>
+                        </div>
+                    </div>
+                {{/captchascount}}
             </div>
             <div class="col-4 text-end">
                 <button id="getinstancejson" type="button" class="btn btn-secondary" data-forcedinstancesjson="{{forcedinstancesjson}}"><i class="fa fa-code"></i>

@@ -630,6 +630,8 @@ class rule_instances_controller implements renderable, \templatable {
                 'name' => $ruleinstance->get_name(),
                 'description' => $ruleinstance->get_display_description(),
                 'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_type()),
+                'label' => $this->is_captcha($ruleinstance->get_type())
+                    ? new \lang_string('ruleinstancestable:captcha', 'tool_registrationrules') : null,
                 'points' => $ruleinstance->get_points(),
                 'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
                 'enabled' => $output->render(
@@ -711,24 +713,43 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Given a rule type, determine if the rule implements the captcha interface.
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function is_captcha(string $type): bool {
+        $class = 'registrationrule_' . $type . '\rule';
+        if (is_subclass_of($class, 'tool_registrationrules\local\rule\captcha_rule')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get enabled rule types to generate the add rule instance menu.
      *
-     * @return array
+     * @return stdClass object containing arrays for rules and captchas
      * @throws moodle_exception
      */
-    public function get_types_for_add_menu(): array {
-        $types = [];
+    public function get_types_for_add_menu(): stdClass {
+        $types = new stdClass();
+        $types->rules = [];
+        $types->captchas = [];
         $ruletypes = \tool_registrationrules\plugininfo\registrationrule::get_enabled_plugins();
         foreach ($ruletypes as $ruleplugin) {
             if (!$this->new_instance_of_type_allowed($ruleplugin)) {
                 continue;
             }
-            $types[] = (object)[
+            $types->{$this->is_captcha($ruleplugin) ? 'captchas' : 'rules'}[] = (object)[
                 'addurl' => new \moodle_url(
                     '/admin/tool/registrationrules/editruleinstance.php',
                     ['addruletype' => $ruleplugin],
                 ),
                 'name' => new \lang_string('pluginname', 'registrationrule_' . $ruleplugin),
+                'label' => $this->is_captcha($ruleplugin)
+                    ? new \lang_string('ruleinstancestable:captcha', 'tool_registrationrules') : null,
             ];
         }
         return $types;
