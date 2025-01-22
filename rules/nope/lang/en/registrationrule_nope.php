@@ -28,7 +28,7 @@
 
 $string['failuremessage'] = 'User registration has been temporarily disabled.';
 $string['plugindescription'] = 'Disallow registration entirely';
-$string['pluginname'] = 'Nope rule';
+$string['pluginname'] = 'Nope';
 $string['privacy:null_provider:reason'] = 'Nope rule simply denies registration constantly. There is no user related data involved, stored, or processed by the plugin.';
 $string['registrationrule:instance:name'] = 'Nope';
 $string['resultmessage'] = 'Sorry, but nope!';
