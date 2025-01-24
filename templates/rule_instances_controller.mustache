@@ -93,6 +93,14 @@
             </tr>
         {{/instances}}</tbody>
     </table>
+    {{^pluginenabled}}
+        <div class="alert alert-danger alert-block" role="alert">
+            {{#str}} ruleinstancestable:disabledmessage, tool_registrationrules  {{/str}}
+        </div>
+    {{/pluginenabled}}
+    {{^instances}}
+    <div class="alert alert-success alert-block" role="alert">{{#str}} ruleinstancestable:norulesaddedyet, tool_registrationrules {{/str}}</div>
+    {{/instances}}
     {{#disabledcount}}<div class="alert alert-warning alert-block" role="alert">
         {{#str}} ruleinstancestable:disabledpluginsmessage, tool_registrationrules, {{disabledcount}} {{/str}}
     </div>{{/disabledcount}}

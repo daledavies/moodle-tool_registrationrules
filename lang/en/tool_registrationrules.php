@@ -56,6 +56,7 @@ $string['ruleinstancestable:addcaptcha'] = 'Add CAPTCHA';
 $string['ruleinstancestable:addrule'] = 'Add rule';
 $string['ruleinstancestable:captcha'] = 'CAPTCHA';
 $string['ruleinstancestable:description'] = 'Description';
+$string['ruleinstancestable:disabledmessage'] = 'The Registration Plugin is disabled, rules will not take affect until it is enabled on the <a href="/admin/settings.php?section=generalsettings">Registation rules settings</a> page.';
 $string['ruleinstancestable:disabledpluginsmessage'] = 'There are <a href="/admin/settings.php?section=manageregistrationrules">{$a} disabled rule plugins</a>, new rules using these plugins cannot be created until they are enabled.';
 $string['ruleinstancestable:enabled'] = 'Enabled';
 $string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
@@ -66,6 +67,7 @@ $string['ruleinstancestable:instancesjson:ruleinstancesjson'] = 'Rule instances 
 $string['ruleinstancestable:move'] = 'Move';
 $string['ruleinstancestable:name'] = 'Name';
 $string['ruleinstancestable:nomorecaptchasmessage'] = 'Only one CAPTCHA type rule can be added at a time. New rules using these plugin types cannot be created until the current CAPTCHA instance is removed.';
+$string['ruleinstancestable:norulesaddedyet'] = 'No rules have been added yet, begin by adding a rule and/or CAPTCHA using the dropdown menus below.';
 $string['ruleinstancestable:notconfigured'] = 'Not configured';
 $string['ruleinstancestable:plugindisabled'] = 'Plugin disabled';
 $string['ruleinstancestable:points'] = 'Points';
@@ -77,6 +79,7 @@ $string['rulewillnotbeused'] = 'This rule will not be used yet as the plugin\'s 
 $string['settings:enable:description'] = 'Enable rule checking.';
 $string['settings:generalbeforemessage'] = 'General message for pre-signup rules';
 $string['settings:generalbeforemessage:description'] = 'Some rules (e.g. <b>limitdatetime</b> or <b>nope</b>) will stop the signup page from being displayed, this is a static message that will show up above any feedback from those rules.';
+$string['settings:guidancemessage'] = '<p>You will need to tick "Enable rule checking" before Registration Rules can work.</p><p>It is recommended however that you first review and set up the available rules and CAPTCHA options, then create some <a href="/admin/tool/registrationrules/manageruleinstances.php">rule instances</a> before enabling rule checking.</p> You may also wish to consider enabling "Logging only" for a short while to assess the impact of your chosen rules.';
 $string['settings:loggingonly'] = 'Logging only';
 $string['settings:loggingonly:description'] = 'Evaluate rules as normal but only log the results instead of denying user registration.';
 $string['settings:maxpoints'] = 'Max rejection points';

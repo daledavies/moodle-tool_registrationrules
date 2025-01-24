@@ -551,6 +551,7 @@ class rule_instances_controller implements renderable, \templatable {
                 'tool_registrationrules\local\rule\captcha_rule'
             )),
             'siterecaptchaenabled' => login_captcha_enabled(),
+            'pluginenabled' => get_config('tool_registrationrules', 'enable'),
         ];
 
         foreach ($this->get_rule_instances() as $key => $ruleinstance) {

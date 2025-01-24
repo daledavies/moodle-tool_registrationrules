@@ -27,6 +27,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_registrationrules\admin\admin_setting_visible_description;
+
 defined('MOODLE_INTERNAL') || die;
 
 $ADMIN->add(
@@ -36,20 +38,28 @@ $ADMIN->add(
 
 // The main registrationrules plugin settings.
 $settings = new admin_settingpage(
-    'generalsettings',
+    'generalregistrationrulessettings',
     new lang_string('settings:registrationrulessettings', 'tool_registrationrules'),
     'moodle/site:config',
 );
 if ($ADMIN->fulltree) {
-    // Enable/disable.
-    $settings->add(
-        new admin_setting_configcheckbox(
-            'tool_registrationrules/enable',
-            new lang_string('enable', 'core'),
-            new lang_string('settings:enable:description', 'tool_registrationrules'),
-            0,
-        ),
+    global $OUTPUT;
+
+    // Show guidance for how to begin with registrationrules.
+    $setting = new admin_setting_visible_description(
+        'tool_registrationrules/guidancemessage',
+        null,
+        $OUTPUT->notification(get_string('settings:guidancemessage', 'tool_registrationrules'), 'success', false)
     );
+    $settings->add($setting);
+
+    // Enable/disable.
+    $settings->add(new admin_setting_configcheckbox(
+        'tool_registrationrules/enable',
+        new lang_string('enable', 'core'),
+        new lang_string('settings:enable:description', 'tool_registrationrules'),
+        0,
+    ));
     // Max points.
     $setting = new admin_setting_configtext(
         'tool_registrationrules/maxpoints',

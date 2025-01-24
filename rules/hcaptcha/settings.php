@@ -26,11 +26,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_registrationrules\admin\admin_setting_visible_description;
+
 defined('MOODLE_INTERNAL') || die();
 
 if (!\registrationrule_hcaptcha\rule::is_plugin_configured()) {
     global $OUTPUT;
-    $setting = new admin_setting_description(
+    $setting = new admin_setting_visible_description(
         'registrationrule_hcaptcha/settingsrequired',
         null,
         $OUTPUT->notification(get_string('settingsrequired', 'registrationrule_hcaptcha'), 'error', false)
@@ -39,8 +41,8 @@ if (!\registrationrule_hcaptcha\rule::is_plugin_configured()) {
 }
 
 $settings->add(new admin_setting_configtext('registrationrule_hcaptcha/hcaptcha_sitekey',
-    new lang_string('sitekey', 'registrationrule_hcaptcha'),
-    null, null, PARAM_ALPHANUMEXT));
+new lang_string('sitekey', 'registrationrule_hcaptcha'),
+null, null, PARAM_ALPHANUMEXT));
 
 $settings->add(new admin_setting_configpasswordunmask('registrationrule_hcaptcha/hcaptcha_secret',
     new lang_string('secret', 'registrationrule_hcaptcha'),
