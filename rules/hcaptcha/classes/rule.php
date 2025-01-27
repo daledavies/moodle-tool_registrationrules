@@ -83,10 +83,11 @@ class rule implements rule_interface, extend_signup_form, plugin_configurable, p
         if (!$hcaptchasecret || !$hcaptchasitekey) {
             return null;
         }
-        $validationpost = [
+        $postparams = [
             'secret' => $hcaptchasecret,
             'sitekey' => $hcaptchasitekey,
             'response' => $data['h-captcha-response'],
+            'remoteip' => getremoteaddr(),
         ];
 
         // Call the hCaptcha API for validation.
@@ -97,7 +98,7 @@ class rule implements rule_interface, extend_signup_form, plugin_configurable, p
         ]);
         $response = $curl->post(
             'https://api.hcaptcha.com/siteverify',
-            $validationpost
+            $postparams
         );
 
         // If either the API call was unseuccessful, the json could not be decoded
