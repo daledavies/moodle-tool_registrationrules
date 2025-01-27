@@ -56,7 +56,7 @@ $string['ruleinstancestable:addcaptcha'] = 'Add CAPTCHA';
 $string['ruleinstancestable:addrule'] = 'Add rule';
 $string['ruleinstancestable:captcha'] = 'CAPTCHA';
 $string['ruleinstancestable:description'] = 'Description';
-$string['ruleinstancestable:disabledmessage'] = 'The Registration Plugin is disabled, rules will not take affect until it is enabled on the <a href="/admin/settings.php?section=generalsettings">Registation rules settings</a> page.';
+$string['ruleinstancestable:disabledmessage'] = 'The Registration Plugin is disabled, rules will not take affect until it is enabled on the <a href="/admin/settings.php?section=generalregistrationrulessettings">Registation rules settings</a> page.';
 $string['ruleinstancestable:disabledpluginsmessage'] = 'There are <a href="/admin/settings.php?section=manageregistrationrules">{$a} disabled rule plugins</a>, new rules using these plugins cannot be created until they are enabled.';
 $string['ruleinstancestable:enabled'] = 'Enabled';
 $string['ruleinstancestable:fallbackpoints'] = 'Fallback points';
