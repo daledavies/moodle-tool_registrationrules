@@ -70,13 +70,15 @@ Disposable email addresses are temporary and intended for short-term use. They a
 
 #### Have I Been Pwned?!
 
-Check, warn and/or deny signup if password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database, a free online service that aggregates details of data breaches.
+Check, warn and deny signup if the user's password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database, a free online service that aggregates details of data breaches.
 
 - *This plugin communicates with external systems but does not require you to register for a user account.*
 
 #### Hidden honeypot field
 
-A **honeypot field** is a hidden field in a web form designed to trap and identify bots. It is a simple, effective technique for reducing spam and automated submissions on websites.
+A **honeypot field** is a hidden field added to the signup form that is designed to trap and identify bots. It is a simple, effective technique for reducing spam and automated submissions on websites. 
+
+A random field will be added to the signup form that is invisible to the user, if this field contains data when the form is submitted then it must have been completed by a bot.
 
 #### Limit by date/time
 
@@ -84,7 +86,7 @@ Control exactly when your users are allowed to register for new accounts by defi
 
 #### Minimum completion time
 
-A minimum completion time check is a technique used to help prevent form spam by measuring how quickly a form is filled out and submitted. Since bots can typically complete forms almost instantly, this check helps distinguish between human users and automated account registration.
+This rule helps to prevent spam by measuring how quickly the signup form is filled out and submitted. Since bots can typically complete forms almost instantly, this check helps distinguish between human users and automated account registration.
 
 #### Nope
 
@@ -92,7 +94,7 @@ Completely disable account registration with one click, displaying a message to 
 
 #### Stop Forum Spam
 
-The Stop Forum Spam check helps reduce spam account registrations by comparing user-submitted information (such as email addresses, usernames, or IP addresses) against a global database of known spammers. This prevents spam bots from repeatedly creating accounts, providing an effective layer of protection against automated and malicious account creation.
+This helps reduce spam account registrations by comparing the submitted username, email address and IP address against a global database of known spammers provided by the free [Stop Forum Spam](https://www.stopforumspam.com/) service, an effective layer of protection against automated and malicious account creation.
 
 - *This plugin communicates with external systems but does not require you to register for a user account.*
 
