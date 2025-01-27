@@ -35,5 +35,5 @@ $string['privacy:metadata:payload'] = 'Information about a user during their ses
 $string['privacy:metadata:summary'] = 'Coudflare Turnstile evaluates various information (e.g. IP address, (e.g. IP address, browser fingerprint). The data collected during the analysis will be forwarded to Cloudflare. This plugin does not store any user related data, and only necessary data is sent to Cloudflare.';
 $string['registrationrule:instance:name'] = 'Cloudflare Turnstile';
 $string['secret'] = 'Secret';
-$string['settingsrequired'] = '<p>If you choose to use Cloudflare Turnstile, you will first need to generate a Site Key and Secret.</p> You can generate these by logging into the Cloudflare dashboard and clicking "Turnstyle", more information can be found in the <a href="https://developers.cloudflare.com/turnstile/get-started/">Cloudflare Turnstile documentation</a>.';
+$string['settingsrequired'] = '<p>If you choose to use Cloudflare Turnstile, you will first need to generate a Site Key and Secret.</p> You can generate these by logging into the Cloudflare dashboard and clicking "Turnstile", more information can be found in the <a href="https://developers.cloudflare.com/turnstile/get-started/">Cloudflare Turnstile documentation</a>.';
 $string['sitekey'] = 'Site Key';
