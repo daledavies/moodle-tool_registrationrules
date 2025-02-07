@@ -27,8 +27,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_registrationrules\admin\admin_setting_visible_description;
-
 defined('MOODLE_INTERNAL') || die;
 
 $ADMIN->add(
@@ -46,7 +44,7 @@ if ($ADMIN->fulltree) {
     global $OUTPUT;
 
     // Show guidance for how to begin with registrationrules.
-    $setting = new admin_setting_visible_description(
+    $setting = new admin_setting_description(
         'tool_registrationrules/guidancemessage',
         null,
         $OUTPUT->notification(get_string('settings:guidancemessage', 'tool_registrationrules'), 'success', false)
