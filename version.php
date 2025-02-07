@@ -29,8 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025012000; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->release   = 2025012000;
+$plugin->version   = 2025020700; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->release   = 2025020700;
 $plugin->requires  = 2022112813; // Requires this Moodle version.
 $plugin->supported = [401, 405];
 $plugin->component = 'tool_registrationrules'; // Full name of the plugin (used for diagnostics).

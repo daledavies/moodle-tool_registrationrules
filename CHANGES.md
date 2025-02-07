@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 2025020700
+
+### Added
+
+- New Cloudflare Turnstile CAPTCHA rule.
+- Added separate dropdown for CAPTCHA rules.
+- Automatic selection of text in forced instances modal.
+
+### Fixed
+
+- Improved notifications and guidance text.
+- Only one CAPTCHA rule can be added at a time.
+- Fixed some typos and incorrect links.
+- Use remote IP for hcaptcha.
+- Ensure plugin does no processing if not enabled.
+
 ## Version 2025012000
 
 ### Added
