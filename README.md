@@ -18,10 +18,10 @@ The **Registration Rules** plugin lets you set up a series of flexible rules to 
 
 ### How rules are evaluated:
 
-    1. When a user tries to sign up, the plugin checks their submitted details against the set rules.
-    2. Each rule has a score. If the rule's condition is met, the corresponding score is added to the total.
-    3. After all rules are checked, the plugin compares the total score with a configurable threshold.
-    4. If the total score is below the threshold then registration is allowed. If it is above the threshold, the registration is denied.
+1. When a user tries to sign up, the plugin checks their submitted details against the set rules.
+2. Each rule has a score. If the rule's condition is met, the corresponding score is added to the total.
+3. After all rules are checked, the plugin compares the total score with a configurable threshold.
+4. If the total score is below the threshold then registration is allowed. If it is above the threshold, the registration is denied.
 
 ## :pencil: How to use
 
