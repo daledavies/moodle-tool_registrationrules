@@ -92,6 +92,10 @@ This rule helps to prevent spam by measuring how quickly the signup form is fill
 
 Completely disable account registration with one click, displaying a message to users in place of the signup form.
 
+#### Rate Limit
+
+Prevent brute-force registration attacks by limiting the number of registration attempts based on the user's session and/or IP address. This rule allows administrators to set individual parameters for both session and IP-based rate limiting, specifying the maximum number of allowed attempts within a defined time window. If the limit is exceeded, further registration attempts are temporarily blocked.
+
 #### Stop Forum Spam
 
 This helps reduce spam account registrations by comparing the submitted username, email address and IP address against a global database of known spammers provided by the free [Stop Forum Spam](https://www.stopforumspam.com/) service, an effective layer of protection against automated and malicious account creation.
