@@ -14,9 +14,14 @@ The **Registration Rules** plugin enhances user account registration control in 
 
 ## 🧐 How it works
 
-The **Registration Rules** plugin enables you to configure a set of customisable rules, selected from a list of available rule plugins. Each rule specifies a condition that is evaluated to determine whether a user is permitted to register an account.
+The **Registration Rules** plugin lets you set up a series of flexible rules to control user signups based on specific conditions. Each rule defines a check that is run during the registration process.
 
-When configuring a rule, a score can be assigned that will be added if the condition is met. Once all rules have been evaluated, the total score is compared against the maximum threshold set on the plugin's main settings page. Registration is allowed only if the accumulated score remains below this threshold.
+### How rules are evaluated:
+
+    1. When a user tries to sign up, the plugin checks their submitted details against the set rules.
+    2. Each rule has a score. If the rule's condition is met, the corresponding score is added to the total.
+    3. After all rules are checked, the plugin compares the total score with a configurable threshold.
+    4. If the total score is below the threshold then registration is allowed. If it is above the threshold, the registration is denied.
 
 ## :pencil: How to use
 
