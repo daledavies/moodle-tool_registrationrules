@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/registrationrules/db" VERSION="20241016" COMMENT="XMLDB file for Moodle admin/tool/registrationrules"
+<XMLDB PATH="admin/tool/registrationrules/db" VERSION="20250212" COMMENT="XMLDB file for Moodle admin/tool/registrationrules"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -15,13 +15,9 @@
         <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false" COMMENT="Points added to the score for failing this rule."/>
         <FIELD NAME="fallbackpoints" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Points awarded if this rule's fallback becomes active (API not reachable, etc.)"/>
         <FIELD NAME="other" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Type specific configuration encoded as JSON."/>
-        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

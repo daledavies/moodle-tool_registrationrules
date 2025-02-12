@@ -80,6 +80,31 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024090304, 'tool', 'registrationrules');
     }
 
+    if ($oldversion < 2025020701) {
+        // Drop usermodified key.
+        $table = new xmldb_table('tool_registrationrules');
+        $key = new xmldb_key('primary', XMLDB_KEY_FOREIGN, ['usermodified']);
+        $dbman->drop_key($table, $key);
+        // Drop usermodified field.
+        $field = new xmldb_field('usermodified');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        // Drop timecreated field.
+        $field = new xmldb_field('timecreated');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        // Drop timemodified field.
+        $field = new xmldb_field('timemodified');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Registrationrules savepoint reached.
+        upgrade_plugin_savepoint(true, 2025020701, 'tool', 'registrationrules');
+    }
+
     // Apparently we must always return true here, or we get an "unkown error" dusing upgrade.
     // See https://moodledev.io/docs/guides/upgrade#dbupgradephp for info.
     return true;

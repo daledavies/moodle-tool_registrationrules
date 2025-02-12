@@ -680,8 +680,6 @@ class rule_instances_controller implements renderable, \templatable {
             'points' => $formdata->points,
             'fallbackpoints' => $formdata->fallbackpoints,
             'other' => $this->encode_instance_config($formdata),
-            'usermodified' => $USER->id,
-            'timemodified' => time(),
         ];
 
         if (!empty($formdata->id)) {
