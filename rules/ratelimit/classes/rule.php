@@ -99,6 +99,18 @@ class rule implements rule_interface, pre_data_check, post_data_check, instance_
      * @return void
      */
     public static function extend_settings_form(MoodleQuickForm $mform): void {
+        global $OUTPUT;
+        // General help message for this rule should be displayed above the generic "Enabled" setting.
+        $mform->insertElementBefore(
+            $mform->createElement(
+                'static', 'registrationrule_ratelimit_help', '',
+                $OUTPUT->notification(
+                    get_string('registrationrule:instance:settings:help', 'registrationrule_ratelimit'),
+                    'success', false,
+                ),
+            ),
+            'enabled',
+        );
         // Session rate limiting group.
         $mform->addElement('header', 'sessionratelimitgroup',
             get_string('registrationrule:instance:settings:sessionratelimitgroup', 'registrationrule_ratelimit'));

@@ -33,6 +33,7 @@ $string['plugindescription'] = 'Limit the number of signup attempts within a tim
 $string['pluginname'] = 'Rate Limit';
 $string['privacy:null_provider:reason'] = 'This rule does not store identifiable user data.';
 $string['registrationrule:instance:name'] = 'Rate Limit';
+$string['registrationrule:instance:settings:help'] = 'This rule allows administrators to set individual parameters for both session and IP-based rate limiting, specifying the maximum number of allowed attempts within a defined time window. If the limit is exceeded, further registration attempts are temporarily blocked.';
 $string['registrationrule:instance:settings:ipratelimitgroup'] = 'IP rate limiting options';
 $string['registrationrule:instance:settings:limit'] = 'Limit';
 $string['registrationrule:instance:settings:sessionratelimitgroup'] = 'Session rate limiting options';
