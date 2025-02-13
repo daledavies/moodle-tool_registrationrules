@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2025021300
+
+### Added
+
+- New Rate Limit rule for limiting the number of registration attempts over a period of time based on the user's session and/or IP address.
+
+### Fixed
+
+- Issue #65: Removed unused dB tables.
+- Issue #66: Make some CSS rules more specific.
+
 ## Version 2025020700
 
 ### Added
