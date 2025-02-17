@@ -629,7 +629,6 @@ class rule_instances_controller implements renderable, \templatable {
             // Add the instance row details to our template context.
             $context->instances[] = (object)[
                 'id' => $ruleinstance->get_id(),
-                'name' => $ruleinstance->get_name(),
                 'description' => $ruleinstance->get_display_description(),
                 'type' => new \lang_string('pluginname', 'registrationrule_' . $ruleinstance->get_type()),
                 'label' => $this->is_captcha($ruleinstance->get_type())
@@ -676,7 +675,6 @@ class rule_instances_controller implements renderable, \templatable {
         $instance = (object)[
             'type' => $formdata->type,
             'enabled' => $formdata->enabled,
-            'name' => $formdata->name,
             'description' => $formdata->description,
             'points' => $formdata->points,
             'fallbackpoints' => $formdata->fallbackpoints,

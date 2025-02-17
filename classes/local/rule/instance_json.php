@@ -35,7 +35,6 @@ class instance_json implements JsonSerializable {
     public const EXPECTED_PROPERTIES = [
         'type',
         'enabled',
-        'name',
         'description',
         'points',
         'fallbackpoints',
@@ -53,7 +52,6 @@ class instance_json implements JsonSerializable {
         $this->instancedata = new stdClass();
         $this->instancedata->type = $ruleinstance->get_type();
         $this->instancedata->enabled = $ruleinstance->get_enabled();
-        $this->instancedata->name = $ruleinstance->get_name();
         $this->instancedata->description = $ruleinstance->get_description();
         $this->instancedata->points = $ruleinstance->get_points();
         $this->instancedata->fallbackpoints = $ruleinstance->get_fallbackpoints();

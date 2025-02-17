@@ -62,7 +62,7 @@ class log_info {
      * @return string
      */
     public function get_rule_name(): string {
-        return $this->ruleinstance->get_name();
+        return get_string('pluginname', 'registrationrule_' . $this->ruleinstance->get_type());
     }
 
     /**

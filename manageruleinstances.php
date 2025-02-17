@@ -90,7 +90,11 @@ if ($action === 'delete' && $confirm === null) {
     );
     $ruleinstance = $controller->get_rule_instance_by_id($instanceid);
     echo $OUTPUT->confirm(
-        get_string('confirmdelete', 'tool_registrationrules', $ruleinstance->get_name()),
+        get_string(
+            'confirmdelete',
+            'tool_registrationrules',
+            get_string('pluginname', 'registrationrule_' . $ruleinstance->get_type())
+        ),
         $confirmurl,
         $PAGE->url,
         ['continuestr' => get_string('delete')]

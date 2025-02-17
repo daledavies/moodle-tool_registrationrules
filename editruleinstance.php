@@ -54,7 +54,8 @@ $controller = rule_instances_controller::get_instance();
 if (!empty($ruleinstanceid)) {
     $ruleinstance = $controller->get_rule_instance_by_id($ruleinstanceid);
     $PAGE->set_title(get_string('editruleinstance', 'tool_registrationrules'));
-    $PAGE->set_heading(get_string('editruleinstance', 'tool_registrationrules', $ruleinstance->get_name()));
+    $PAGE->set_heading(get_string('editruleinstancename', 'tool_registrationrules',
+        get_string('pluginname', 'registrationrule_' . $ruleinstance->get_type())));
     $mform = rule_settings::from_rule_instance($ruleinstance->get_id());
 } else {
     if (!$controller->new_instance_of_type_allowed($addruletype)) {

@@ -82,21 +82,6 @@ interface rule_interface {
     public function set_enabled(bool $enabled): bool;
 
     /**
-     * Get the rule instance's name.
-     *
-     * @return string the rule instance name.
-     */
-    public function get_name(): string;
-
-    /**
-     * Set  the rule instance's name.
-     *
-     * @param string $name
-     * @return string
-     */
-    public function set_name(string $name): string;
-
-    /**
      * Get the rule instance's description as configured in it's settings.
      *
      * @return string the rule instance description.

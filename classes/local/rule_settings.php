@@ -68,7 +68,6 @@ class rule_settings extends \moodleform {
             'id' => $ruleinstance->get_id(),
             'type' => $ruleinstance->get_type(),
             'enabled' => $ruleinstance->get_enabled(),
-            'name' => $ruleinstance->get_name(),
             'description' => $ruleinstance->get_description(),
             'points' => $ruleinstance->get_points(),
             'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
@@ -185,12 +184,6 @@ class rule_settings extends \moodleform {
         );
         $mform->setType('enabled', PARAM_BOOL);
         $mform->setDefault('enabled', 0);
-
-        // Sortorder is only changeable via the list of registrationrule instances.
-
-        $mform->addElement('text', 'name', get_string('registrationrule:instance:name', 'tool_registrationrules'));
-        $mform->setType('name', PARAM_TEXT);
-        $mform->setDefault('name', get_string('registrationrule:instance:name', 'registrationrule_' . $this->type));
 
         // TODO: replace with WYSIWYG editor!
         $mform->addElement(

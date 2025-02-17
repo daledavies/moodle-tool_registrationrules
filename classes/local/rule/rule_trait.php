@@ -44,9 +44,6 @@ trait rule_trait {
     /** @var bool true if the rule instance is enabled. */
     protected bool $enabled;
 
-    /** @var string rule plugin instance name. */
-    protected string $name;
-
     /** @var string rule plugin instance description. */
     protected string $description;
 
@@ -114,25 +111,6 @@ trait rule_trait {
      */
     public function set_enabled(bool $enabled): bool {
         return $this->enabled = $enabled;
-    }
-
-    /**
-     * Get the rule instance's name.
-     *
-     * @return string the rule instance name.
-     */
-    public function get_name(): string {
-        return $this->name;
-    }
-
-    /**
-     * Set  the rule instance's name.
-     *
-     * @param string $name
-     * @return string
-     */
-    public function set_name(string $name): string {
-        return $this->name = $name;
     }
 
     /**
