@@ -60,6 +60,7 @@ class rule_instances_controller implements renderable, \templatable {
         'limitdatetime',
         'mintime',
         'nope',
+        'ratelimit',
         'stopforumspam',
     ];
 
