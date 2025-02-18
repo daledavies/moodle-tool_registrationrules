@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2025021800
+
+### Fixed
+
+- Removed superfluous "name" field from rule instances.
+- Add ratelimit to bundled rule plugins list.
+- Ensure fieldsets are closed on regstration form before adding new elements.
+
 ## Version 2025021300
 
 ### Added
