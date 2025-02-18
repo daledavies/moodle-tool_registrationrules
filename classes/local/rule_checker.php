@@ -333,5 +333,6 @@ class rule_checker {
      */
     public function add_error_field(MoodleQuickForm $mform) {
         $mform->addElement('static', 'tool_registrationrules_errors');
+        $mform->closeHeaderBefore('tool_registrationrules_errors');
     }
 }
