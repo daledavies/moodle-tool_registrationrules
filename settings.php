@@ -109,9 +109,13 @@ $manageinstancespage = new admin_externalpage(
 );
 $ADMIN->add('toolregistrationrules', $manageinstancespage);
 
-// Load the settings from registration rule subplugins and add a link to them.
-$plugins = core_plugin_manager::instance()->get_plugins_of_type('registrationrule');
-core_collator::asort_objects_by_property($plugins, 'displayname');
-foreach ($plugins as $plugin) {
-    $plugin->load_settings($ADMIN, 'toolregistrationrules', $hassiteconfig);
+// Don't show settings for individual rule plugins in menu, but still show them in settings
+// category and on plugin management table.
+if ($ADMIN->fulltree) {
+    // Load the settings from registration rule subplugins and add a link to them.
+    $plugins = core_plugin_manager::instance()->get_plugins_of_type('registrationrule');
+    core_collator::asort_objects_by_property($plugins, 'displayname');
+    foreach ($plugins as $plugin) {
+        $plugin->load_settings($ADMIN, 'toolregistrationrules', $hassiteconfig);
+    }
 }
