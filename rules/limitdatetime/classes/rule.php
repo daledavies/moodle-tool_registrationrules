@@ -176,7 +176,7 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
                             // the rule instance that returned this result.
                             $loginfo = $result->get_log_info();
                             // Skip any results from rule types other that limitdatetime.
-                            if (!$loginfo->get_rule_type() == 'limitdatetime') {
+                            if ($loginfo->get_rule_type() !== 'limitdatetime') {
                                 continue;
                             }
                             // Get an instance of the rule from it's ID and check how it is configured, we are only
