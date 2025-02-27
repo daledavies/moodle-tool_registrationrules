@@ -62,6 +62,7 @@ class rule_instances_controller implements renderable, \templatable {
         'nope',
         'ratelimit',
         'stopforumspam',
+        'verifymx',
     ];
 
     /** @var rule_instances_controller $instance singleton instance of rule_instances_controller */
