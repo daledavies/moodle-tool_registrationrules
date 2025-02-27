@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2025022700
+
+### Added
+
+- New Verify Mail Server ruleto ensure submitted email domain DNS records point at an email server (i.e. have MX records).
+- Simplify settings menu options and clarify naming around rule/instances/plugin etc.
+
+### Fixed
+
+- Fix error shown in certain situations when using limitdatetime rule, caused by incorrect deferred_deny callback logic.
+
 ## Version 2025021800
 
 ### Fixed
