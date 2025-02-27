@@ -8,9 +8,9 @@ The **Registration Rules** plugin enhances user account registration control in 
 - Prevent accounts from being created with [disposable email addresses](https://en.wikipedia.org/wiki/Disposable_email_address).
 - Check, warn and/or deny signup if password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database.
 - Check and deny signup if IP address, email address or username are listed in the [Stop Forum Spam](https://www.stopforumspam.com/) database.
-- Implement other anti-spam measures such as injecting randomised hidden honeypot fields into the signup form and ensuring users take a minimum amount of time to register.
+- Implement other anti-spam measures such as injecting randomised hidden honeypot fields into the signup form, ensuring users take a minimum amount of time to register, rate limiting the number of allowed signups per session or IP address, and more!
 - Flexible rules to allow or deny account registration around date/time windows.
-- Entirely disable user signups with a single click, displaying a custom message on the signup page.
+- Entirely disable user signups with a single click.
 
 ## 🧐 How it works
 
@@ -29,19 +29,19 @@ The **Registration Rules** plugin lets you set up a series of flexible rules to 
 
 - [Install the plugin](https://docs.moodle.org/en/Installing_plugins#Installing_a_plugin) in Moodle.
 
-- Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rule instances".
+- Browse to "Site administration / Plugins / Admin tools / Registration rules / Rules".
 
 - Select and configure the rules you want to use via the "Add rule" and/or "Add CAPTCHA" dropdown.
 
-- Browse to "Site administration / Plugins / Admin tools / Registration rules / Registration rules settings" and tick "Enable".
+- Browse to "Site administration / Plugins / Admin tools / Registration rules / Settings" and tick "Enable".
 
-- While on the "Registration rules settings" page you may wish to consider ticking the "Logging only" option initially, the plugin will then evaluate rules as normal but will only log the results instead of denying user registration.
+- While on the general settings page you may wish to consider ticking the "Logging only" option initially, the plugin will then evaluate rules as normal but will only log the results instead of denying user registration.
 
 ### Forced instances
 
 When you have found your perfect configuration it is possible to enforce this via `config.php` so that it cannot be changed via the admin interface, this is particularly useful for deploying sites with a preset configuration.
 
-For more information, click the "View instances JSON" button on the "Registration rule instances"" page.
+For more information, click the "View instances JSON" button on the "Rules" page.
 
 ### Bundled CAPTCHA plugins
 
@@ -106,6 +106,10 @@ Prevent brute-force registration attacks by limiting the number of registration 
 This helps reduce spam account registrations by comparing the submitted username, email address and IP address against a global database of known spammers provided by the free [Stop Forum Spam](https://www.stopforumspam.com/) service, an effective layer of protection against automated and malicious account creation.
 
 - *This plugin communicates with external systems but does not require you to register for a user account.*
+
+#### Verify Mail Server
+
+This rule ensures that the email domain provided during registration has valid mail server DNS records, known as MX records. These indicate that the domain is configured to handle email traffic, helping to prevent signups using non-functional or randomly generated email addresses.
 
 ---
 
