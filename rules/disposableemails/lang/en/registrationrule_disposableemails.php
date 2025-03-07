@@ -26,6 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['cachedef_blockedemaildomains'] = 'Blocked email domains';
 $string['errorlistdownloadfailed'] = 'Error downloading disposable email list';
 $string['failuremessage'] = 'Email domain is on a disposable email domain list.';
 $string['fallbackfailuremessage'] = 'Your email address cannot be veriefied at the moment';
@@ -34,3 +35,4 @@ $string['plugindescription'] = 'Check if user email is on a list of disposable e
 $string['pluginname'] = 'Disposable emails';
 $string['privacy:null_provider:reason'] = 'Disposable emails rule does not store any user related data. The domain part of user email addresses will be compared to a list of disposable email domains, this happens transiently during form processing and no data is transmitted.';
 $string['registrationrule:instance:name'] = 'Disposable emails';
+$string['taskupdateblockeddomainslist'] = 'Update blocked domains list';

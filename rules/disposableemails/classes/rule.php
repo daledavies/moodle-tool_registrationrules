@@ -56,14 +56,11 @@ class rule implements rule_interface, post_data_check {
         // Get just the domain part of the user's email address.
         $domain = $this->extract_email_domain($email);
 
-        // Get an instance of list_manager so we can begin checking the user's
-        // email domain against a list of disposable email domains.
         $listmanager = new list_manager();
 
-        // Retrieve a list of disposable email domains, if anything goes wrong while
-        // retrieving the list then return a fail with the configured fallback points.
+        // Check the provided domain, if something goes wrong then return a fallback.
         try {
-            $blockeddomains = $listmanager->get_blocked_domains();
+            $isonlist = $listmanager->is_domain_blocked($domain);
         } catch (moodle_exception) {
             return $this->deny(
                 score: $this->get_fallbackpoints(),
@@ -72,10 +69,8 @@ class rule implements rule_interface, post_data_check {
             );
         }
 
-        // If we get a list of domains then check the provided domain and
-        // return a failure with the configured score if the email domain is
-        // on the list.
-        if (in_array($domain, $blockeddomains)) {
+        // The email domain is on the list so return a failure.
+        if ($isonlist) {
             return $this->deny(
                 score: $this->get_points(),
                 validationmessages: ['email' => get_string('failuremessage', 'registrationrule_disposableemails')],
@@ -92,7 +87,7 @@ class rule implements rule_interface, post_data_check {
      * @param string $email
      * @return false|string
      */
-    private function extract_email_domain(string $email) {
+    private function extract_email_domain(string $email): string {
         $parts = explode('@', $email);
 
         return end($parts);
