@@ -91,9 +91,12 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
         $this->startdate = $instanceconfig->limitdatetime_from;
         $this->enddate = $instanceconfig->limitdatetime_to;
         $this->restrictionmode = $instanceconfig->restrictionmode;
+        // Information to be displayed in various strings. Using userdate() here to ensure
+        // date format is acceptable, but forcing server timezone.
         $this->stringparams = [
-            'from' => userdate($this->startdate),
-            'to' => userdate($this->enddate),
+            'from' => userdate($this->startdate, null, \core_date::get_server_timezone()),
+            'to' => userdate($this->enddate, null, \core_date::get_server_timezone()),
+            'timezone' => \core_date::get_server_timezone(),
         ];
     }
 
@@ -124,8 +127,32 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      * @throws coding_exception
      */
     public static function extend_settings_form(MoodleQuickForm $mform): void {
-        $mform->addElement('date_time_selector', 'limitdatetime_from', get_string('from', 'registrationrule_limitdatetime'));
-        $mform->addElement('date_time_selector', 'limitdatetime_to', get_string('to', 'registrationrule_limitdatetime'));
+        global $OUTPUT;
+        // HTML element to indicate the timezone being used by our date time selectors.
+        $timezoneelement = $OUTPUT->render_from_template('registrationrule_limitdatetime/timezoneelement', [
+            'timezone' => \core_date::get_server_timezone(),
+        ]);
+        // More sensible options than default...
+        // (1) We really don't need to pick previous years or go very far into the future.
+        // (2) We don't need a very granular step.
+        // (3) We are enforcing the server timezone to save confusion.
+        $datetimeoptions = [
+            'startyear' => date('Y'),
+            'stopyear' => date('Y') + 10,
+            'step' => '5',
+            'timezone' => \core_date::get_server_timezone(),
+        ];
+        // Date/time from.
+        $mform->addGroup([
+            $mform->createElement('date_time_selector', 'limitdatetime_from', '', $datetimeoptions),
+            $mform->createElement('html', $timezoneelement),
+        ], '', get_string('from', 'registrationrule_limitdatetime'));
+        // Date/time to.
+        $mform->addGroup([
+            $mform->createElement('date_time_selector', 'limitdatetime_to', '', $datetimeoptions),
+            $mform->createElement('html', $timezoneelement),
+        ], '', get_string('to', 'registrationrule_limitdatetime'));
+        // Restriction mode.
         $mform->addElement('select', 'restrictionmode', get_string('restrictionmode', 'registrationrule_limitdatetime'), [
             static::OPTION_ALLOW_BETWEEN_DATES => get_string('allowbetweendates', 'registrationrule_limitdatetime'),
             static::OPTION_DENY_BETWEEN_DATES => get_string('denybetweendates', 'registrationrule_limitdatetime'),
@@ -138,13 +165,14 @@ class rule implements rule_interface, pre_data_check, instance_configurable, mul
      * @return rule_check_result A rule_check_result object.
      */
     public function pre_data_check(): rule_check_result {
-        $now = time();
         /* A wizard is never late, nor is he early,
          * he arrives precisely when he means to.
          *
          * Just like users don't.
-         * TODO: check timezone used in settings and maybe explain about used timezone as hint in UI?
          */
+
+        // Grab a UTC timestamp for the current time.
+        $now = time();
 
         // Is the current date/time in the window between the configured start and end dates?
         $nowisinsidewindow = (($now >= $this->startdate) && ($now <= $this->enddate));
