@@ -4,7 +4,7 @@ The **Registration Rules** plugin enhances user account registration control in 
 
 ## :rocket: List of features
 
-- Extend the signup form to include reCAPTCHA alternatives from [ALTCHA](https://github.com/altcha-org), [Cloudflare Turnstile](https://www.cloudflare.com/en-gb/application-services/products/turnstile/) and [hCaptcha](%5Bhttps://www.hcaptcha.com/%5D(https://www.hcaptcha.com/))
+- Extend the signup form to include reCAPTCHA alternatives from [ALTCHA](https://github.com/altcha-org), [Cloudflare Turnstile](https://www.cloudflare.com/en-gb/application-services/products/turnstile/) and [hCaptcha](https://www.hcaptcha.com)
 - Prevent accounts from being created with [disposable email addresses](https://en.wikipedia.org/wiki/Disposable_email_address).
 - Check, warn and/or deny signup if password is listed in the [Have I Been Pwned](https://haveibeenpwned.com/) database.
 - Check and deny signup if IP address, email address or username are listed in the [Stop Forum Spam](https://www.stopforumspam.com/) database.
