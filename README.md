@@ -89,6 +89,10 @@ A random field will be added to the signup form that is invisible to the user, i
 
 Control exactly when your users are allowed to register for new accounts by defining flexible rules to allow or deny account registration around date/time windows.
 
+Multiple instances of this rule can be created to allow combinations of time periods where registration will be allowed and disallowed.
+
+*Note all selected times are in the default site timezone.*
+
 #### Minimum completion time
 
 This rule helps to prevent spam by measuring how quickly the signup form is filled out and submitted. Since bots can typically complete forms almost instantly, this check helps distinguish between human users and automated account registration.
@@ -115,4 +119,4 @@ This rule ensures that the email domain provided during registration has valid m
 
 ## Proudly developed in MoodleMoot DACH 2024
 
-Moodle Registration Rules was originally developed during [MoodleMoot DACH](https://moodlemootdach.org) 2024 as a collaboration between Dale Davies from [Catalyst IT Europe](https://www.catalyst-eu.net/), Philipp Hager and Andreas Hruska from [eDaktik](https://www.edaktik.at/), Lukas Müller from [lern.link](https://lern.link/) and Michael Aherne from [University of Strathclyde](https://www.strath.ac.uk/).
+Moodle Registration Rules was originally developed during [MoodleMoot DACH](https://moodlemootdach.org) 2024 as a collaboration between [Dale Davies](https://www.daledavies.co.uk) from [Catalyst IT Europe](https://www.catalyst-eu.net/), Philipp Hager and Andreas Hruska from [eDaktik](https://www.edaktik.at/), Lukas Müller from [lern.link](https://lern.link/) and Michael Aherne from [University of Strathclyde](https://www.strath.ac.uk/).
