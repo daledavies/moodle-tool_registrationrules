@@ -20,7 +20,7 @@ namespace registrationrule_disposableemails\local;
 use cache_data_source;
 use coding_exception;
 use context_system;
-use core_cache\definition;
+use cache_definition;
 use dml_exception;
 use moodle_exception;
 use file_exception;
@@ -197,10 +197,10 @@ class list_manager implements cache_data_source {
      * Returns an instance of the data source class that the cache can use for loading data using the other methods
      * specified by this interface.
      *
-     * @param definition $definition
+     * @param cache_definition $definition
      * @return object
      */
-    public static function get_instance_for_cache(definition $definition): list_manager {
+    public static function get_instance_for_cache(cache_definition $definition): list_manager {
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
