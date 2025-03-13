@@ -345,12 +345,8 @@ class rule_instances_controller implements renderable, \templatable {
      * @return rule_instances_controller
      */
     public function add_instance(stdClass $formdata): rule_instances_controller {
-        // Extract the standard rule config from the form and create a new
-        // instance record object.
+        // Extract the rule config from the form and create a new instance record object.
         $instance = $this->extract_instancedata($formdata);
-        // Encode rule specific config data from the form and add to
-        // the instance record.
-        $instance->other = $this->encode_instance_config($formdata);
         // Find the highest sortorder in the list of rule instances so far.
         $highestsortorder = 0;
         foreach ($this->ruleinstancesinternal as $i) {
@@ -381,8 +377,6 @@ class rule_instances_controller implements renderable, \templatable {
                 $this->ruleinstancesinternal[$formdata->id]->{$property} = $value;
             }
         }
-        // Encode rule specific config data from the form and add to the instance record.
-        $this->ruleinstancesinternal[$formdata->id]->other = $this->encode_instance_config($formdata);
         // Signify we have made a modification.
         $this->ruleinstancesinternal[$formdata->id]->modified = true;
 
@@ -686,8 +680,6 @@ class rule_instances_controller implements renderable, \templatable {
      * @return stdClass
      */
     private function extract_instancedata(stdClass $formdata): stdClass {
-        global $USER;
-
         $instance = (object)[
             'type' => $formdata->type,
             'enabled' => $formdata->enabled,
