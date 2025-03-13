@@ -179,6 +179,17 @@ class rule_instances_controller implements renderable, \templatable {
         // Signify that we are happy for the changes within this transaction to be
         // committed when ready.
         $transaction->allow_commit();
+
+        // Reorder list of rule instance records by sortorder.
+        $this->reorder_instance_records();
+    }
+
+    /**
+     * Reorder list of rule instance records by sortorder.
+     *
+     * @return void
+     */
+    protected function reorder_instance_records(): void {
         // Reorder array of ruleinstances based on each instance's sortorder.
         uasort($this->ruleinstances, function($a, $b) {
             return ($a->sortorder < $b->sortorder) ? -1 : 1;
@@ -457,6 +468,8 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$previnstancekey]->modified = true;
+            // Reorder list of rule instance records by new sortorder.
+            $this->reorder_instance_records();
         }
 
         return $this;
@@ -481,6 +494,8 @@ class rule_instances_controller implements renderable, \templatable {
             // Signify we have made a modification and commit the update to the database.
             $this->ruleinstancesinternal[$instanceid]->modified = true;
             $this->ruleinstancesinternal[$nextinstancekey]->modified = true;
+            // Reorder list of rule instance records by new sortorder.
+            $this->reorder_instance_records();
         }
 
         return $this;
