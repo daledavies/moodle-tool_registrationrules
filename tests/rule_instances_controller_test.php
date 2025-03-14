@@ -212,4 +212,160 @@ final class rule_instances_controller_test extends \advanced_testcase {
         // already at the bottom of the list.
         $this->assertEquals($movedinstance->get_sortorder(), 2);
     }
+
+    /**
+     * Tests only active rule instance objects are returned, excluding those where either the
+     * rule plugin or instance are disabled, or the rule plugin has not been configured.
+     *
+     * @covers ::get_active_rule_instances
+     */
+    public function test_get_active_rule_instances(): void {
+        $controller = new rule_instances_controller();
+
+        // Raw data used to create first instance of "nope" type.
+        $formdata1 = new stdClass();
+        $formdata1->type = 'nope';
+        $formdata1->enabled = 1;
+        $formdata1->description = 'Instance 1';
+        $formdata1->points = 100;
+        $formdata1->fallbackpoints = 50;
+        // Raw data used to create second instance of "nope" type.
+        $formdata2 = clone $formdata1;
+        $formdata2->description = 'Instance 2';
+        // Raw data used to create first instance of "verifymx" type.
+        $formdata3 = new stdClass();
+        $formdata3->type = 'verifymx';
+        $formdata3->enabled = 1;
+        $formdata3->description = 'Instance 3';
+        $formdata3->points = 100;
+        $formdata3->fallbackpoints = 50;
+        // Add all instances using the controller.
+        $controller
+            ->add_instance($formdata1)
+            ->add_instance($formdata2)
+            ->add_instance($formdata3)->commit();
+
+        // We should see 3 instances.
+        $instances = $controller->get_active_rule_instances();
+        $this->assertCount(3, $instances);
+
+        // Create a disabled instance.
+        $formdata4 = clone $formdata1;
+        $formdata4->enabled = 0;
+        $formdata4->description = 'Instance 4';
+        $controller->add_instance($formdata4)->commit();
+
+        // We should still see 3 instances.
+        $instances = $controller->get_active_rule_instances();
+        $this->assertCount(3, $instances);
+
+        // Disable the verifymx plugin.
+        \tool_registrationrules\plugininfo\registrationrule::enable_plugin('verifymx', false);
+
+        // We should now see 2 instances.
+        $instances = $controller->get_active_rule_instances();
+        $this->assertCount(2, $instances);
+
+        // Disable the nope plugin.
+        \tool_registrationrules\plugininfo\registrationrule::enable_plugin('nope', false);
+
+        // There should now be no active instances.
+        $instances = $controller->get_active_rule_instances();
+        $this->assertCount(0, $instances);
+    }
+
+    /**
+     * Tests that only rule instances of the specified type are returned.
+     *
+     * @covers ::get_rule_instances_by_type
+     */
+    public function test_get_rule_instances_by_type(): void {
+        $controller = new rule_instances_controller();
+
+        // Raw data used to create first instance of "nope" type.
+        $formdata1 = new stdClass();
+        $formdata1->type = 'nope';
+        $formdata1->enabled = 1;
+        $formdata1->description = 'Instance 1';
+        $formdata1->points = 100;
+        $formdata1->fallbackpoints = 50;
+        // Raw data used to create second instance of "nope" type.
+        $formdata2 = clone $formdata1;
+        $formdata2->description = 'Instance 2';
+        // Raw data used to create first instance of "verifymx" type.
+        $formdata3 = new stdClass();
+        $formdata3->type = 'verifymx';
+        $formdata3->enabled = 1;
+        $formdata3->description = 'Instance 3';
+        $formdata3->points = 100;
+        $formdata3->fallbackpoints = 50;
+
+        // Add all instances using the controller.
+        $controller
+            ->add_instance($formdata1)
+            ->add_instance($formdata2)
+            ->add_instance($formdata3)->commit();
+
+        $instances = $controller->get_rule_instances_by_type('nope');
+
+        // We should see 2 instances.
+        $this->assertCount(2, $instances);
+
+        // Each instance should be the type we asked for.
+        $this->assertContainsOnlyInstancesOf('registrationrule_nope\rule', $instances);
+    }
+
+    /**
+     * Tests that get_rule_instances_by_type() throws the correct exception
+     * if passed an invalid rule plugin type.
+     *
+     * @covers ::get_rule_instances_by_type
+     */
+    public function test_get_rule_instances_by_type_invalid_type(): void {
+        $controller = new rule_instances_controller();
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage('Invalid rule plugin type');
+        $controller->get_rule_instances_by_type('invalid');
+    }
+
+    /**
+     * Tests that only one instance of a rule is allowed where this does not
+     * allow multiple instances and that CAPTCHA plugins cannot be added if
+     * site reCAPTCHA is enabled.
+     *
+     * @covers ::new_instance_of_type_allowed
+     */
+    public function test_new_instance_of_type_allowed(): void {
+        global $CFG;
+        $controller = new rule_instances_controller();
+
+        // Raw data used to create first instance of "nope" type, only one
+        // instance of this rule should be allowed.
+        $formdata1 = new stdClass();
+        $formdata1->type = 'nope';
+        $formdata1->enabled = 1;
+        $formdata1->description = 'Instance 1';
+        $formdata1->points = 100;
+        $formdata1->fallbackpoints = 50;
+
+        // Add all instances using the controller.
+        $controller->add_instance($formdata1)->commit();
+
+        // We should not be allowed to add a second instance.
+        $allowed = $controller->new_instance_of_type_allowed('nope');
+        $this->assertFalse($allowed);
+
+        // We should be allowed to add a captcha rule.
+        $allowed = $controller->new_instance_of_type_allowed('altcha');
+        $this->assertTrue($allowed);
+
+        // Enable site reCAPTCHA.
+        $CFG->recaptchapublickey = 'randompublickey';
+        $CFG->recaptchaprivatekey = 'randomprivatekey';
+        $CFG->enableloginrecaptcha = true;
+
+        // We should no longer be allowed to add a captcha rule.
+        $allowed = $controller->new_instance_of_type_allowed('altcha');
+        $this->assertFalse($allowed);
+    }
 }
