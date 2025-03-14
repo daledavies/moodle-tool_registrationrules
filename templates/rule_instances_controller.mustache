@@ -123,20 +123,22 @@
                         </div>
                     </div>
                 </div>
-                {{^captchascount}}
-                    <div class="btn-group">
-                        <div class="dropdown show">
-                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addCaptcha" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{#str}} ruleinstancestable:addcaptcha, tool_registrationrules {{/str}}
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="addCaptcha">
-                                {{#types.captchas}}
-                                    <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
-                                {{/types.captchas}}
+                {{^siterecaptchaenabled}}
+                    {{^captchascount}}
+                        <div class="btn-group">
+                            <div class="dropdown show">
+                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="addCaptcha" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{#str}} ruleinstancestable:addcaptcha, tool_registrationrules {{/str}}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="addCaptcha">
+                                    {{#types.captchas}}
+                                        <a class="dropdown-item" href="{{addurl}}">{{name}}</a>
+                                    {{/types.captchas}}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {{/captchascount}}
+                    {{/captchascount}}
+                {{/siterecaptchaenabled}}
             </div>
             <div class="col-4 text-end">
                 <button id="getinstancejson" type="button" class="btn btn-secondary" data-forcedinstancesjson="{{forcedinstancesjson}}"><i class="fa fa-code"></i>
