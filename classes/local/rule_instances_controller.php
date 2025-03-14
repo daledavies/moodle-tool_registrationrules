@@ -514,7 +514,7 @@ class rule_instances_controller implements renderable, \templatable {
         // instance then don't allow it.
         $numcaptchainstances = count($this->get_rule_instances_by_interface('tool_registrationrules\local\rule\captcha_rule'));
         $iscaptcharule = is_subclass_of($class, 'tool_registrationrules\local\rule\captcha_rule');
-        if ($iscaptcharule && (login_captcha_enabled() || $numcaptchainstances)) {
+        if ($iscaptcharule && (signup_captcha_enabled() || $numcaptchainstances)) {
             return false;
         }
 
@@ -561,7 +561,7 @@ class rule_instances_controller implements renderable, \templatable {
             'captchascount' => $this->forcedinstances ? 0 : (bool) count($this->get_rule_instances_by_interface(
                 'tool_registrationrules\local\rule\captcha_rule'
             )),
-            'siterecaptchaenabled' => login_captcha_enabled(),
+            'siterecaptchaenabled' => signup_captcha_enabled(),
             'pluginenabled' => get_config('tool_registrationrules', 'enable'),
         ];
 

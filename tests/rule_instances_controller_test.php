@@ -356,13 +356,14 @@ final class rule_instances_controller_test extends \advanced_testcase {
         $this->assertFalse($allowed);
 
         // We should be allowed to add a captcha rule.
+        $CFG->registerauth = 'email';
         $allowed = $controller->new_instance_of_type_allowed('altcha');
         $this->assertTrue($allowed);
 
         // Enable site reCAPTCHA.
         $CFG->recaptchapublickey = 'randompublickey';
         $CFG->recaptchaprivatekey = 'randomprivatekey';
-        $CFG->enableloginrecaptcha = true;
+        set_config('recaptcha', 1, 'auth_email');
 
         // We should no longer be allowed to add a captcha rule.
         $allowed = $controller->new_instance_of_type_allowed('altcha');
