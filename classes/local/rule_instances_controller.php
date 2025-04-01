@@ -37,6 +37,7 @@ use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
 use tool_registrationrules\local\rule\instance_json;
 use tool_registrationrules\plugininfo\registrationrule;
 
@@ -666,6 +667,9 @@ class rule_instances_controller implements renderable, \templatable {
                 'actions' => (new action_menu($actions))->export_for_template($output),
                 'dimmedrow' => count($dimmedreasons),
                 'dimmedmessage' => implode(', ', $dimmedreasons),
+                'forgotpassword' => ($ruleinstance instanceof extend_forgot_password_form) ? 1 : 0,
+                'forgotpasswordenabled' => ($ruleinstance instanceof extend_forgot_password_form
+                                                && $ruleinstance->get_forgotpasswordenabled()),
             ];
         }
 
@@ -688,6 +692,12 @@ class rule_instances_controller implements renderable, \templatable {
             'fallbackpoints' => $formdata->fallbackpoints,
             'other' => $this->encode_instance_config($formdata),
         ];
+
+        // Include form data for forgot password option if implemented by rule plugin.
+        $class = 'registrationrule_' . $formdata->type . '\rule';
+        if (is_subclass_of($class, 'tool_registrationrules\local\rule\extend_forgot_password_form')) {
+            $instance->forgotpasswordenabled = $formdata->forgotpasswordenabled;
+        }
 
         if (!empty($formdata->id)) {
             $instance->id = $formdata->id;

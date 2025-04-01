@@ -31,6 +31,7 @@
 
 use tool_registrationrules\event\registration_denied;
 use tool_registrationrules\event\registration_denied_logging_only;
+use tool_registrationrules\local\helpers;
 use tool_registrationrules\local\rule_checker;
 
 /**
@@ -62,25 +63,9 @@ function tool_registrationrules_pre_signup_requests() {
     // If we get here then registration is not allowed. So first create an event to
     // store log information from rules that denied registration.
     registration_denied::log_event($rulechecker->get_logger());
-    // Set an appropriate status code.
-    header("HTTP/1.0 403 Forbidden");
-    // Build and output the page with appropriate messages.
-    $newaccount = get_string('newaccount');
-    $login      = get_string('login');
-    $PAGE->navbar->add($login);
-    $PAGE->navbar->add($newaccount);
-    $PAGE->set_pagelayout('login');
-    $PAGE->set_title($newaccount);
-    $PAGE->set_heading($newaccount);
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($newaccount);
-    if ($generalmessage = get_config('tool_registrationrules', 'generalbeforemessage')) {
-        echo $OUTPUT->notification(format_text($generalmessage, FORMAT_HTML), 'info', false);
-    }
-    echo $OUTPUT->notification($rulechecker->get_feedback_messages_string(), 'warning', false);
-    echo $OUTPUT->footer();
-    // Exit here to prevent the actual registration page from being generated.
-    exit;
+
+    // Display error page and exit.
+    helpers::error_page(get_string('newaccount'), $rulechecker->get_feedback_messages_string());
 }
 
 /**
@@ -108,7 +93,7 @@ function tool_registrationrules_extend_signup_form($mform): void {
     }
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->add_error_field($mform);
-    $rulechecker->extend_form($mform);
+    $rulechecker->extend_signup_form($mform);
 }
 
 /**
@@ -126,6 +111,60 @@ function tool_registrationrules_validate_extend_signup_form($data): array {
 
     $rulechecker = rule_checker::get_instance('signup_form');
     $rulechecker->run_post_data_checks($data);
+
+    if ($rulechecker->is_registration_allowed()) {
+        return [];
+    }
+
+    // The loggingonly setting has been enabled so create an event but do not
+    // deny registration.
+    if (get_config('tool_registrationrules', 'loggingonly')) {
+        registration_denied_logging_only::log_event($rulechecker->get_logger());
+        return [];
+    }
+    // If we get here then registration is not allowed. So first create an event to
+    // store log information from rules that denied registration.
+    registration_denied::log_event($rulechecker->get_logger());
+
+    // Then return an array of messages to trigger a validation failure on the
+    // registration form.
+    return $rulechecker->get_all_messages();
+}
+
+/**
+ * Allow rules to extend the forgot password form.
+ *
+ * @param MoodleQuickForm $mform
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function tool_registrationrules_extend_forgot_password_form($mform): void {
+    // Plugin not enabled.
+    if (!get_config('tool_registrationrules', 'enable')) {
+        return;
+    }
+
+    $rulechecker = rule_checker::get_instance('forgot_password_form');
+    $rulechecker->add_error_field($mform);
+    $rulechecker->extend_forgot_password_form($mform);
+}
+
+/**
+ * Inject our own rule instance based validation into the forgot password form.
+ *
+ * @param array $data
+ * @return string[]
+ * @throws coding_exception
+ */
+function tool_registrationrules_validate_extend_forgot_password_form($data): array {
+    // Plugin not enabled.
+    if (!get_config('tool_registrationrules', 'enable')) {
+        return [];
+    }
+
+    $rulechecker = rule_checker::get_instance('forgot_password_form');
+    $rulechecker->validate_forgot_password_form($data);
 
     if ($rulechecker->is_registration_allowed()) {
         return [];

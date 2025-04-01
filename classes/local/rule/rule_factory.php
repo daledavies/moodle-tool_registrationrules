@@ -59,6 +59,11 @@ class rule_factory {
         $ruleinstance->set_fallbackpoints($dbrecord->fallbackpoints);
         $ruleinstance->set_sortorder($dbrecord->sortorder);
 
+        // Add options for forgot password if implemented by rule plugin.
+        if ($ruleinstance instanceof extend_forgot_password_form) {
+            $ruleinstance->set_forgotpasswordenabled($dbrecord->forgotpasswordenabled);
+        }
+
         // If the rule instance allows configuration then decode and validate config json.
         if ($ruleinstance instanceof instance_configurable) {
             // Decode raw json from DB record containing instance related config object.

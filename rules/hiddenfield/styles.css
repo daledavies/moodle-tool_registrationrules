@@ -8,7 +8,8 @@
  */
 
 /* stylelint-disable declaration-no-important  */
-#page-login-signup #rr-hhf {
+#page-login-signup #rr-hhf,
+#page-login-forgot_password #rr-hhf {
     position: absolute !important;
     left: -99999px !important;
 }

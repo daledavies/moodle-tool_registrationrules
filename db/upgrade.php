@@ -117,6 +117,18 @@ function xmldb_tool_registrationrules_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025021301, 'tool', 'registrationrules');
     }
 
+    if ($oldversion < 2025032101) {
+        // Add forgotpasswordenabled field.
+        $table = new xmldb_table('tool_registrationrules');
+        $field = new xmldb_field('forgotpasswordenabled', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Registrationrules savepoint reached.
+        upgrade_plugin_savepoint(true, 2025032101, 'tool', 'registrationrules');
+    }
+
     // Apparently we must always return true here, or we get an "unkown error" dusing upgrade.
     // See https://moodledev.io/docs/guides/upgrade#dbupgradephp for info.
     return true;

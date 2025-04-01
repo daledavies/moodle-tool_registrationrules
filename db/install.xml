@@ -13,6 +13,7 @@
         <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false" COMMENT="Points added to the score for failing this rule."/>
         <FIELD NAME="fallbackpoints" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Points awarded if this rule's fallback becomes active (API not reachable, etc.)"/>
+        <FIELD NAME="forgotpasswordenabled" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If the rule is enabled for the forgotten password form."/>
         <FIELD NAME="other" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Type specific configuration encoded as JSON."/>
       </FIELDS>
       <KEYS>

@@ -18,7 +18,10 @@ namespace registrationrule_ratelimit;
 
 use MoodleQuickForm;
 use stdClass;
+use tool_registrationrules\local\helpers;
 use tool_registrationrules\local\logger\log_info;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
+use tool_registrationrules\local\rule\forgot_password_trait;
 use tool_registrationrules\local\rule\instance_configurable;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule\post_data_check;
@@ -39,8 +42,8 @@ use registrationrule_ratelimit\local\rate_limiter;
  * @author    Dale Davies <dale.davies@catalyst-eu.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, pre_data_check, post_data_check, instance_configurable {
-    use rule_trait;
+class rule implements rule_interface, pre_data_check, post_data_check, instance_configurable, extend_forgot_password_form {
+    use rule_trait, forgot_password_trait;
 
     /** @var stdClass rule plugin instance config. */
     protected stdClass $instanceconfig;
@@ -191,7 +194,7 @@ class rule implements rule_interface, pre_data_check, post_data_check, instance_
                 score: $this->get_points(),
                 feedbackmessage: get_string('failuremessage', 'registrationrule_ratelimit'),
                 loginfo: new log_info(
-                    $this, get_string('logmessage:session', 'registrationrule_ratelimit', getremoteaddr())
+                    $this, get_string('logmessage:session', 'registrationrule_ratelimit')
                 )
             );
         }
@@ -216,7 +219,7 @@ class rule implements rule_interface, pre_data_check, post_data_check, instance_
                 score: $this->get_points(),
                 feedbackmessage: get_string('failuremessage', 'registrationrule_ratelimit'),
                 loginfo: new log_info(
-                    $this, get_string('logmessage:session', 'registrationrule_ratelimit')
+                    $this, get_string('logmessage:ip', 'registrationrule_ratelimit', getremoteaddr())
                 )
             );
         }
@@ -235,5 +238,28 @@ class rule implements rule_interface, pre_data_check, post_data_check, instance_
 
         // We made it here so the limit hasn't yet been reached.
         return $this->allow();
+    }
+
+    /**
+     * Inject additional fields into the forgot password form.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_forgot_password_form(MoodleQuickForm $mform): void {
+        $result = $this->pre_data_check([]);
+        if (!$result->get_allowed()) {
+            helpers::error_page(get_string('passwordforgotten'), $result->get_feedback_message());
+        }
+    }
+
+    /**
+     * Perform rule's checks after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result a rule_check_result object.
+     */
+    public function validate_forgot_password_form(array $data): rule_check_result {
+        return $this->post_data_check($data);
     }
 }

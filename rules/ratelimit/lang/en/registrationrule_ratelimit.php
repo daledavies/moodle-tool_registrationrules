@@ -26,10 +26,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['failuremessage'] = 'The number of allowed signup attempts has been reached, please try again later.';
+$string['failuremessage'] = 'The number of allowed attempts has been reached, please try again later.';
 $string['logmessage:ip'] = 'IP address was rate limited... {$a}';
 $string['logmessage:session'] = 'Session was rate limited';
-$string['plugindescription'] = 'Limit the number of signup attempts within a time window';
+$string['plugindescription'] = 'Limit the number of attempts within a time window';
 $string['pluginname'] = 'Rate Limit';
 $string['privacy:null_provider:reason'] = 'This rule does not store identifiable user data.';
 $string['registrationrule:instance:name'] = 'Rate Limit';

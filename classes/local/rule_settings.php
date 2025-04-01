@@ -18,6 +18,7 @@ namespace tool_registrationrules\local;
 
 use coding_exception;
 use dml_exception;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
 use tool_registrationrules\local\rule\instance_configurable;
 
 defined('MOODLE_INTERNAL') || die;
@@ -73,6 +74,11 @@ class rule_settings extends \moodleform {
             'fallbackpoints' => $ruleinstance->get_fallbackpoints(),
             'sortorder' => $ruleinstance->get_sortorder(),
         ];
+
+        // Get forgot password option if implemented by rule plugin.
+        if ($ruleinstance instanceof extend_forgot_password_form) {
+            $data['forgotpasswordenabled'] = $ruleinstance->get_forgotpasswordenabled();
+        }
 
         // Merge in instance specific field data if rule plugin class specifies it.
         if ($ruleinstance instanceof instance_configurable) {
@@ -206,6 +212,17 @@ class rule_settings extends \moodleform {
         );
         $mform->setType('fallbackpoints', PARAM_INT);
         $mform->setDefault('fallbackpoints', 0);
+
+        // Add forgot password option if implemented by rule plugin.
+        if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\extend_forgot_password_form')) {
+            $mform->addElement(
+                'selectyesno',
+                'forgotpasswordenabled',
+                get_string('registrationrule:instance:forgotpassword', 'tool_registrationrules'),
+            );
+            $mform->setType('forgotpasswordenabled', PARAM_BOOL);
+            $mform->setDefault('forgotpasswordenabled', 0);
+        }
 
         // If this is defined as a configurable instance then allow it to extend the settings form.
         if (is_subclass_of($this->ruleinstanceclass, 'tool_registrationrules\local\rule\instance_configurable')) {

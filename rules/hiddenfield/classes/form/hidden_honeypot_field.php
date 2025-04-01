@@ -19,7 +19,7 @@ namespace registrationrule_hiddenfield\form;
 use MoodleQuickForm_text;
 
 /**
-
+ * Custom form element for a random hidden honeypot field.
  *
  * @package   registrationrule_hiddenfield
  * @copyright 2025 Catalyst IT Europe {@link https://www.catalyst-eu.net}

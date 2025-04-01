@@ -21,7 +21,9 @@ use curl;
 use MoodleQuickForm;
 use tool_registrationrules\local\logger\log_info;
 use tool_registrationrules\local\rule\captcha_rule;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
 use tool_registrationrules\local\rule\extend_signup_form;
+use tool_registrationrules\local\rule\forgot_password_trait;
 use tool_registrationrules\local\rule\plugin_configurable;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule_check_result;
@@ -41,8 +43,9 @@ use tool_registrationrules\local\rule\rule_trait;
  * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, extend_signup_form, plugin_configurable, post_data_check, captcha_rule {
-    use rule_trait;
+class rule implements rule_interface, extend_signup_form, plugin_configurable, post_data_check,
+        captcha_rule, extend_forgot_password_form {
+    use rule_trait, forgot_password_trait;
 
     /**
      * Inject additional fields into the signup form for usage by the rule instance after submission.
@@ -136,5 +139,26 @@ class rule implements rule_interface, extend_signup_form, plugin_configurable, p
         }
 
         return true;
+    }
+
+    /**
+     * Inject additional fields into the forgot password form.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_forgot_password_form(MoodleQuickForm $mform): void {
+        $mform->addElement('header', 'captcha', '', '');
+        $this->extend_form($mform);
+    }
+
+    /**
+     * Perform rule's checks after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result a rule_check_result object.
+     */
+    public function validate_forgot_password_form(array $data): rule_check_result {
+        return $this->post_data_check($data);
     }
 }

@@ -19,8 +19,24 @@
     border-radius: 5px;
     color: #333;
     font-size: 0.7em;
-    margin-left: 0.5em;
+    margin: 0 0.5em 0 0;
     padding: 0.2em 0.6em;
     position: relative;
     top: -1px;
+}
+
+#page-admin-tool-registrationrules-manageruleinstances td.type .label:first-of-type {
+    margin-left: 0.5em;
+}
+
+#page-admin-tool-registrationrules-manageruleinstances .label.enabled {
+    background-color: #d7e4d6;
+    border-color:#a7c1a5;
+    color: #1c3f1a;
+}
+
+#page-admin-tool-registrationrules-manageruleinstances td.areas ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }

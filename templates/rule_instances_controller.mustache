@@ -49,6 +49,7 @@
                 <th>{{#str}} ruleinstancestable:enabled, tool_registrationrules {{/str}}</th>
             {{/forcedinstances}}
             <th>{{#str}} ruleinstancestable:description, tool_registrationrules {{/str}}</th>
+            <th>{{#str}} ruleinstancestable:areasused, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:points, tool_registrationrules {{/str}}</th>
             <th>{{#str}} ruleinstancestable:fallbackpoints, tool_registrationrules {{/str}}</th>
             {{^forcedinstances}}
@@ -59,11 +60,22 @@
         </thead>
         <tbody>{{#instances}}
             <tr{{#dimmedrow}} class="dimmed_text"{{/dimmedrow}}>
-                <td>{{type}}{{#dimmedrow}} ({{dimmedmessage}}){{/dimmedrow}} {{#label}}<span class="label">{{label}}</span>{{/label}}</td>
+                <td class="type">{{type}}{{#dimmedrow}} ({{dimmedmessage}}){{/dimmedrow}} {{#label}}<span class="label">{{label}}</span>{{/label}}</td>
                 {{^forcedinstances}}
                     <td>{{{enabled}}}</td>
                 {{/forcedinstances}}
                 <td>{{description}}</td>
+                <td class="areas">
+                    <ul>
+                        <li class="label enabled" title="{{#str}} ruleinstancestable:enabledarealabel, tool_registrationrules  {{/str}}">{{#str}} ruleinstancestable:signuplabel, tool_registrationrules  {{/str}}</li>
+                        {{#forgotpassword}}
+                            <li class="label {{#forgotpasswordenabled}}enabled{{/forgotpasswordenabled}}"
+                                title="{{#forgotpasswordenabled}}{{#str}} ruleinstancestable:enabledarealabel, tool_registrationrules  {{/str}}{{/forgotpasswordenabled}}{{^forgotpasswordenabled}}{{#str}} ruleinstancestable:disabledarealabel, tool_registrationrules  {{/str}}{{/forgotpasswordenabled}}"
+                            >{{#str}} ruleinstancestable:forgotpasswordlabel, tool_registrationrules  {{/str}}
+                            </li>
+                        {{/forgotpassword}}
+                    </ul>
+                </td>
                 <td>{{points}}</td>
                 <td>{{fallbackpoints}}</td>
                 {{^forcedinstances}}
@@ -147,6 +159,3 @@
         </div>
     {{/forcedinstances}}
 </div>
-{{#js}}
-{{! here comes the JS }}
-{{/js}}

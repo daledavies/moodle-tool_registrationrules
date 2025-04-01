@@ -14,21 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace tool_registrationrules\local\rule;
+
 /**
- * Strings for registrationrule_hiddenfield registration rule sublugin.
+ * Trait implementing getter and setter for forgotpasswordenabled.
  *
- * @package   registrationrule_hiddenfield
+ * @package tool_registrationrules
  * @copyright 2025 Catalyst IT Europe {@link https://www.catalyst-eu.net}
  *            2025 eDaktik GmbH {@link https://www.edaktik.at/}
  *            2025 lern.link GmbH {@link https://lern.link/}
  *            2025 University of Strathclyde {@link https://www.strath.ac.uk}
- * @author    Dale Davies <dale.davies@catalyst-eu.net)
+ * @author    Dale Davies <dale.davies@catalyst-eu.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+trait forgot_password_trait {
+    /** @var bool true if the rule instance is enabled. */
+    protected bool $forgotpasswordenabled;
 
-$string['failuremessage'] = 'Error submitting form';
-$string['logmessage'] = 'Honeypot field contains unexpected data.';
-$string['plugindescription'] = 'Adds a honeypot field to trap bots';
-$string['pluginname'] = 'Hidden honeypot field';
-$string['privacy:null_provider:reason'] = 'This plugin does not store any user related data.';
-$string['registrationrule:instance:name'] = 'Hidden honeypot field';
+    /**
+     * Is the rule plugin instance enabled?
+     *
+     * @return bool true if enabled.
+     */
+    public function get_forgotpasswordenabled(): bool {
+        return $this->forgotpasswordenabled;
+    }
+
+    /**
+     * Enable the rule plugin instance.
+     *
+     * @param bool $forgotpasswordenabled
+     * @return bool
+     */
+    public function set_forgotpasswordenabled(bool $forgotpasswordenabled): bool {
+        return $this->forgotpasswordenabled = $forgotpasswordenabled;
+    }
+}

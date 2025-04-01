@@ -19,7 +19,9 @@ namespace registrationrule_hiddenfield;
 use MoodleQuickForm;
 use stdClass;
 use registrationrule_hiddenfield\form\hidden_honeypot_field;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
 use tool_registrationrules\local\rule\extend_signup_form;
+use tool_registrationrules\local\rule\forgot_password_trait;
 use tool_registrationrules\local\rule\rule_interface;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule_check_result;
@@ -37,8 +39,8 @@ use tool_registrationrules\local\rule\rule_trait;
  * @author    Dale Davies <dale.davies@catalyst-eu.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rule implements rule_interface, post_data_check, extend_signup_form {
-    use rule_trait;
+class rule implements rule_interface, post_data_check, extend_signup_form, extend_forgot_password_form {
+    use rule_trait, forgot_password_trait;
 
     /** @var array Selection of realistic fields to use as a honeypot. */
     private const FIELDNAMES = [
@@ -88,6 +90,7 @@ class rule implements rule_interface, post_data_check, extend_signup_form {
      */
     public function extend_form(MoodleQuickForm $mform): void {
         global $CFG, $SESSION;
+        require_once($CFG->libdir.'/form/text.php');
 
         // Pick a random name and label to use, store this in the session so we know what
         // to check during validation.
@@ -129,5 +132,25 @@ class rule implements rule_interface, post_data_check, extend_signup_form {
         }
 
         return $this->allow();
+    }
+
+    /**
+     * Inject additional fields into the forgot password form.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_forgot_password_form(MoodleQuickForm $mform): void {
+        $this->extend_form($mform);
+    }
+
+    /**
+     * Perform rule's checks after signup form is submitted.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return rule_check_result a rule_check_result object.
+     */
+    public function validate_forgot_password_form(array $data): rule_check_result {
+        return $this->post_data_check($data);
     }
 }

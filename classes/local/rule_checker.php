@@ -21,6 +21,7 @@ use dml_exception;
 use MoodleQuickForm;
 use stdClass;
 use tool_registrationrules\local\logger\logger;
+use tool_registrationrules\local\rule\extend_forgot_password_form;
 use tool_registrationrules\local\rule\extend_signup_form;
 use tool_registrationrules\local\rule\post_data_check;
 use tool_registrationrules\local\rule\pre_data_check;
@@ -185,12 +186,42 @@ class rule_checker {
      * @param MoodleQuickForm $mform
      * @return void
      */
-    public function extend_form(MoodleQuickForm $mform): void {
+    public function extend_signup_form(MoodleQuickForm $mform): void {
         foreach ($this->rules as $instance) {
             if ($instance instanceof extend_signup_form) {
                 $instance->extend_form($mform);
             }
         }
+    }
+
+    /**
+     * Let configured rule instances extend the forgot password form.
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function extend_forgot_password_form(MoodleQuickForm $mform): void {
+        foreach ($this->rules as $instance) {
+            if ($instance instanceof extend_forgot_password_form && $instance->get_forgotpasswordenabled()) {
+                $instance->extend_forgot_password_form($mform);
+            }
+        }
+    }
+
+    /**
+     * Run rule's checks to validate forgot poassword data.
+     *
+     * @param array $data the data array from submitted form values.
+     * @return void
+     */
+    public function validate_forgot_password_form(array $data): void {
+        foreach ($this->rules as $instance) {
+            if ($instance instanceof extend_forgot_password_form && $instance->get_forgotpasswordenabled()) {
+                $this->results[] = $instance->validate_forgot_password_form($data);
+            }
+        }
+
+        $this->checked = true;
     }
 
     /**
