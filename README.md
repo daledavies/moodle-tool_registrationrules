@@ -11,6 +11,7 @@ The **Registration Rules** plugin enhances user account registration control in 
 - Implement other anti-spam measures such as injecting randomised hidden honeypot fields into the signup form, ensuring users take a minimum amount of time to register, rate limiting the number of allowed signups per session or IP address, and more!
 - Flexible rules to allow or deny account registration around date/time windows.
 - Entirely disable user signups with a single click.
+- Apply reCAPTCHA alternatives and other rules to the forgotten password form for further security.
 
 ## 🧐 How it works
 
