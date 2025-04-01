@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 2025040100
+
+### Added
+
+- CAPTCHAs and other appropriate rules can now be added to the forgotten password form.
+- Unit tests to cover core functionality.
+- Add caching and periodic refresh for disposable emails list.
+- Clarify timezone used by limitdatetime rule.
+
+### Fixed
+
+- Replace login_captcha_enabled to restore 4.1 compatibility.
+- Do not display Add CAPTCHA button when site captcha is enabled.
+- Reorder internal rule instance list when instance is moved.
+- Remove unnecessary calls to encode_instance_config() to improve performance.
+
 ## Version 2025022700
 
 ### Added
