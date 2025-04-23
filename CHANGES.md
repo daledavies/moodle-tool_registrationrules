@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2025042300
+
+### Fixed
+
+- Several small fixes for Moodle 5.x compatibility.
+- Fixed exception on new site installs.
+
 ## Version 2025040100
 
 ### Added
