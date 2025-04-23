@@ -241,6 +241,22 @@ class rule_instances_controller implements renderable, \templatable {
     }
 
     /**
+     * Determine if site reCAPTCHA has been enabled.
+     *
+     * @return boolean
+     */
+    protected function site_captcha_enabled(): bool {
+        global $CFG;
+        // Check $CFG->registerauth first to stop signup_captcha_enabled() from blowing up if it
+        // hasn't been set, which appears to happen with new installs.
+        if ($CFG->registerauth && signup_captcha_enabled()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Return an up to date array of rule instance DB records in the correct order.
      *
      * @return array Array of rule instance records.
@@ -515,7 +531,7 @@ class rule_instances_controller implements renderable, \templatable {
         // instance then don't allow it.
         $numcaptchainstances = count($this->get_rule_instances_by_interface('tool_registrationrules\local\rule\captcha_rule'));
         $iscaptcharule = is_subclass_of($class, 'tool_registrationrules\local\rule\captcha_rule');
-        if ($iscaptcharule && (signup_captcha_enabled() || $numcaptchainstances)) {
+        if ($iscaptcharule && ($this->site_captcha_enabled() || $numcaptchainstances)) {
             return false;
         }
 
@@ -562,7 +578,7 @@ class rule_instances_controller implements renderable, \templatable {
             'captchascount' => $this->forcedinstances ? 0 : (bool) count($this->get_rule_instances_by_interface(
                 'tool_registrationrules\local\rule\captcha_rule'
             )),
-            'siterecaptchaenabled' => signup_captcha_enabled(),
+            'siterecaptchaenabled' => $this->site_captcha_enabled(),
             'pluginenabled' => get_config('tool_registrationrules', 'enable'),
         ];
 
