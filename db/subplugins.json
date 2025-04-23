@@ -1,5 +1,8 @@
 {
     "plugintypes": {
         "registrationrule": "admin/tool/registrationrules/rules"
+    },
+    "subplugintypes": {
+        "registrationrule": "rules"
     }
 }
