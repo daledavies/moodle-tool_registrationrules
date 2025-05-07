@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace registrationrule_turnstile\privacy;
+namespace registrationrule_cloudflareturnstile\privacy;
 
 use coding_exception;
 use core_privacy\local\metadata\collection;
