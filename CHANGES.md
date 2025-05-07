@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2025050700
+
+### Fixed
+
+- Issue #67: Fixed non-compliand privacy provider for Cloudflare rule.
+- Issue #68: Added missing cache definition language strings.
+
+### Security
+
+- Fixed hassiteconfig permission check in plugin stetings page.
+
 ## Version 2025042300
 
 ### Fixed
