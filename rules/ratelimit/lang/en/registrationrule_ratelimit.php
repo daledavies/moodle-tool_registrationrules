@@ -26,6 +26,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['cachedef_ipratelimit'] = 'Cache for IP rate limiter data.';
+$string['cachedef_sessionratelimit'] = 'Cache for session rate limiter data.';
 $string['failuremessage'] = 'The number of allowed attempts has been reached, please try again later.';
 $string['logmessage:ip'] = 'IP address was rate limited... {$a}';
 $string['logmessage:session'] = 'Session was rate limited';
