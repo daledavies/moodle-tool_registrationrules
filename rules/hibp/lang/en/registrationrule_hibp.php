@@ -26,6 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['cachedef_pwhashes'] = 'Cache for hashed password responses from HiBW';
 $string['failuremessage'] = 'Password found in HIBP database, please try a different one.';
 $string['fallbackfailuremessage'] = 'Cannot verify password, problem verifying with HIBP database.';
 $string['logmessage'] = 'Error connecting to HIBP API';
